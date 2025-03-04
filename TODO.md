@@ -2,11 +2,13 @@
 this_file: TODO.md
 ---
 
-# Opero: TODO List
+# TODO
+
+Tip: Periodically run `./cleanup.py status` to see results of lints and tests.
 
 This document outlines the remaining tasks for the Opero project.
 
-## Core Functionality
+## Phase 1
 
 - [ ] Improve error handling in `retry_async` function to properly handle coroutine objects
 - [ ] Fix type compatibility issues in async/sync conversions
@@ -15,7 +17,7 @@ This document outlines the remaining tasks for the Opero project.
 - [ ] Add comprehensive logging throughout the codebase
 - [ ] Optimize retry logic for better performance
 
-## Testing
+## Phase 2
 
 - [ ] Add more unit tests for edge cases in retry mechanism
 - [ ] Create integration tests for complex scenarios combining multiple features
@@ -23,7 +25,7 @@ This document outlines the remaining tasks for the Opero project.
 - [ ] Implement stress tests for concurrency and rate limiting
 - [ ] Add tests for multiprocessing with different backends
 
-## Documentation
+## Phase 3
 
 - [ ] Create comprehensive API documentation with Sphinx
 - [ ] Add more usage examples for common patterns

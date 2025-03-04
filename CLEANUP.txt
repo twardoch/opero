@@ -466,3 +466,73 @@ debug statements (python)................................................Passed
 check for case conflicts.................................................Passed
 mixed line ending........................................................Passed
 
+2025-03-04 05:37:39 - [main e5e7356] Update repository files
+ 30 files changed, 22280 insertions(+), 55 deletions(-)
+ create mode 100644 .cursor/rules/filetree.mdc
+ create mode 100644 .specstory/history/.what-is-this.md
+ create mode 100644 .specstory/history/2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
+ create mode 100644 CHANGELOG.md
+ create mode 100644 CLEANUP.txt
+ create mode 100644 TODO.md
+ create mode 100755 cleanup.py
+ create mode 100644 src/opero/__init__.py
+ create mode 100644 src/opero/_version.py
+ create mode 100644 src/opero/concurrency.py
+ create mode 100644 src/opero/core.py
+ create mode 100644 src/opero/decorators.py
+ create mode 100644 src/opero/exceptions.py
+ create mode 100644 src/opero/rate_limit.py
+ create mode 100644 src/opero/retry.py
+ create mode 100644 src/opero/utils.py
+ create mode 100644 tests/test_core.py
+ create mode 100644 tests/test_decorators.py
+ create mode 100644 twat_search.txt
+ create mode 100644 uv.lock
+
+2025-03-04 05:37:39 - Changes committed successfully
+2025-03-04 05:37:40 - 
+📦 Repomix v0.2.29
+
+No custom config found at repomix.config.json or global config at /Users/adam/.config/repomix/repomix.config.json.
+You can add a config file for additional settings. Please check https://github.com/yamadashy/repomix for more information.
+⠙ Collecting files...
+[2K[1A[2K[G⠹ Collecting files...
+[2K[1A[2K[G⠸ Collecting files...
+[2K[1A[2K[G⠼ Running security check...
+[2K[1A[2K[G⠴ Running security check... (7/25) src/opero/core.py
+[2K[1A[2K[G⠦ Processing files...
+[2K[1A[2K[G⠧ Processing file... (3/25) .github/workflows/release.yml
+[2K[1A[2K[G⠇ Writing output file...
+[2K[1A[2K[G⠏ Calculating metrics...
+[2K[1A[2K[G⠋ Calculating metrics...
+[2K[1A[2K[G⠙ Calculating metrics...
+[2K[1A[2K[G⠹ Calculating metrics...
+[2K[1A[2K[G⠸ Calculating metrics... (6/25) src/opero/concurrency.py
+[2K[1A[2K[G✔ Packing completed successfully!
+
+📈 Top 5 Files by Character Count and Token Count:
+──────────────────────────────────────────────────
+1.  README.md (9,695 chars, 2,229 tokens)
+2.  pyproject.toml (6,227 chars, 1,972 tokens)
+3.  cleanup.py (5,538 chars, 1,254 tokens)
+4.  .gitignore (3,633 chars, 1,391 tokens)
+5.  .github/workflows/push.yml (2,741 chars, 707 tokens)
+
+🔎 Security Check:
+──────────────────
+✔ No suspicious files detected.
+
+📊 Pack Summary:
+────────────────
+  Total Files: 25 files
+  Total Chars: 54,792 chars
+ Total Tokens: 13,859 tokens
+       Output: twat_search.txt
+     Security: ✔ No suspicious files detected
+
+🎉 All Done!
+Your repository has been successfully packed.
+
+💡 Repomix is now available in your browser! Try it at https://repomix.com
+
+2025-03-04 05:37:40 - Repository content mixed into twat_search.txt
