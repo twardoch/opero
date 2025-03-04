@@ -165,14 +165,14 @@ globs:
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
 │       ├── [ 67K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
-│       └── [ 99K]  2025-03-04_08-40-managing-todo-list-tasks.md
-├── [1.8K]  CHANGELOG.md
+│       └── [198K]  2025-03-04_08-40-managing-todo-list-tasks.md
+├── [2.4K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
 ├── [ 23K]  README.md
-├── [ 69K]  REPO_CONTENT.txt
-├── [2.2K]  TODO.md
+├── [ 73K]  REPO_CONTENT.txt
+├── [2.7K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -1100,6 +1100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive logging throughout the codebase with configurable log levels
 - Context information to log messages for better debugging
 - Proper timezone handling in datetime operations
+- Structured logging example in README.md with context management
+- Best practices section in documentation for error handling and performance optimization
 
 ### Changed
 - Modified `process` method to apply function to each item individually
@@ -1107,6 +1109,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Optimized retry logic and fallback mechanisms
 - Restructured code to reduce complexity in core functions
 - Updated project documentation to reflect recent changes
+- Enhanced docstrings for all public functions and classes
+- Improved type annotations throughout the codebase
 
 ### Fixed
 - Fixed failing tests in `process` method
@@ -1114,12 +1118,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed loop variable binding issues in `core.py`
 - Addressed too many arguments in `retry.py:with_retry` function
 - Fixed error handling in `retry_async` function
+- Fixed parameter order in `_execute_with_retry` function calls to `retry_async` and `retry_sync`
+- Added fallback mechanism for handling None `retry_config` in `_execute_with_retry`
+- Fixed type incompatibility issues in async/sync conversions
 - Fixed linter errors in cleanup.py including:
   - Added timezone to datetime.datetime.now() calls
   - Fixed Boolean-typed positional arguments
   - Addressed subprocess call security issues
 - Updated pyproject.toml configuration for proper linting
 - Fixed cleanup.py script by removing problematic _print_tree function and simplifying tree generation
+- Fixed structured logging example in README.md to use correct imports and context features
 
 ## [0.1.0] - Initial Release
 
@@ -1629,11 +1637,14 @@ this_file: README.md
 
 ## Recent Improvements
 
-- **Enhanced Logging**: Added comprehensive logging throughout the codebase with configurable log levels
+- **Enhanced Logging**: Added comprehensive logging throughout the codebase with configurable log levels and context support
 - **Improved Error Handling**: Better handling of errors in async/sync conversions and fallback scenarios
 - **Optimized Core Functions**: Reduced complexity in key functions for better maintainability
 - **Fixed Process Method**: Modified to apply functions to each item individually for more intuitive behavior
-- **Code Quality**: Fixed various linter errors and improved type annotations
+- **Fixed Retry Functionality**: Corrected parameter order in retry function calls and added fallback for None configurations
+- **Enhanced Documentation**: Added detailed docstrings, usage examples, and best practices sections
+- **Type Safety**: Improved type annotations and fixed type incompatibility issues
+- **Code Quality**: Fixed various linter errors and improved overall code structure
 
 ## Installation
 
@@ -2445,52 +2456,66 @@ this_file: TODO.md
 
 Tip: Periodically run `python ./cleanup.py status` to see results of lints and tests. Use `uv pip ...` not `pip ...`
 
-## Phase 1
+## High Priority Tasks
 
 - [ ] Complete the test suite with 90%+ coverage
+  - [ ] Add tests for edge cases in retry mechanism
+  - [ ] Create integration tests for complex scenarios
+  - [ ] Add tests for error handling in concurrent operations
+  - [ ] Implement test coverage reporting
+
 - [ ] Optimize performance for high-throughput scenarios
-- [ ] Add more usage examples for common patterns
-- [ ] Document best practices for error handling
-- [ ] Add docstrings to all public functions and classes
-- [ ] Create API reference documentation
+  - [ ] Profile code to identify bottlenecks
+  - [ ] Reduce overhead in the orchestration layer
+  - [ ] Optimize retry logic for better performance
+  - [ ] Improve concurrency management
 
-## Phase 2 
+- [ ] Fix remaining type issues in pyproject.toml
+  - [ ] Resolve schema validation errors in hatch configuration
+  - [ ] Update deprecated settings
 
-- [ ] Add more unit tests for edge cases in retry mechanism
-- [ ] Create integration tests for complex scenarios combining multiple features
-- [ ] Add performance benchmarks for key operations
-- [ ] Implement stress tests for concurrency and rate limiting
-- [ ] Optimize retry logic for better performance
-- [ ] Reduce overhead in the orchestration layer
-- [ ] Improve concurrency management
+## Medium Priority Tasks
 
-## Phase 3
+- [ ] Add performance benchmarks
+  - [ ] Create benchmark suite for key operations
+  - [ ] Implement stress tests for concurrency and rate limiting
+  - [ ] Add comparison benchmarks against similar libraries
 
-- [ ] Implement middleware support for function transformation
-- [ ] Add metrics collection for performance monitoring
-- [ ] Create a CLI interface using `fire` and `rich`
-- [ ] Add support for distributed task queues
-- [ ] Implement streaming support with backpressure handling
+- [ ] Infrastructure improvements
+  - [ ] Set up CI/CD pipeline for automated testing and deployment
+  - [ ] Configure code coverage reporting
+  - [ ] Add pre-commit hooks for code quality
+  - [ ] Create GitHub Actions workflow for publishing to PyPI
+  - [ ] Set up automated dependency updates
 
-1. [ ] Infrastructure improvements:
-   - [ ] Set up CI/CD pipeline for automated testing and deployment
-   - [ ] Configure code coverage reporting
-   - [ ] Add pre-commit hooks for code quality
-   - [ ] Create GitHub Actions workflow for publishing to PyPI
-   - [ ] Set up automated dependency updates
+- [ ] Compatibility enhancements
+  - [ ] Test with different versions of dependencies
+  - [ ] Add explicit support for asyncio event loop policies
+  - [ ] Ensure thread safety for shared resources
+  - [ ] Test on different operating systems
 
-2. [ ] Compatibility enhancements:
-   - [ ] Ensure compatibility with Python 3.8+
-   - [ ] Test with different versions of dependencies
-   - [ ] Add explicit support for asyncio event loop policies
-   - [ ] Ensure thread safety for shared resources
-   - [ ] Test on different operating systems
+## Low Priority Tasks
 
-5. [x] Improve documentation:
-   - [x] Add more usage examples for common patterns
-   - [x] Document best practices for error handling
-   - [x] Add docstrings to all public functions and classes
-   - [x] Create API reference documentation
+- [ ] Feature enhancements
+  - [ ] Implement middleware support for function transformation
+  - [ ] Add metrics collection for performance monitoring
+  - [ ] Create a CLI interface using `fire` and `rich`
+  - [ ] Add support for distributed task queues
+  - [ ] Implement streaming support with backpressure handling
+
+## Completed Tasks
+
+- [x] Fix all linter errors in the codebase
+- [x] Create proper API documentation
+- [x] Improve documentation
+  - [x] Add more usage examples for common patterns
+  - [x] Document best practices for error handling
+  - [x] Add docstrings to all public functions and classes
+  - [x] Create API reference documentation
+- [x] Fix parameter order in retry function calls
+- [x] Add fallback mechanism for handling None configurations
+- [x] Fix type incompatibility issues in async/sync conversions
+- [x] Enhance structured logging with context support
 
 ## Next Release (v0.2.0) Priorities
 
@@ -2498,6 +2523,7 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 2. [ ] Complete the test suite with 90%+ coverage
 3. [x] Create proper API documentation
 4. [ ] Optimize performance for high-throughput scenarios
+5. [ ] Fix remaining type issues in pyproject.toml
 
 
 

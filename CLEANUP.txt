@@ -1,6 +1,6 @@
-2025-03-04 08:30:01 - 
+2025-03-04 08:45:19 - 
 === PROJECT STATEMENT ===
-2025-03-04 08:30:01 - ---
+2025-03-04 08:45:19 - ---
 title: Opero Project Rules
 glob: "**/*.py"
 ---
@@ -48,9 +48,9 @@ Opero is a Python library for orchestrating function execution with retries, fal
 - Minimize overhead in the orchestration layer
 - Use async/await for I/O-bound operations
 - Use appropriate concurrency mechanisms for CPU-bound operations 
-2025-03-04 08:30:01 - 
+2025-03-04 08:45:19 - 
 === Current Status ===
-2025-03-04 08:30:01 - [ 896]  .
+2025-03-04 08:45:19 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
@@ -70,14 +70,14 @@ Opero is a Python library for orchestrating function execution with retries, fal
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
 │       ├── [ 67K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
-│       └── [ 99K]  2025-03-04_08-40-managing-todo-list-tasks.md
-├── [1.8K]  CHANGELOG.md
+│       └── [198K]  2025-03-04_08-40-managing-todo-list-tasks.md
+├── [2.4K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
 ├── [ 23K]  README.md
-├── [ 69K]  REPO_CONTENT.txt
-├── [2.2K]  TODO.md
+├── [ 74K]  REPO_CONTENT.txt
+├── [2.7K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -104,9 +104,9 @@ Opero is a Python library for orchestrating function execution with retries, fal
 
 13 directories, 38 files
 
-2025-03-04 08:30:01 - 
+2025-03-04 08:45:19 - 
 Project structure:
-2025-03-04 08:30:01 - [ 896]  .
+2025-03-04 08:45:19 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
@@ -126,14 +126,14 @@ Project structure:
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
 │       ├── [ 67K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
-│       └── [ 99K]  2025-03-04_08-40-managing-todo-list-tasks.md
-├── [1.8K]  CHANGELOG.md
+│       └── [198K]  2025-03-04_08-40-managing-todo-list-tasks.md
+├── [2.4K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
 ├── [ 23K]  README.md
-├── [ 69K]  REPO_CONTENT.txt
-├── [2.2K]  TODO.md
+├── [ 74K]  REPO_CONTENT.txt
+├── [2.7K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -160,49 +160,51 @@ Project structure:
 
 13 directories, 38 files
 
-2025-03-04 08:30:01 - On branch main
-Your branch is up to date with 'origin/main'.
+2025-03-04 08:45:19 - On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   .cursor/rules/filetree.mdc
+	modified:   .specstory/history/2025-03-04_08-40-managing-todo-list-tasks.md
 	modified:   CLEANUP.txt
-	modified:   TODO.md
-	modified:   src/opero/core.py
+	modified:   REPO_CONTENT.txt
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 08:30:01 - On branch main
-Your branch is up to date with 'origin/main'.
+2025-03-04 08:45:19 - On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   .cursor/rules/filetree.mdc
+	modified:   .specstory/history/2025-03-04_08-40-managing-todo-list-tasks.md
 	modified:   CLEANUP.txt
-	modified:   TODO.md
-	modified:   src/opero/core.py
+	modified:   REPO_CONTENT.txt
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 08:30:01 - 
+2025-03-04 08:45:19 - 
 === Environment Status ===
-2025-03-04 08:30:01 - Setting up virtual environment
-2025-03-04 08:30:01 - Virtual environment created and activated
-2025-03-04 08:30:01 - Installing package with all extras
-2025-03-04 08:30:01 - Setting up virtual environment
-2025-03-04 08:30:01 - Virtual environment created and activated
-2025-03-04 08:30:02 - Package installed successfully
-2025-03-04 08:30:02 - Running code quality checks
-2025-03-04 08:30:02 - >>> Running code fixes...
-2025-03-04 08:30:02 - All checks passed!
+2025-03-04 08:45:19 - Setting up virtual environment
+2025-03-04 08:45:19 - Virtual environment created and activated
+2025-03-04 08:45:19 - Installing package with all extras
+2025-03-04 08:45:19 - Setting up virtual environment
+2025-03-04 08:45:19 - Virtual environment created and activated
+2025-03-04 08:45:19 - Package installed successfully
+2025-03-04 08:45:19 - Running code quality checks
+2025-03-04 08:45:19 - >>> Running code fixes...
+2025-03-04 08:45:20 - All checks passed!
 
-2025-03-04 08:30:02 - 13 files left unchanged
+2025-03-04 08:45:20 - 13 files left unchanged
 
-2025-03-04 08:30:02 - >>>Running type checks...
-2025-03-04 08:30:03 - >>> Running tests...
-2025-03-04 08:30:08 - ============================= test session starts ==============================
+2025-03-04 08:45:20 - >>>Running type checks...
+2025-03-04 08:45:21 - >>> Running tests...
+2025-03-04 08:45:26 - ============================= test session starts ==============================
 platform darwin -- Python 3.12.8, pytest-8.3.5, pluggy-1.5.0 -- /Users/adam/Developer/vcs/github.twardoch/pub/opero/.venv/bin/python
 cachedir: .pytest_cache
 rootdir: /Users/adam/Developer/vcs/github.twardoch/pub/opero
@@ -275,16 +277,16 @@ tests/test_decorators.py::test_orchestrate_decorator_with_sync_function PASSED [
 tests/test_package.py::test_version PASSED                               [100%]
 
 ============================= slowest 10 durations =============================
-1.01s call     tests/test_core.py::test_orchestrator_with_retry
+1.00s call     tests/test_core.py::test_orchestrator_with_retry
 1.00s call     tests/test_decorators.py::test_orchestrate_decorator_retry
 
 (8 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 16 passed in 2.86s ==============================
+============================== 16 passed in 2.91s ==============================
 
-2025-03-04 08:30:08 - All checks completed
-2025-03-04 08:30:08 - 
+2025-03-04 08:45:26 - All checks completed
+2025-03-04 08:45:26 - 
 === TODO.md ===
-2025-03-04 08:30:08 - ---
+2025-03-04 08:45:26 - ---
 this_file: TODO.md
 ---
 
@@ -292,52 +294,66 @@ this_file: TODO.md
 
 Tip: Periodically run `python ./cleanup.py status` to see results of lints and tests. Use `uv pip ...` not `pip ...`
 
-## Phase 1
+## High Priority Tasks
 
 - [ ] Complete the test suite with 90%+ coverage
+  - [ ] Add tests for edge cases in retry mechanism
+  - [ ] Create integration tests for complex scenarios
+  - [ ] Add tests for error handling in concurrent operations
+  - [ ] Implement test coverage reporting
+
 - [ ] Optimize performance for high-throughput scenarios
-- [ ] Add more usage examples for common patterns
-- [ ] Document best practices for error handling
-- [ ] Add docstrings to all public functions and classes
-- [ ] Create API reference documentation
+  - [ ] Profile code to identify bottlenecks
+  - [ ] Reduce overhead in the orchestration layer
+  - [ ] Optimize retry logic for better performance
+  - [ ] Improve concurrency management
 
-## Phase 2 
+- [ ] Fix remaining type issues in pyproject.toml
+  - [ ] Resolve schema validation errors in hatch configuration
+  - [ ] Update deprecated settings
 
-- [ ] Add more unit tests for edge cases in retry mechanism
-- [ ] Create integration tests for complex scenarios combining multiple features
-- [ ] Add performance benchmarks for key operations
-- [ ] Implement stress tests for concurrency and rate limiting
-- [ ] Optimize retry logic for better performance
-- [ ] Reduce overhead in the orchestration layer
-- [ ] Improve concurrency management
+## Medium Priority Tasks
 
-## Phase 3
+- [ ] Add performance benchmarks
+  - [ ] Create benchmark suite for key operations
+  - [ ] Implement stress tests for concurrency and rate limiting
+  - [ ] Add comparison benchmarks against similar libraries
 
-- [ ] Implement middleware support for function transformation
-- [ ] Add metrics collection for performance monitoring
-- [ ] Create a CLI interface using `fire` and `rich`
-- [ ] Add support for distributed task queues
-- [ ] Implement streaming support with backpressure handling
+- [ ] Infrastructure improvements
+  - [ ] Set up CI/CD pipeline for automated testing and deployment
+  - [ ] Configure code coverage reporting
+  - [ ] Add pre-commit hooks for code quality
+  - [ ] Create GitHub Actions workflow for publishing to PyPI
+  - [ ] Set up automated dependency updates
 
-1. [ ] Infrastructure improvements:
-   - [ ] Set up CI/CD pipeline for automated testing and deployment
-   - [ ] Configure code coverage reporting
-   - [ ] Add pre-commit hooks for code quality
-   - [ ] Create GitHub Actions workflow for publishing to PyPI
-   - [ ] Set up automated dependency updates
+- [ ] Compatibility enhancements
+  - [ ] Test with different versions of dependencies
+  - [ ] Add explicit support for asyncio event loop policies
+  - [ ] Ensure thread safety for shared resources
+  - [ ] Test on different operating systems
 
-2. [ ] Compatibility enhancements:
-   - [ ] Ensure compatibility with Python 3.8+
-   - [ ] Test with different versions of dependencies
-   - [ ] Add explicit support for asyncio event loop policies
-   - [ ] Ensure thread safety for shared resources
-   - [ ] Test on different operating systems
+## Low Priority Tasks
 
-5. [x] Improve documentation:
-   - [x] Add more usage examples for common patterns
-   - [x] Document best practices for error handling
-   - [x] Add docstrings to all public functions and classes
-   - [x] Create API reference documentation
+- [ ] Feature enhancements
+  - [ ] Implement middleware support for function transformation
+  - [ ] Add metrics collection for performance monitoring
+  - [ ] Create a CLI interface using `fire` and `rich`
+  - [ ] Add support for distributed task queues
+  - [ ] Implement streaming support with backpressure handling
+
+## Completed Tasks
+
+- [x] Fix all linter errors in the codebase
+- [x] Create proper API documentation
+- [x] Improve documentation
+  - [x] Add more usage examples for common patterns
+  - [x] Document best practices for error handling
+  - [x] Add docstrings to all public functions and classes
+  - [x] Create API reference documentation
+- [x] Fix parameter order in retry function calls
+- [x] Add fallback mechanism for handling None configurations
+- [x] Fix type incompatibility issues in async/sync conversions
+- [x] Enhance structured logging with context support
 
 ## Next Release (v0.2.0) Priorities
 
@@ -345,63 +361,12 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 2. [ ] Complete the test suite with 90%+ coverage
 3. [x] Create proper API documentation
 4. [ ] Optimize performance for high-throughput scenarios
+5. [ ] Fix remaining type issues in pyproject.toml
 
 
-2025-03-04 08:30:08 -  M .cursor/rules/filetree.mdc
+2025-03-04 08:45:26 -  M .cursor/rules/filetree.mdc
+ M .specstory/history/2025-03-04_08-40-managing-todo-list-tasks.md
  M CLEANUP.txt
- M TODO.md
- M src/opero/core.py
+ M REPO_CONTENT.txt
 
-2025-03-04 08:30:08 - Changes detected in repository
-2025-03-04 08:30:08 - [main 102ed1c] Update repository files
- 4 files changed, 118 insertions(+), 238 deletions(-)
-
-2025-03-04 08:30:08 - Changes committed successfully
-2025-03-04 08:30:10 - 
-📦 Repomix v0.2.29
-
-No custom config found at repomix.config.json or global config at /Users/adam/.config/repomix/repomix.config.json.
-You can add a config file for additional settings. Please check https://github.com/yamadashy/repomix for more information.
-⠙ Collecting files...
-[2K[1A[2K[G⠹ Collecting files...
-[2K[1A[2K[G⠸ Running security check...
-[2K[1A[2K[G⠼ Running security check...
-[2K[1A[2K[G⠴ Processing files...
-[2K[1A[2K[G⠦ Processing files...
-[2K[1A[2K[G⠧ Processing file... (4/27) .github/workflows/release.yml
-[2K[1A[2K[G⠇ Processing file... (20/27) CHANGELOG.md
-[2K[1A[2K[G⠏ Calculating metrics...
-[2K[1A[2K[G⠋ Calculating metrics...
-[2K[1A[2K[G⠙ Calculating metrics...
-[2K[1A[2K[G⠹ Calculating metrics...
-[2K[1A[2K[G⠸ Calculating metrics...
-[2K[1A[2K[G⠼ Calculating metrics...
-[2K[1A[2K[G⠴ Calculating metrics... (14/27) src/opero/utils.py
-[2K[1A[2K[G✔ Packing completed successfully!
-
-📈 Top 5 Files by Character Count and Token Count:
-──────────────────────────────────────────────────
-1.  README.md (23,443 chars, 5,208 tokens)
-2.  pyproject.toml (6,199 chars, 1,965 tokens)
-3.  cleanup.py (6,088 chars, 1,371 tokens)
-4.  .gitignore (3,633 chars, 1,391 tokens)
-5.  src/opero/retry.py (3,407 chars, 738 tokens)
-
-🔎 Security Check:
-──────────────────
-✔ No suspicious files detected.
-
-📊 Pack Summary:
-────────────────
-  Total Files: 27 files
-  Total Chars: 74,312 chars
- Total Tokens: 18,223 tokens
-       Output: REPO_CONTENT.txt
-     Security: ✔ No suspicious files detected
-
-🎉 All Done!
-Your repository has been successfully packed.
-
-💡 Repomix is now available in your browser! Try it at https://repomix.com
-
-2025-03-04 08:30:10 - Repository content mixed into REPO_CONTENT.txt
+2025-03-04 08:45:26 - Changes detected in repository
