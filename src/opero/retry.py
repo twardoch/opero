@@ -29,6 +29,7 @@ from opero.utils import ContextAdapter, get_logger
 # Define type variables for generic function types
 P = ParamSpec("P")
 R = TypeVar("R")
+T = TypeVar("T")  # Additional type variable for _execute_function
 
 # Get a logger with context support
 _logger = get_logger(__name__)
@@ -98,64 +99,84 @@ def with_retry(
     **kwargs: Any,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
-    Decorator that applies retry logic to a function.
+    Decorator that adds retry capability to a function.
+
+    This decorator can be applied to both synchronous and asynchronous functions.
+    It will automatically detect the function type and apply the appropriate retry logic.
 
     Args:
-        config: RetryConfig object with retry settings
-        **kwargs: Additional retry settings to override the defaults
-                  (max_attempts, wait_min, wait_max, wait_multiplier,
-                   retry_exceptions, reraise)
+        config: Configuration for retry behavior. If None, default RetryConfig is used.
+        **kwargs: Additional keyword arguments to override specific RetryConfig attributes.
+            These will take precedence over the values in the config object.
 
     Returns:
-        Decorator function that applies retry logic
+        A decorator function that adds retry capability to the decorated function.
+
+    Example:
+        ```python
+        @with_retry(max_attempts=5, wait_min=2.0)
+        async def fetch_data(url):
+            # This function will be retried up to 5 times with a minimum wait of 2 seconds
+            response = await aiohttp.get(url)
+            return await response.json()
+        ```
     """
-    # Create a config object if one wasn't provided
-    if config is None:
-        config = RetryConfig(**kwargs)
-    elif kwargs:
+    # Create or update the retry configuration
+    retry_config = config or RetryConfig()
+    if kwargs:
         # Update the config with any provided kwargs
-        config_dict = asdict(config)
-        config_dict.update(kwargs)
-        config = RetryConfig(**config_dict)
-
-    return _with_retry_config(config)
-
-
-def _with_retry_config(
-    config: RetryConfig,
-) -> Callable[[Callable[P, R]], Callable[P, R]]:
-    """
-    Create a retry decorator with the given configuration.
-
-    Args:
-        config: Retry configuration
-
-    Returns:
-        A decorator function
-    """
+        retry_config = RetryConfig(**{**asdict(retry_config), **kwargs})
 
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         """
-        Apply retry logic to a function.
+        Inner decorator function that wraps the target function with retry logic.
 
         Args:
-            func: The function to decorate
+            func: The function to add retry capability to.
 
         Returns:
-            The decorated function
+            A wrapped function with retry capability.
         """
         if inspect.iscoroutinefunction(func):
             # Async function
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                return await retry_async(func, *args, config=config, **kwargs)
+                """
+                Async wrapper that adds retry capability to an async function.
+
+                Args:
+                    *args: Positional arguments to pass to the wrapped function.
+                    **kwargs: Keyword arguments to pass to the wrapped function.
+
+                Returns:
+                    The result of the wrapped function.
+
+                Raises:
+                    CustomRetryError: If all retry attempts fail and reraise is False.
+                    Original exception: If all retry attempts fail and reraise is True.
+                """
+                return await retry_async(func, retry_config, *args, **kwargs)
 
             return cast(Callable[P, R], async_wrapper)
         else:
             # Sync function
             @functools.wraps(func)
             def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                return retry_sync(func, *args, config=config, **kwargs)
+                """
+                Sync wrapper that adds retry capability to a sync function.
+
+                Args:
+                    *args: Positional arguments to pass to the wrapped function.
+                    **kwargs: Keyword arguments to pass to the wrapped function.
+
+                Returns:
+                    The result of the wrapped function.
+
+                Raises:
+                    CustomRetryError: If all retry attempts fail and reraise is False.
+                    Original exception: If all retry attempts fail and reraise is True.
+                """
+                return retry_sync(func, retry_config, *args, **kwargs)
 
             return cast(Callable[P, R], sync_wrapper)
 
@@ -163,62 +184,70 @@ def _with_retry_config(
 
 
 def retry_sync(
-    func: Callable[..., R], *args: Any, config: RetryConfig | None = None, **kwargs: Any
+    func: Callable[..., R],
+    config: RetryConfig,
+    *args: Any,
+    **kwargs: Any,
 ) -> R:
     """
-    Apply retry logic to a synchronous function call.
+    Apply retry logic to a synchronous function.
 
-    This is useful when you want to apply retry logic to a function call
-    without decorating the entire function.
+    This function executes the provided sync function with retry logic according to the
+    provided configuration. If all retry attempts fail, it will either reraise the last
+    exception or raise a CustomRetryError, depending on the config.
 
     Args:
-        func: The function to call with retry logic
-        *args: Positional arguments to pass to the function
-        config: Retry configuration (or None to use defaults)
-        **kwargs: Keyword arguments to pass to the function
+        func: The sync function to retry.
+        config: Configuration for retry behavior.
+        *args: Positional arguments to pass to the function.
+        **kwargs: Keyword arguments to pass to the function.
 
     Returns:
-        The result of the function call
+        The result of the function call if successful.
+
+    Raises:
+        CustomRetryError: If all retry attempts fail and reraise is False.
+        Original exception: If all retry attempts fail and reraise is True.
     """
-    retry_config = config or RetryConfig()
-    retry_args = retry_config.get_retry_arguments()
+    retry_args = config.get_retry_arguments()
     retrying = Retrying(**retry_args)
 
     try:
         return retrying(func, *args, **kwargs)
     except RetryError as e:
-        logger.error(
-            f"All {retry_config.max_attempts} retry attempts failed", exc_info=True
-        )
-        if retry_config.reraise and e.last_attempt.failed:
+        logger.error(f"All {config.max_attempts} retry attempts failed", exc_info=True)
+        if config.reraise and e.last_attempt.failed:
             if e.last_attempt.exception() is not None:
                 raise e.last_attempt.exception() from e
         raise
 
 
 async def retry_async(
-    func: Callable[..., Any],
+    func: Callable[..., R],
+    config: RetryConfig,
     *args: Any,
-    config: RetryConfig | None = None,
     **kwargs: Any,
 ) -> R:
     """
-    Apply retry logic to an async function call.
+    Apply retry logic to an asynchronous function.
 
-    This is useful when you want to apply retry logic to a function call
-    without decorating the entire function.
+    This function executes the provided async function with retry logic according to the
+    provided configuration. If all retry attempts fail, it will either reraise the last
+    exception or raise a CustomRetryError, depending on the config.
 
     Args:
-        func: The function to call with retry logic (can be sync or async)
-        *args: Positional arguments to pass to the function
-        config: Retry configuration (or None to use defaults)
-        **kwargs: Keyword arguments to pass to the function
+        func: The async function to retry.
+        config: Configuration for retry behavior.
+        *args: Positional arguments to pass to the function.
+        **kwargs: Keyword arguments to pass to the function.
 
     Returns:
-        The result of the function call
-    """
-    retry_config = config or RetryConfig()
+        The result of the function call if successful.
 
+    Raises:
+        CustomRetryError: If all retry attempts fail and reraise is False.
+        Original exception: If all retry attempts fail and reraise is True.
+    """
     # Track attempt information for better error reporting
     attempt_number = 1
     last_exception: Exception | None = None
@@ -229,9 +258,9 @@ async def retry_async(
     logger.debug(f"Starting retry operation for {func_name}")
 
     try:
-        while attempt_number <= retry_config.max_attempts:
+        while attempt_number <= config.max_attempts:
             try:
-                logger.debug(f"Attempt {attempt_number}/{retry_config.max_attempts}")
+                logger.debug(f"Attempt {attempt_number}/{config.max_attempts}")
 
                 # Handle function execution based on its type
                 result = await _execute_function(func, *args, **kwargs)
@@ -244,25 +273,25 @@ async def retry_async(
                 logger.warning(f"Attempt {attempt_number} failed: {e!s}", exc_info=True)
 
                 # Check if we should retry based on exception type
-                if not _should_retry_exception(e, retry_config.retry_exceptions):
+                if not _should_retry_exception(e, config.retry_exceptions):
                     logger.debug(
                         f"Exception {type(e).__name__} is not in retry_exceptions, not retrying"
                     )
                     break
 
-                if attempt_number == retry_config.max_attempts:
+                if attempt_number == config.max_attempts:
                     # This was the last attempt, so we're done
                     logger.debug("Maximum retry attempts reached")
                     break
 
                 # Calculate wait time using exponential backoff
-                wait_time = _calculate_wait_time(attempt_number, retry_config)
+                wait_time = _calculate_wait_time(attempt_number, config)
                 logger.debug(f"Waiting {wait_time} seconds before next attempt")
                 await asyncio.sleep(wait_time)
                 attempt_number += 1
 
         # If we get here, all attempts failed
-        _handle_retry_failure(func_name, retry_config, last_exception)
+        _handle_retry_failure(func_name, config, last_exception)
         # This line is never reached as _handle_retry_failure always raises an exception
         # But we need it for type checking
         msg = "This code should never be reached"
@@ -273,20 +302,30 @@ async def retry_async(
 
 
 async def _execute_function(func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
-    """Execute a function that could be sync, async, or a coroutine object."""
+    """
+    Execute a function, handling both sync and async functions.
+
+    This is a helper function used by retry_async to execute the target function.
+    It detects whether the function is synchronous or asynchronous and executes it accordingly.
+
+    Args:
+        func: The function to execute (can be sync or async).
+        *args: Positional arguments to pass to the function.
+        **kwargs: Keyword arguments to pass to the function.
+
+    Returns:
+        The result of the function call.
+    """
     if inspect.iscoroutinefunction(func):
         # Direct coroutine function call
         return await func(*args, **kwargs)
     elif asyncio.iscoroutine(func):
-        # Handle case where func is already a coroutine object
-        return await func  # type: ignore
+        # Already a coroutine object
+        return await func
     else:
-        # Regular function that might return an awaitable
-        result = func(*args, **kwargs)
-        # If result is awaitable, await it
-        if inspect.isawaitable(result):
-            return await result
-        return result
+        # Synchronous function, run in executor
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, lambda: func(*args, **kwargs))
 
 
 def _should_retry_exception(

@@ -164,7 +164,9 @@ async def main():
     logger.add_context(service="api_service", version="1.0.0")
     
     orchestrator = Orchestrator(
-        config=OrchestratorConfig()
+        config=OrchestratorConfig(
+            logger=logger
+        )
     )
     
     # Use context manager for temporary context
@@ -177,6 +179,278 @@ async def main():
     logger.info("Continuing with other operations")
 
 asyncio.run(main())
+```
+
+## Best Practices
+
+### Error Handling
+
+Opero provides several mechanisms for handling errors gracefully. Here are some best practices:
+
+1. **Use Fallbacks for Critical Operations**: Always provide fallback functions for critical operations that must succeed.
+
+```python
+from opero import Orchestrator, OrchestratorConfig
+
+# Primary function that might fail
+async def fetch_from_primary_api(item_id):
+    # Implementation that might fail
+    ...
+
+# Fallback function that uses a different approach
+async def fetch_from_backup_api(item_id):
+    # More reliable but possibly slower implementation
+    ...
+
+# Last resort fallback that returns cached data
+async def fetch_from_cache(item_id):
+    # Return cached data
+    ...
+
+# Create an orchestrator with multiple fallbacks in order of preference
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        fallbacks=[fetch_from_backup_api, fetch_from_cache]
+    )
+)
+
+# Execute with fallbacks
+result = await orchestrator.execute(fetch_from_primary_api, "item123")
+```
+
+2. **Configure Retries Appropriately**: Adjust retry parameters based on the operation's characteristics.
+
+```python
+from opero import RetryConfig, orchestrate
+
+# For quick operations that might fail due to temporary issues
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(
+            max_attempts=5,
+            wait_min=0.1,
+            wait_max=1.0,
+            wait_multiplier=1.2
+        )
+    )
+)
+async def quick_operation():
+    # Implementation
+    ...
+
+# For operations that might take longer to recover
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(
+            max_attempts=3,
+            wait_min=2.0,
+            wait_max=30.0,
+            wait_multiplier=2.0,
+            # Only retry specific exceptions
+            retry_exceptions=(ConnectionError, TimeoutError)
+        )
+    )
+)
+async def slow_operation():
+    # Implementation
+    ...
+```
+
+3. **Handle Specific Exceptions**: Configure retries to only trigger for specific exceptions.
+
+```python
+from opero import RetryConfig, orchestrate
+
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(
+            max_attempts=3,
+            # Only retry these specific exceptions
+            retry_exceptions=(ConnectionError, TimeoutError, ValueError)
+        )
+    )
+)
+async def network_operation():
+    # Implementation
+    ...
+```
+
+### Performance Optimization
+
+1. **Use Concurrency for I/O-Bound Operations**: Limit concurrency based on your application's needs and the target system's capacity.
+
+```python
+from opero import Orchestrator, OrchestratorConfig, ConcurrencyConfig
+
+# Create an orchestrator with concurrency control
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        concurrency_config=ConcurrencyConfig(
+            limit=10  # Limit to 10 concurrent operations
+        )
+    )
+)
+
+# Process many items efficiently
+urls = [f"https://example.com/api/{i}" for i in range(100)]
+results = await orchestrator.process([fetch_url], *urls)
+```
+
+2. **Use Rate Limiting for API Calls**: Respect API rate limits to avoid being throttled.
+
+```python
+from opero import Orchestrator, OrchestratorConfig, RateLimitConfig
+
+# Create an orchestrator with rate limiting
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        rate_limit_config=RateLimitConfig(
+            rate=5  # Limit to 5 requests per second
+        )
+    )
+)
+
+# Process API calls without exceeding rate limits
+api_ids = list(range(100))
+results = await orchestrator.process([api_call], *api_ids)
+```
+
+3. **Combine Multiple Resilience Patterns**: For complex scenarios, combine multiple patterns.
+
+```python
+from opero import (
+    Orchestrator, OrchestratorConfig, 
+    RetryConfig, RateLimitConfig, ConcurrencyConfig
+)
+
+# Create an orchestrator with multiple resilience patterns
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(max_attempts=3),
+        rate_limit_config=RateLimitConfig(rate=10),
+        concurrency_config=ConcurrencyConfig(limit=5),
+        fallbacks=[fallback_function]
+    )
+)
+
+# Process items with full resilience
+results = await orchestrator.process([primary_function], *items)
+```
+
+### Logging Best Practices
+
+1. **Configure Comprehensive Logging**: Set up logging to capture important events and errors.
+
+```python
+import logging
+from opero import Orchestrator, OrchestratorConfig
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("my_app")
+
+# Pass the logger to the orchestrator
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        logger=logger
+    )
+)
+```
+
+2. **Log Context Information**: Include relevant context in your function logs.
+
+```python
+import logging
+from opero import orchestrate, OrchestratorConfig
+
+logger = logging.getLogger("my_app")
+
+@orchestrate(
+    config=OrchestratorConfig(
+        logger=logger
+    )
+)
+async def process_item(item_id, context=None):
+    context = context or {}
+    logger.info(f"Processing item {item_id}", extra={"context": context})
+    # Implementation
+    ...
+```
+
+### Advanced Patterns
+
+1. **Chaining Operations**: Chain multiple orchestrated operations together.
+
+```python
+from opero import orchestrate, OrchestratorConfig, RetryConfig
+
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(max_attempts=3)
+    )
+)
+async def fetch_data(item_id):
+    # Fetch data implementation
+    ...
+
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(max_attempts=2)
+    )
+)
+async def process_data(data):
+    # Process data implementation
+    ...
+
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(max_attempts=2)
+    )
+)
+async def save_result(processed_data):
+    # Save result implementation
+    ...
+
+async def pipeline(item_id):
+    # Chain operations together
+    data = await fetch_data(item_id)
+    processed = await process_data(data)
+    result = await save_result(processed)
+    return result
+```
+
+2. **Dynamic Configuration**: Adjust configuration based on runtime conditions.
+
+```python
+from opero import Orchestrator, OrchestratorConfig, RetryConfig
+
+async def get_config_for_item(item):
+    # Determine appropriate configuration based on item characteristics
+    if item.priority == "high":
+        return OrchestratorConfig(
+            retry_config=RetryConfig(max_attempts=5),
+            fallbacks=[high_priority_fallback]
+        )
+    else:
+        return OrchestratorConfig(
+            retry_config=RetryConfig(max_attempts=2),
+            fallbacks=[standard_fallback]
+        )
+
+async def process_items(items):
+    results = []
+    for item in items:
+        # Create orchestrator with dynamic configuration
+        config = await get_config_for_item(item)
+        orchestrator = Orchestrator(config=config)
+        
+        # Process item with appropriate resilience
+        result = await orchestrator.execute(process_item, item)
+        results.append(result)
+    return results
 ```
 
 ## Core Components
@@ -213,7 +487,7 @@ results = await orchestrator.process([my_function], *items)
 
 - **process**: Processes multiple items with the same function or functions. Each item is processed individually.
   ```python
-  results = await orchestrator.process([my_function], *items, **kwargs)
+  results = await orchestrator.process([my_function], *items)
   ```
 
 ### FallbackChain

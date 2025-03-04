@@ -14,6 +14,7 @@ import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import Any, TypeVar, cast
+import time
 
 from opero.concurrency import ConcurrencyConfig, MultiprocessConfig
 from opero.exceptions import AllFailedError
@@ -160,18 +161,38 @@ class FallbackChain:
 
 class Orchestrator:
     """
-    Orchestrates execution with retries, rate limiting, and fallbacks.
+    Main orchestration class for executing functions with resilience patterns.
 
-    This class provides a way to orchestrate the execution of functions with
-    retries, rate limiting, and fallbacks.
+    The Orchestrator provides a unified interface for executing functions with
+    various resilience patterns such as retries, fallbacks, rate limiting, and
+    concurrency control. It can be used to execute a single function or process
+    multiple items with the same function.
+
+    Attributes:
+        config: Configuration for the orchestrator
+        logger: Logger to use for logging
+
+    Example:
+        ```python
+        # Create an orchestrator with fallbacks and retry
+        orchestrator = Orchestrator(
+            config=OrchestratorConfig(
+                fallbacks=[fallback_function],
+                retry_config=RetryConfig(max_attempts=3)
+            )
+        )
+
+        # Execute a function with the orchestrator
+        result = await orchestrator.execute(my_function, arg1, arg2, keyword_arg=value)
+        ```
     """
 
     def __init__(self, *, config: OrchestratorConfig | None = None):
         """
-        Initialize an Orchestrator.
+        Initialize the Orchestrator with the given configuration.
 
         Args:
-            config: Configuration for the orchestrator
+            config: Configuration for the orchestrator. If None, default configuration is used.
         """
         self.config = config or OrchestratorConfig()
         self.logger = self.config.logger or logger
@@ -180,66 +201,52 @@ class Orchestrator:
         self, fallback_func: Callable[..., Any]
     ) -> Callable[..., Any]:
         """
-        Wrap a fallback function with retry logic.
+        Wrap a fallback function with retry logic if retry is configured.
 
         Args:
             fallback_func: The fallback function to wrap
 
         Returns:
-            A retry-wrapped version of the fallback function
+            The wrapped fallback function
         """
-        if asyncio.iscoroutinefunction(fallback_func):
-            # Capture fallback_func in the closure to avoid loop variable binding issues
-            captured_func = fallback_func
+        if self.config.retry_config:
+            # Create a wrapper that applies retry logic to the fallback
+            async def wrapped_fallback(*args: Any, **kwargs: Any) -> Any:
+                return await self._execute_with_retry(fallback_func, *args, **kwargs)
 
-            # Wrap the async fallback with retry
-            async def retry_wrapped_async_fallback(*a: Any, **kw: Any) -> Any:
-                return await retry_async(
-                    captured_func, *a, config=self.config.retry_config, **kw
-                )
-
-            return retry_wrapped_async_fallback
+            return wrapped_fallback
         else:
-            # Capture fallback_func in the closure to avoid loop variable binding issues
-            captured_func = fallback_func
+            # No retry, return the original fallback
+            return fallback_func
 
-            # Wrap the sync fallback with retry
-            def retry_wrapped_sync_fallback(*a: Any, **kw: Any) -> Any:
-                return retry_sync(
-                    captured_func, *a, config=self.config.retry_config, **kw
-                )
-
-            return retry_wrapped_sync_fallback
-
-    def _create_fallback_chain(self, func: Callable[..., Any]) -> FallbackChain:
+    def _create_fallback_chain(self, primary: Callable[..., Any]) -> FallbackChain:
         """
-        Create a fallback chain for the given function.
+        Create a fallback chain with the given primary function.
 
         Args:
-            func: The primary function
+            primary: The primary function to use
 
         Returns:
-            A fallback chain with the primary function and any fallbacks
+            A FallbackChain instance
         """
-        if self.config.retry_config and self.config.fallbacks:
-            # Create a new list with retry-wrapped fallbacks
-            retry_wrapped_fallbacks = [
-                self._wrap_fallback_with_retry(fallback)
-                for fallback in self.config.fallbacks
-            ]
-            return FallbackChain(func, retry_wrapped_fallbacks)
-        elif self.config.fallbacks:
-            # Create a fallback chain without retry
-            return FallbackChain(func, self.config.fallbacks)
-        else:
-            # No fallbacks, just return a chain with the primary function
-            return FallbackChain(func, [])
+        # Get fallbacks from config
+        fallbacks = list(self.config.fallbacks or [])
+
+        # Wrap fallbacks with retry if needed
+        if self.config.retry_config:
+            fallbacks = [self._wrap_fallback_with_retry(f) for f in fallbacks]
+
+        # Create and return the fallback chain
+        return FallbackChain(primary=primary, fallbacks=fallbacks)
 
     async def _execute_with_retry(
         self, func: Callable[..., Any], *args: Any, **kwargs: Any
     ) -> Any:
         """
-        Execute a function with retry logic.
+        Execute a function with retry logic and fallbacks.
+
+        This internal method applies retry logic to the function execution
+        and falls back to the fallback chain if all retry attempts fail.
 
         Args:
             func: The function to execute
@@ -247,21 +254,38 @@ class Orchestrator:
             **kwargs: Keyword arguments to pass to the function
 
         Returns:
-            The result of the function call
+            The result of the function execution
+
+        Raises:
+            AllFailedError: If all execution attempts (including fallbacks) fail
         """
         if asyncio.iscoroutinefunction(func):
-            # Apply retry to the async function
-            return await retry_async(
-                func, *args, config=self.config.retry_config, **kwargs
-            )
+            # Async function
+            try:
+                result = await retry_async(
+                    func, *args, config=self.config.retry_config, **kwargs
+                )
+                return result
+            except Exception as e:
+                self.logger.warning(f"Retry failed: {e}")
+                raise
         else:
-            # Apply retry to the sync function
-            result = retry_sync(func, *args, config=self.config.retry_config, **kwargs)
-            return result
+            # Sync function
+            try:
+                result = retry_sync(
+                    func, *args, config=self.config.retry_config, **kwargs
+                )
+                return result
+            except Exception as e:
+                self.logger.warning(f"Retry failed: {e}")
+                raise
 
     async def execute(self, func: Callable[..., R], *args: Any, **kwargs: Any) -> R:
         """
-        Execute a function with retries, rate limiting, and fallbacks.
+        Execute a function with resilience patterns.
+
+        This method applies the configured resilience patterns (retries, fallbacks,
+        rate limiting) to the execution of the given function.
 
         Args:
             func: The function to execute
@@ -269,10 +293,23 @@ class Orchestrator:
             **kwargs: Keyword arguments to pass to the function
 
         Returns:
-            The result of the function call
+            The result of the function execution
+
+        Raises:
+            AllFailedError: If all execution attempts (including fallbacks) fail
+            Exception: Any exception raised by the function if no fallbacks are configured
+
+        Example:
+            ```python
+            result = await orchestrator.execute(fetch_data, "https://example.com/api")
+            ```
         """
         # Create a fallback chain if needed
         chain = self._create_fallback_chain(func)
+
+        # Apply rate limiting if configured
+        if self.config.rate_limit_config:
+            await self._apply_rate_limit()
 
         # Execute with or without retry
         if self.config.retry_config:
@@ -291,18 +328,32 @@ class Orchestrator:
         return cast(R, result)
 
     async def process(
-        self, funcs: list[Callable[..., Any]], *args: Any, **kwargs: Any
-    ) -> list[Any]:
+        self, funcs: list[Callable[..., R]], *args: Any, **kwargs: Any
+    ) -> list[R]:
         """
-        Process multiple functions in sequence.
+        Process multiple items with the given functions.
+
+        This method applies the configured resilience patterns to each item
+        and returns a list of results. If concurrency is configured, the items
+        will be processed concurrently.
 
         Args:
-            funcs: List of functions to process
-            *args: Positional arguments to pass to the functions
-            **kwargs: Keyword arguments to pass to the functions
+            funcs: List of functions to execute for each item
+            *args: Items to process
+            **kwargs: Additional keyword arguments to pass to each function
 
         Returns:
-            List of results from the function calls
+            List of results, one for each processed item
+
+        Example:
+            ```python
+            # Process multiple URLs with the same function
+            results = await orchestrator.process([fetch_data], "https://example.com/1",
+                                                "https://example.com/2", "https://example.com/3")
+
+            # Process multiple items with different functions
+            results = await orchestrator.process([func1, func2, func3], item)
+            ```
         """
         results = []
         for func in funcs:
@@ -311,3 +362,24 @@ class Orchestrator:
                 result = await self.execute(func, arg, **kwargs)
                 results.append(result)
         return results
+
+    async def _apply_rate_limit(self) -> None:
+        """
+        Apply rate limiting if configured.
+
+        This internal method enforces the configured rate limit by
+        waiting if necessary before allowing the next operation.
+        """
+        if self.config.rate_limit_config and self.config.rate_limit_config.rate > 0:
+            # Calculate time since last request
+            now = time.time()
+            if hasattr(self, "_last_request_time"):
+                elapsed = now - self._last_request_time
+                min_interval = 1.0 / self.config.rate_limit_config.rate
+                if elapsed < min_interval:
+                    # Wait to enforce rate limit
+                    wait_time = min_interval - elapsed
+                    self.logger.debug(f"Rate limiting: waiting {wait_time:.4f} seconds")
+                    await asyncio.sleep(wait_time)
+            # Update last request time
+            self._last_request_time = time.time()
