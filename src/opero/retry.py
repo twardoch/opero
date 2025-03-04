@@ -83,35 +83,45 @@ class RetryConfig:
 
 def with_retry(
     *,  # Force keyword arguments
-    max_attempts: int = 3,
-    wait_min: float = 1,
-    wait_max: float = 60,
-    wait_multiplier: float = 1,
-    retry_exceptions: tuple[type[Exception], ...] = (Exception,),
-    reraise: bool = True,
+    config: RetryConfig | None = None,
+    max_attempts: int | None = None,
+    wait_min: float | None = None,
+    wait_max: float | None = None,
+    wait_multiplier: float | None = None,
+    retry_exceptions: tuple[type[Exception], ...] | None = None,
+    reraise: bool | None = None,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Decorator that applies retry logic to a function.
 
     Args:
+        config: RetryConfig object with retry settings (overrides other parameters if provided)
         max_attempts: Maximum number of attempts
         wait_min: Minimum wait time between retries (seconds)
         wait_max: Maximum wait time between retries (seconds)
         wait_multiplier: Multiplier for wait time between retries
-        retry_exceptions: Exceptions to retry on
-        reraise: Whether to reraise the last exception
+        retry_exceptions: Exception types that should trigger a retry
+        reraise: Whether to reraise the last exception after all retries fail
 
     Returns:
-        A decorator function
+        Decorator function that applies retry logic
     """
-    config = RetryConfig(
-        max_attempts=max_attempts,
-        wait_min=wait_min,
-        wait_max=wait_max,
-        wait_multiplier=wait_multiplier,
-        retry_exceptions=retry_exceptions,
-        reraise=reraise,
-    )
+    # Create a config object if one wasn't provided
+    if config is None:
+        config = RetryConfig(
+            max_attempts=max_attempts
+            if max_attempts is not None
+            else RetryConfig.max_attempts,
+            wait_min=wait_min if wait_min is not None else RetryConfig.wait_min,
+            wait_max=wait_max if wait_max is not None else RetryConfig.wait_max,
+            wait_multiplier=wait_multiplier
+            if wait_multiplier is not None
+            else RetryConfig.wait_multiplier,
+            retry_exceptions=retry_exceptions
+            if retry_exceptions is not None
+            else RetryConfig.retry_exceptions,
+            reraise=reraise if reraise is not None else RetryConfig.reraise,
+        )
 
     return _with_retry_config(config)
 

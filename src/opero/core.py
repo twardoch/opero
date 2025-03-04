@@ -54,35 +54,34 @@ class OrchestratorConfig:
 
 class FallbackChain:
     """
-    Chain of fallback functions.
+    Chain of fallback functions to try in sequence.
 
-    This class provides a way to chain fallback functions together.
-    If one function fails, the next function in the chain is called.
+    This class provides a way to chain multiple fallback functions together.
+    If the primary function fails, the fallbacks will be tried in sequence.
     """
 
     def __init__(
-        self,
-        primary_func: Callable[..., Any],
-        fallbacks: Callable[..., Any] | list[Callable[..., Any]] | None = None,
-    ):
+        self, primary: Callable[..., Any], fallbacks: list[Callable[..., Any]]
+    ) -> None:
         """
-        Initialize a FallbackChain.
+        Initialize a fallback chain.
 
         Args:
-            primary_func: The primary function to call
-            fallbacks: Fallback function or list of fallback functions to call if the primary function fails
+            primary: The primary function to try first
+            fallbacks: List of fallback functions to try in sequence
         """
-        self.primary_func = primary_func
-
-        # Handle both single function and list of functions
-        if fallbacks is None:
-            self.fallbacks = []
-        elif callable(fallbacks):
-            self.fallbacks = [fallbacks]
-        else:
-            self.fallbacks = fallbacks
-
+        self.primary = primary
+        self.fallbacks = fallbacks
         self.logger = logger
+
+    def has_fallbacks(self) -> bool:
+        """
+        Check if this chain has any fallback functions.
+
+        Returns:
+            True if there are fallback functions, False otherwise
+        """
+        return len(self.fallbacks) > 0
 
     async def __call__(self, *args: Any, **kwargs: Any) -> Any:
         """
@@ -119,7 +118,7 @@ class FallbackChain:
         # Try the primary function first
         try:
             self.logger.debug("Trying primary function")
-            result = await ensure_async(self.primary_func, *args, **kwargs)
+            result = await ensure_async(self.primary, *args, **kwargs)
             self.logger.debug("Primary function succeeded")
             return result
         except Exception as e:
@@ -167,6 +166,89 @@ class Orchestrator:
         self.config = config or OrchestratorConfig()
         self.logger = self.config.logger or logger
 
+    def _wrap_fallback_with_retry(
+        self, fallback_func: Callable[..., Any]
+    ) -> Callable[..., Any]:
+        """
+        Wrap a fallback function with retry logic.
+
+        Args:
+            fallback_func: The fallback function to wrap
+
+        Returns:
+            A retry-wrapped version of the fallback function
+        """
+        if asyncio.iscoroutinefunction(fallback_func):
+            # Capture fallback_func in the closure to avoid loop variable binding issues
+            captured_func = fallback_func
+
+            # Wrap the async fallback with retry
+            async def retry_wrapped_async_fallback(*a: Any, **kw: Any) -> Any:
+                return await retry_async(
+                    captured_func, *a, config=self.config.retry_config, **kw
+                )
+
+            return retry_wrapped_async_fallback
+        else:
+            # Capture fallback_func in the closure to avoid loop variable binding issues
+            captured_func = fallback_func
+
+            # Wrap the sync fallback with retry
+            def retry_wrapped_sync_fallback(*a: Any, **kw: Any) -> Any:
+                return retry_sync(
+                    captured_func, *a, config=self.config.retry_config, **kw
+                )
+
+            return retry_wrapped_sync_fallback
+
+    def _create_fallback_chain(self, func: Callable[..., Any]) -> FallbackChain:
+        """
+        Create a fallback chain for the given function.
+
+        Args:
+            func: The primary function
+
+        Returns:
+            A fallback chain with the primary function and any fallbacks
+        """
+        if self.config.retry_config and self.config.fallbacks:
+            # Create a new list with retry-wrapped fallbacks
+            retry_wrapped_fallbacks = [
+                self._wrap_fallback_with_retry(fallback)
+                for fallback in self.config.fallbacks
+            ]
+            return FallbackChain(func, retry_wrapped_fallbacks)
+        elif self.config.fallbacks:
+            # Create a fallback chain without retry
+            return FallbackChain(func, self.config.fallbacks)
+        else:
+            # No fallbacks, just return a chain with the primary function
+            return FallbackChain(func, [])
+
+    async def _execute_with_retry(
+        self, func: Callable[..., Any], *args: Any, **kwargs: Any
+    ) -> Any:
+        """
+        Execute a function with retry logic.
+
+        Args:
+            func: The function to execute
+            *args: Positional arguments to pass to the function
+            **kwargs: Keyword arguments to pass to the function
+
+        Returns:
+            The result of the function call
+        """
+        if asyncio.iscoroutinefunction(func):
+            # Apply retry to the async function
+            return await retry_async(
+                func, *args, config=self.config.retry_config, **kwargs
+            )
+        else:
+            # Apply retry to the sync function
+            result = retry_sync(func, *args, config=self.config.retry_config, **kwargs)
+            return result
+
     async def execute(self, func: Callable[..., R], *args: Any, **kwargs: Any) -> R:
         """
         Execute a function with retries, rate limiting, and fallbacks.
@@ -179,73 +261,23 @@ class Orchestrator:
         Returns:
             The result of the function call
         """
-        # Create a fallback chain if fallbacks are provided
-        if self.config.fallbacks:
-            # Apply retry to each function in the fallback chain
-            if self.config.retry_config:
-                # Create a new list with retry-wrapped fallbacks
-                retry_wrapped_fallbacks = []
-                for fallback_func in self.config.fallbacks:
-                    # Determine if the fallback is async or sync
-                    if asyncio.iscoroutinefunction(fallback_func):
-                        # Wrap the async fallback with retry
-                        async def retry_wrapped_async_fallback(
-                            *a: Any, **kw: Any
-                        ) -> Any:
-                            return await retry_async(
-                                fallback_func, *a, config=self.config.retry_config, **kw
-                            )
+        # Create a fallback chain if needed
+        chain = self._create_fallback_chain(func)
 
-                        retry_wrapped_fallbacks.append(retry_wrapped_async_fallback)
-                    else:
-                        # Wrap the sync fallback with retry
-                        def retry_wrapped_sync_fallback(*a: Any, **kw: Any) -> Any:
-                            return retry_sync(
-                                fallback_func, *a, config=self.config.retry_config, **kw
-                            )
-
-                        retry_wrapped_fallbacks.append(retry_wrapped_sync_fallback)
-
-                # Create a fallback chain with the retry-wrapped functions
-                chain = FallbackChain(func, retry_wrapped_fallbacks)
+        # Execute with or without retry
+        if self.config.retry_config:
+            if chain.has_fallbacks():
+                # Execute the fallback chain with retry for the primary function
+                result = await self._execute_with_retry(chain.execute, *args, **kwargs)
             else:
-                # Create a fallback chain without retry
-                chain = FallbackChain(func, self.config.fallbacks)
-
-            # Execute the fallback chain with retry for the primary function
-            if self.config.retry_config:
-                if asyncio.iscoroutinefunction(func):
-                    # Apply retry to the primary async function
-                    result = await retry_async(
-                        chain.execute, *args, config=self.config.retry_config, **kwargs
-                    )
-                else:
-                    # Apply retry to the primary sync function
-                    result = await ensure_async(
-                        retry_sync,
-                        chain.execute,
-                        *args,
-                        config=self.config.retry_config,
-                        **kwargs,
-                    )
-            else:
-                # Execute without retry
-                result = await chain.execute(*args, **kwargs)
-        # No fallbacks, just execute with retry if configured
-        elif self.config.retry_config:
-            if asyncio.iscoroutinefunction(func):
-                # Apply retry to the async function
-                result = await retry_async(
-                    func, *args, config=self.config.retry_config, **kwargs
-                )
-            else:
-                # Apply retry to the sync function
-                result = retry_sync(
-                    func, *args, config=self.config.retry_config, **kwargs
-                )
+                # No fallbacks, just execute the function with retry
+                result = await self._execute_with_retry(func, *args, **kwargs)
         else:
             # Execute without retry
-            result = await ensure_async(func, *args, **kwargs)
+            if chain.has_fallbacks():
+                result = await chain.execute(*args, **kwargs)
+            else:
+                result = await ensure_async(func, *args, **kwargs)
 
         return cast(R, result)
 
@@ -265,6 +297,8 @@ class Orchestrator:
         """
         results = []
         for func in funcs:
-            result = await self.execute(func, *args, **kwargs)
-            results.append(result)
+            # Process each argument individually
+            for arg in args:
+                result = await self.execute(func, arg, **kwargs)
+                results.append(result)
         return results
