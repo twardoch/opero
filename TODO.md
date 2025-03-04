@@ -8,11 +8,7 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 
 ## Phase 1 - Immediate Priorities
 
-1. [ ] Fix cleanup.py script errors:
-   - [ ] Fix the `_print_tree` function that's causing TypeError when running `cleanup.py status`
-   - [ ] Ensure proper argument handling in tree generation functions
-
-2. [ ] Fix remaining linter errors in cleanup.py:
+1. [ ] Fix remaining linter errors in cleanup.py:
    - [ ] Replace `typing.List` with `list` (UP035)
    - [ ] Remove unused imports (F401)
    - [ ] Fix Boolean-typed positional arguments (FBT001/FBT002)
@@ -21,21 +17,27 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
    - [ ] Remove unnecessary mode argument (UP015)
    - [ ] Replace `print` with logging (T201)
 
-3. [ ] Fix linter errors in src/opero/retry.py:
+2. [ ] Fix linter errors in src/opero/retry.py:
    - [ ] Remove unused imports (F401)
    - [ ] Update deprecated typing imports (UP035)
    - [ ] Use `X | Y` for type annotations (UP007)
    - [ ] Reduce complexity in `retry_async` function (C901, PLR0912)
 
-4. [ ] Fix linter errors in src/opero/utils.py:
+3. [ ] Fix linter errors in src/opero/utils.py:
    - [ ] Update deprecated typing imports (UP035)
    - [ ] Remove unused imports (F401)
    - [ ] Use `X | Y` for type annotations (UP007)
    - [ ] Fix Boolean-typed positional arguments (FBT001/FBT002)
    - [ ] Use `dict` instead of `Dict` for type annotations (UP006)
 
-5. [ ] Fix pyproject.toml schema validation errors:
+4. [ ] Fix pyproject.toml schema validation errors:
    - [ ] Resolve the "valid under more than one of the schemas listed in the 'oneOf' keyword" errors
+
+5. [ ] Improve documentation:
+   - [ ] Add more usage examples for common patterns
+   - [ ] Document best practices for error handling
+   - [ ] Add docstrings to all public functions and classes
+   - [ ] Create API reference documentation
 
 ## Phase 2 - Next Steps
 
@@ -49,12 +51,6 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
    - [ ] Optimize retry logic for better performance
    - [ ] Reduce overhead in the orchestration layer
    - [ ] Improve concurrency management
-
-3. [ ] Improve documentation:
-   - [ ] Add more usage examples for common patterns
-   - [ ] Document best practices for error handling
-   - [ ] Add docstrings to all public functions and classes
-   - [ ] Create API reference documentation
 
 ## Phase 3 - Future Enhancements
 
@@ -82,10 +78,9 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 ## Next Release (v0.2.0) Priorities
 
 1. [ ] Fix all linter errors in the codebase
-2. [ ] Fix cleanup.py script to run properly
-3. [ ] Complete the test suite with 90%+ coverage
-4. [ ] Create proper API documentation
-5. [ ] Optimize performance for high-throughput scenarios
+2. [ ] Complete the test suite with 90%+ coverage
+3. [ ] Create proper API documentation
+4. [ ] Optimize performance for high-throughput scenarios
 
 ## Completed Tasks
 
@@ -122,3 +117,7 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 
 7. [x] Updated pyproject.toml:
    - Moved 'per-file-ignores' to 'lint.per-file-ignores' section
+
+8. [x] Fixed cleanup.py script errors:
+   - Fixed the `_print_tree` function issue by removing the nested function and using the tree command directly
+   - Simplified the tree generation process to avoid argument handling issues

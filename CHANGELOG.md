@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Improved error handling in async/sync conversions
 - Optimized retry logic and fallback mechanisms
 - Restructured code to reduce complexity in core functions
+- Updated project documentation to reflect recent changes
 
 ### Fixed
 - Fixed failing tests in `process` method
@@ -33,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Fixed Boolean-typed positional arguments
   - Addressed subprocess call security issues
 - Updated pyproject.toml configuration for proper linting
+- Fixed cleanup.py script by removing problematic _print_tree function and simplifying tree generation
 
 ## [0.1.0] - Initial Release
 
