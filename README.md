@@ -137,7 +137,7 @@ asyncio.run(main())
 
 ### Orchestrator
 
-The central class for managing resilient operations:
+The central class for managing resilient operations. The `Orchestrator` class provides a unified interface for applying various resilience mechanisms to function calls.
 
 ```python
 from opero import Orchestrator, OrchestratorConfig, RetryConfig
@@ -158,25 +158,57 @@ result = await orchestrator.execute(my_function, *args, **kwargs)
 results = await orchestrator.process([my_function], *items)
 ```
 
+#### Key Methods
+
+- **execute**: Executes a single function with the configured resilience mechanisms.
+  ```python
+  result = await orchestrator.execute(my_function, *args, **kwargs)
+  ```
+
+- **process**: Processes multiple items with the same function or functions. Each item is processed individually.
+  ```python
+  results = await orchestrator.process([my_function], *items, **kwargs)
+  ```
+
 ### FallbackChain
 
-Manages sequential execution of fallback functions:
+Manages sequential execution of fallback functions. The `FallbackChain` class provides a way to try multiple functions in sequence until one succeeds.
 
 ```python
 from opero import FallbackChain
 
 # Create a fallback chain with a primary function and fallbacks
-chain = FallbackChain(primary_function, [fallback1, fallback2])
+# You can provide a single fallback function
+chain1 = FallbackChain(primary_function, fallback_function)
+
+# Or a list of fallback functions
+chain2 = FallbackChain(primary_function, [fallback1, fallback2])
+
+# Or no fallbacks at all
+chain3 = FallbackChain(primary_function)
 
 # Execute the chain - will try each function in order until one succeeds
 result = await chain.execute(*args, **kwargs)
 ```
 
+#### Key Methods
+
+- **execute**: Executes the primary function and falls back to the fallback functions if the primary fails.
+  ```python
+  result = await chain.execute(*args, **kwargs)
+  ```
+
+- **has_fallbacks**: Checks if the chain has any fallback functions.
+  ```python
+  if chain.has_fallbacks():
+      # Do something
+  ```
+
 ### Configuration Classes
 
 #### OrchestratorConfig
 
-Unified configuration for the Orchestrator:
+Unified configuration for the Orchestrator. This class brings together all the different configuration options for the Orchestrator.
 
 ```python
 from opero import OrchestratorConfig, RetryConfig, RateLimitConfig
@@ -191,7 +223,7 @@ config = OrchestratorConfig(
 
 #### RetryConfig
 
-Configure retry behavior:
+Configure retry behavior. This class provides a way to configure how functions are retried when they fail.
 
 ```python
 from opero import RetryConfig
@@ -208,7 +240,7 @@ retry_config = RetryConfig(
 
 #### RateLimitConfig
 
-Configure rate limiting:
+Configure rate limiting. This class provides a way to limit how frequently functions are called.
 
 ```python
 from opero import RateLimitConfig
@@ -219,7 +251,7 @@ rate_limit_config = RateLimitConfig(rate=10.0)
 
 #### ConcurrencyConfig
 
-Configure concurrency limits:
+Configure concurrency limits. This class provides a way to limit how many operations can be executed concurrently.
 
 ```python
 from opero import ConcurrencyConfig
@@ -230,7 +262,7 @@ concurrency_config = ConcurrencyConfig(limit=5)
 
 #### MultiprocessConfig
 
-Configure multiprocessing:
+Configure multiprocessing. This class provides a way to configure how operations are executed across multiple processes.
 
 ```python
 from opero import MultiprocessConfig
@@ -241,7 +273,7 @@ multiprocess_config = MultiprocessConfig(max_workers=4, backend="pathos")
 
 ### @orchestrate Decorator
 
-Apply orchestration to functions:
+Apply orchestration to functions. The `@orchestrate` decorator provides a way to apply orchestration to functions without having to create an Orchestrator instance.
 
 ```python
 from opero import orchestrate, OrchestratorConfig, RetryConfig
@@ -267,7 +299,7 @@ results = await my_function.process(item1, item2, item3)
 
 ### Mixing Sync and Async Functions
 
-Opero seamlessly handles both synchronous and asynchronous functions:
+Opero seamlessly handles both synchronous and asynchronous functions. You can mix and match sync and async functions in fallback chains.
 
 ```python
 from opero import Orchestrator, OrchestratorConfig
@@ -296,7 +328,7 @@ result2 = await orchestrator.execute(async_function, 1)  # "Async: 1"
 
 ### Custom Retry Logic
 
-Fine-tune retry behavior for specific exception types:
+Fine-tune retry behavior for specific exception types. You can configure which exceptions trigger retries and how the retries are performed.
 
 ```python
 from opero import RetryConfig, orchestrate, OrchestratorConfig
@@ -322,7 +354,7 @@ async def network_operation(url):
 
 ### Multiprocessing for CPU-Bound Tasks
 
-Use multiprocessing for CPU-intensive operations:
+Use multiprocessing for CPU-intensive operations. This can significantly improve performance for CPU-bound tasks.
 
 ```python
 from opero import Orchestrator, OrchestratorConfig, MultiprocessConfig
@@ -344,15 +376,95 @@ orchestrator = Orchestrator(
 results = await orchestrator.process([cpu_intensive_task], *large_data_items)
 ```
 
+### Using FallbackChain Directly
+
+You can use the `FallbackChain` class directly for more control over fallback behavior. This is useful when you need to customize how fallbacks are executed.
+
+```python
+from opero import FallbackChain
+
+async def primary_function(value):
+    if value < 0:
+        raise ValueError("Value must be non-negative")
+    return f"Primary: {value}"
+
+async def fallback1(value):
+    if value == 0:
+        raise ValueError("Value must be non-zero")
+    return f"Fallback1: {value}"
+
+async def fallback2(value):
+    return f"Fallback2: {value}"
+
+# Create a fallback chain with multiple fallbacks
+chain = FallbackChain(primary_function, [fallback1, fallback2])
+
+# Execute the chain with different values
+result1 = await chain.execute(5)    # "Primary: 5"
+result2 = await chain.execute(-5)   # "Fallback1: -5"
+result3 = await chain.execute(0)    # "Fallback2: 0"
+```
+
+### Combining Multiple Resilience Mechanisms
+
+Combine multiple resilience mechanisms for robust operations. This is useful for operations that need to be both resilient and performant.
+
+```python
+from opero import Orchestrator, OrchestratorConfig, RetryConfig, RateLimitConfig, ConcurrencyConfig
+
+# Create an orchestrator with multiple resilience mechanisms
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(max_attempts=3),
+        rate_limit_config=RateLimitConfig(rate=10),
+        concurrency_config=ConcurrencyConfig(limit=5),
+        fallbacks=[backup_function]
+    )
+)
+
+# Execute a function with all the configured resilience mechanisms
+result = await orchestrator.execute(my_function, *args, **kwargs)
+```
+
 ## Recent Improvements
 
 The latest version includes several improvements to enhance usability and reliability:
 
 - **Enhanced FallbackChain**: Now accepts both single functions and lists of functions as fallbacks, making it more flexible.
+  ```python
+  # Before: Only accepted a list of fallbacks
+  chain = FallbackChain(primary_function, [fallback1, fallback2])
+  
+  # Now: Accepts both single functions and lists
+  chain1 = FallbackChain(primary_function, fallback_function)
+  chain2 = FallbackChain(primary_function, [fallback1, fallback2])
+  ```
+
 - **Improved Process Method**: The `process` method now applies functions to each item individually, providing more intuitive results.
-- **Reduced Complexity**: The `execute` method has been refactored to reduce complexity by extracting helper methods.
-- **Better Error Handling**: Improved error handling in the `FallbackChain` class for more reliable operation.
-- **Simplified Configuration**: Refactored the `with_retry` function to use a config object and kwargs, reducing the number of arguments.
+  ```python
+  # Before: Passed all args at once, resulting in ['Success: (1, 2, 3)']
+  results = await orchestrator.process([my_function], 1, 2, 3)
+  
+  # Now: Processes each item individually, resulting in ['Success: 1', 'Success: 2', 'Success: 3']
+  results = await orchestrator.process([my_function], 1, 2, 3)
+  ```
+
+- **Reduced Complexity**: The `execute` method has been refactored to reduce complexity by extracting helper methods, making the code more maintainable.
+
+- **Better Error Handling**: Improved error handling in the `FallbackChain` class for more reliable operation, ensuring that errors are properly propagated and handled.
+
+- **Simplified Configuration**: Refactored the `with_retry` function to use a config object and kwargs, reducing the number of arguments and making it easier to use.
+  ```python
+  # Before: Many positional arguments
+  @with_retry(max_attempts=3, wait_min=1.0, wait_max=5.0, wait_multiplier=1.5, retry_exceptions=(ValueError,), reraise=True)
+  async def my_function(arg):
+      pass
+  
+  # Now: Config object and/or kwargs
+  @with_retry(config=RetryConfig(max_attempts=3), wait_min=1.0, wait_max=5.0)
+  async def my_function(arg):
+      pass
+  ```
 
 These improvements make Opero more robust and easier to use in various scenarios.
 

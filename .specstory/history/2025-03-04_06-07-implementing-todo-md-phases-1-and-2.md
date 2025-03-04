@@ -3703,6 +3703,350 @@ _****_
 
 
 
+
+
+
+
+Let's run the tests in the src directory to see if they pass:
+
+---
+
+_****_
+
+```bash
+cd src && python -m pytest ../tests/test_core.py -v
+```
+
+```
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/
+site-packages/pytest_asyncio/plugin.py:207: PytestDeprecationWarni
+ng: The configuration option "asyncio_default_fixture_loop_scope"
+is unset.
+The event loop scope for asynchronous fixtures will default to the
+ fixture caching scope. Future versions of pytest-asyncio will def
+ault the loop scope for asynchronous fixtures to function scope. S
+et the default fixture loop scope explicitly in order to avoid une
+xpected behavior in the future. Valid fixture loop scopes are: "fu
+nction", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCO
+PE_UNSET))
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/
+site-packages/pytest_benchmark/logger.py:39: PytestBenchmarkWarnin
+g: Benchmarks are automatically disabled because xdist plugin is a
+ctive.Benchmarks cannot be performed reliably in a parallelized en
+vironment.
+  warner(PytestBenchmarkWarning(text))
+Test session starts (platform: darwin, Python 3.12.8, pytest 8.3.4
+, pytest-sugar 1.0.0)
+cachedir: .pytest_cache
+hypothesis profile 'default' -> database=DirectoryBasedExampleData
+base(PosixPath('/Users/adam/Developer/vcs/github.twardoch/pub/oper
+o/src/.hypothesis/examples'))
+benchmark: 5.1.0 (defaults: timer=time.perf_counter disable_gc=Fal
+se min_rounds=5 min_time=0.000005 max_time=1.0 calibration_precisi
+on=10 warmup=False warmup_iterations=100000)
+Fugue tests will be initialized with options:
+rootdir: /Users/adam/Developer/vcs/github.twardoch/pub/opero
+configfile: pyproject.toml
+plugins: recording-0.13.2, jaxtyping-0.2.37, cov-6.0.0, flake8-1.3
+.0, subtests-0.14.1, instafail-0.5.0, docker-3.1.2, jaraco.mongodb
+-12.1.2, enabler-3.3.0, ignore-flaky-2.2.1, integration-0.2.3, sug
+ar-1.0.0, langchain-0.1.0, env-1.1.5, socket-0.7.0, flaky-3.8.1, t
+ime-machine-2.16.0, shutil-1.8.1, asyncio-0.25.3, checkdocs-2.13.0
+, hypothesis-6.124.7, black-0.6.0, anyio-4.8.0, darkgraylib-1.2.1,
+ ruff-0.4.1, benchmark-5.1.0, pmxbot-1122.17.0, virtualenv-1.8.1,
+jaraco.vcs-2.4.0, perf-0.15.0, rerunfailures-15.0, fugue-0.9.2.dev
+1, timeout-2.3.1, mock-3.14.0, typeguard-4.4.2, logfire-3.4.0, das
+h-2.18.2, xdist-3.6.1, depends-1.0.1, requests-mock-1.12.1, syrupy
+-4.8.1
+asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
+initialized: 8/8 workers/Library/Frameworks/Python.framework/Versi
+ons/3.12/lib/python3.12/site-packages/pytest_asyncio/plugin.py:207
+: PytestDeprecationWarning: The configuration option "asyncio_defa
+ult_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the
+ fixture caching scope. Future versions of pytest-asyncio will def
+ault the loop scope for asynchronous fixtures to function scope. S
+et the default fixture loop scope explicitly in order to avoid une
+xpected behavior in the future. Valid fixture loop scopes are: "fu
+nction", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCO
+PE_UNSET))
+/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/
+site-packages/pytest_asyncio/plugin.py:207: PytestDeprecationWarni
+ng: The configuration option "asyncio_default_fixture_loop_scope"
+is unset.
+The event loop scope for asynchronous fixtures will default to the
+ fixture caching scope. Future versions of pytest-asyncio will def
+ault the loop scope for asynchronous fixtures to function scope. S
+et the default fixture loop scope explicitly in order to avoid une
+xpected behavior in the future. Valid fixture loop scopes are: "fu
+nction", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCO
+PE_UNSET))
+ready: 2/8 workers/Library/Frameworks/Python.framework/Versions/3.
+12/lib/python3.12/site-packages/pytest_asyncio/plugin.py:207: Pyte
+stDeprecationWarning: The configuration option "asyncio_default_fi
+xture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the
+ fixture caching scope. Future versions of pytest-asyncio will def
+ault the loop scope for asynchronous fixtures to function scope. S
+et the default fixture loop scope explicitly in order to avoid une
+xpected behavior in the future. Valid fixture loop scopes are: "fu
+nction", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCO
+PE_UNSET))
+ready: 3/8 workers/Library/Frameworks/Python.framework/Versions/3.
+12/lib/python3.12/site-packages/pytest_asyncio/plugin.py:207: Pyte
+stDeprecationWarning: The configuration option "asyncio_default_fi
+xture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the
+ fixture caching scope. Future versions of pytest-asyncio will def
+ault the loop scope for asynchronous fixtures to function scope. S
+et the default fixture loop scope explicitly in order to avoid une
+xpected behavior in the future. Valid fixture loop scopes are: "fu
+nction", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCO
+PE_UNSET))
+ready: 4/8 workers/Library/Frameworks/Python.framework/Versions/3.
+12/lib/python3.12/site-packages/pytest_asyncio/plugin.py:207: Pyte
+stDeprecationWarning: The configuration option "asyncio_default_fi
+xture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the
+ fixture caching scope. Future versions of pytest-asyncio will def
+ault the loop scope for asynchronous fixtures to function scope. S
+et the default fixture loop scope explicitly in order to avoid une
+xpected behavior in the future. Valid fixture loop scopes are: "fu
+nction", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCO
+PE_UNSET))
+ready: 5/8 workers/Library/Frameworks/Python.framework/Versions/3.
+12/lib/python3.12/site-packages/pytest_asyncio/plugin.py:207: Pyte
+stDeprecationWarning: The configuration option "asyncio_default_fi
+xture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the
+ fixture caching scope. Future versions of pytest-asyncio will def
+ault the loop scope for asynchronous fixtures to function scope. S
+et the default fixture loop scope explicitly in order to avoid une
+xpected behavior in the future. Valid fixture loop scopes are: "fu
+nction", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCO
+PE_UNSET))
+ready: 6/8 workers/Library/Frameworks/Python.framework/Versions/3.
+12/lib/python3.12/site-packages/pytest_asyncio/plugin.py:207: Pyte
+stDeprecationWarning: The configuration option "asyncio_default_fi
+xture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the
+ fixture caching scope. Future versions of pytest-asyncio will def
+ault the loop scope for asynchronous fixtures to function scope. S
+et the default fixture loop scope explicitly in order to avoid une
+xpected behavior in the future. Valid fixture loop scopes are: "fu
+nction", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCO
+PE_UNSET))
+ready: 7/8 workers/Library/Frameworks/Python.framework/Versions/3.
+12/lib/python3.12/site-packages/pytest_asyncio/plugin.py:207: Pyte
+stDeprecationWarning: The configuration option "asyncio_default_fi
+xture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the
+ fixture caching scope. Future versions of pytest-asyncio will def
+ault the loop scope for asynchronous fixtures to function scope. S
+et the default fixture loop scope explicitly in order to avoid une
+xpected behavior in the future. Valid fixture loop scopes are: "fu
+nction", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCO
+PE_UNSET))
+8 workers [12 items]   
+scheduling tests via LoadScheduling
+
+
+ tests/test_core.py::test_fallback_chain_fallback ✓  8% ▉
+
+
+ tests/test_core.py::test_fallback_chain_all_fail ✓ 17% █▋
+
+
+ tests/test_core.py::test_fallback_chain_success ✓  25% ██▌
+
+
+ tests/test_core.py::test_fallback_chain_sync_function ✓33% ███▍
+
+
+
+ tests/test_core.py:: ✓                             42% ████▎
+
+ tests/test_core.py:: ✓✓                            50% █████
+
+
+ tests/test_core.py::test_orchestrator_execute_fallback ✓58% █████
+▉
+
+ tests/test_core.py::test_orchestrator_execute_success ✓67% ██████
+▋
+
+ tests/test_core.py::test_orchestrator_process ✓    75% ███████▌
+
+
+ tests/test_core.py::test_orchestrator_with_retry ✓ 83% ████████▍ 
+
+ tests/test_core.py::Black format check ✓           92% █████████▎
+
+ tests/test_core.py::test_orchestrator_process_with_concurrency ✓1
+00% ██████████
+
+---------- coverage: platform darwin, python 3.12.8-final-0 ------
+----
+Name
+
+       Stmts   Miss  Cover
+------------------------------------------------------------------
+--------------------------
+/Users/adam/Developer/vcs/github.twardoch/pub/opero/tests/test_cor
+e.py      79      5    94%
+opero/__init__.py
+
+           8      0   100%
+opero/_version.py
+
+           1      0   100%
+opero/concurrency.py
+
+         127     84    34%
+opero/core.py
+
+         105     19    82%
+opero/decorators.py
+
+          22     12    45%
+opero/exceptions.py
+
+           7      1    86%
+opero/rate_limit.py
+
+          34     13    62%
+opero/retry.py
+
+          82     36    56%
+opero/utils.py
+
+          21      8    62%
+------------------------------------------------------------------
+--------------------------
+TOTAL
+
+         486    178    63%
+
+
+====================== slowest 10 durations ======================
+2.93s call     tests/test_core.py::black
+1.01s call     tests/test_core.py::test_orchestrator_with_retry
+0.78s setup    tests/test_core.py::black
+0.16s call     tests/test_core.py::ruff::format
+0.15s call     tests/test_core.py::ruff
+0.11s call     tests/test_core.py::test_fallback_chain_sync_functi
+on
+0.03s setup    tests/test_core.py::test_orchestrator_execute_succe
+ss
+0.02s setup    tests/test_core.py::test_orchestrator_process_with_
+concurrency
+0.01s setup    tests/test_core.py::test_orchestrator_process
+0.01s setup    tests/test_core.py::test_fallback_chain_all_fail
+
+Results (50.02s):
+      12 passed
+
+```
+
+---
+
+_****_
+
+
+
+
+
+
+
+
+
+Great! All the tests are passing. Let's summarize what we've done:
+
+1. We've updated the CHANGELOG.md file to include the recent changes we've made to the project.
+2. We've updated the README.md file to include information about the recent improvements.
+3. We've updated the TODO.md file to reflect the completed tasks and prioritize the remaining tasks.
+4. We've run the tests and confirmed that they are passing.
+
+The linter still shows some errors in the cleanup.py file, but those are noted in the TODO.md file as tasks to be addressed.
+
+Here's a summary of the changes we've made:
+
+1. Fixed the `FallbackChain` class to accept both a single function and a list of functions for fallbacks.
+2. Fixed the `process` method in the `Orchestrator` class to apply functions to each item individually.
+3. Refactored the `execute` method in the `Orchestrator` class to reduce complexity.
+4. Fixed loop variable binding issues in `core.py` for `fallback_func`.
+5. Refactored the `with_retry` function in `retry.py` to use a config object and kwargs.
+6. Added a `has_fallbacks` method to the `FallbackChain` class.
+7. Created LOG.md, PROGRESS.md, and .cursor/rules/0project.mdc files.
+8. Improved error handling in the `FallbackChain` class.
+9. Enhanced type annotations throughout the codebase.
+
+The next steps for the project, as outlined in the updated TODO.md file, are:
+
+1. Add comprehensive logging throughout the codebase.
+2. Improve error handling, particularly in the `retry_async` function.
+3. Fix linter errors in cleanup.py.
+4. Update pyproject.toml to move 'per-file-ignores' to the 'lint.per-file-ignores' section.
+5. Optimize performance, particularly in the retry logic and orchestration layer.
+6. Enhance test coverage with more unit tests for edge cases and integration tests for complex scenarios.
+7. Improve documentation with more usage examples and best practices.
+
+Wait, but let me check if there's anything else we should address before concluding.
+
+The tests are passing, which is great. The linter errors are in the cleanup.py file, which is not part of the core codebase, so they can be addressed later as noted in the TODO.md file.
+
+The README.md file now includes information about the recent improvements, which will help users understand the changes we've made.
+
+The CHANGELOG.md file has been updated to include the recent changes, which will help users track the evolution of the project.
+
+The TODO.md file has been updated to reflect the completed tasks and prioritize the remaining tasks, which will help guide future development efforts.
+
+Overall, the project is in a good state, with all tests passing and a clear roadmap for future development.
+
+---
+
+_**User**_
+
+Fold @PROGRESS.md into @CHANGELOG.md (done) and @TODO.md (todo), and then remove @PROGRESS.md — then update @README.md with more detailed and uptodate documentation
+
+---
+
+_**Assistant**_
+
+I'll help you fold the PROGRESS.md content into CHANGELOG.md and TODO.md, remove PROGRESS.md, and then update README.md with more detailed documentation.
+
+First, let's update the CHANGELOG.md to incorporate the implementation details from PROGRESS.md:
+
+---
+
+_****_
+
+
+
+---
+
+_****_
+
+
+
 ---
 
 
