@@ -11,9 +11,9 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from typing import Any, TypeVar, cast
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import Any, TypeVar, cast
 
 from opero.concurrency import ConcurrencyConfig, MultiprocessConfig
 from opero.exceptions import AllFailedError

@@ -12,10 +12,9 @@ from __future__ import annotations
 import asyncio
 import functools
 import inspect
-import logging
-from dataclasses import dataclass, asdict
-from typing import Any, TypeVar, ParamSpec, cast
 from collections.abc import Callable
+from dataclasses import asdict, dataclass
+from typing import Any, ParamSpec, TypeVar, cast
 
 from tenacity import (
     RetryError,
@@ -25,13 +24,25 @@ from tenacity import (
     wait_exponential,
 )
 
-from opero.utils import ensure_async
+from opero.utils import ContextAdapter, get_logger
 
 # Define type variables for generic function types
 P = ParamSpec("P")
 R = TypeVar("R")
 
-logger = logging.getLogger(__name__)
+# Get a logger with context support
+_logger = get_logger(__name__)
+logger = ContextAdapter(_logger)
+
+
+# Custom RetryError that doesn't require a Future object
+class CustomRetryError(Exception):
+    """Custom exception for retry failures that doesn't require a Future object."""
+
+    def __init__(self, message: str, original_exception: Exception | None = None):
+        self.message = message
+        self.original_exception = original_exception
+        super().__init__(message)
 
 
 @dataclass
@@ -176,7 +187,9 @@ def retry_sync(
     try:
         return retrying(func, *args, **kwargs)
     except RetryError as e:
-        logger.error(f"All {retry_config.max_attempts} retry attempts failed")
+        logger.error(
+            f"All {retry_config.max_attempts} retry attempts failed", exc_info=True
+        )
         if retry_config.reraise and e.last_attempt.failed:
             if e.last_attempt.exception() is not None:
                 raise e.last_attempt.exception() from e
@@ -184,7 +197,10 @@ def retry_sync(
 
 
 async def retry_async(
-    func: Callable[..., R], *args: Any, config: RetryConfig | None = None, **kwargs: Any
+    func: Callable[..., Any],
+    *args: Any,
+    config: RetryConfig | None = None,
+    **kwargs: Any,
 ) -> R:
     """
     Apply retry logic to an async function call.
@@ -193,7 +209,7 @@ async def retry_async(
     without decorating the entire function.
 
     Args:
-        func: The function to call with retry logic
+        func: The function to call with retry logic (can be sync or async)
         *args: Positional arguments to pass to the function
         config: Retry configuration (or None to use defaults)
         **kwargs: Keyword arguments to pass to the function
@@ -203,44 +219,88 @@ async def retry_async(
     """
     retry_config = config or RetryConfig()
 
-    # Create a properly typed async function that calls our target function
-    async def async_func(*a: Any, **kw: Any) -> Any:
-        result = await ensure_async(func, *a, **kw)
-        return result
-
-    # We need to manually handle the retry logic to ensure proper exception handling
+    # Track attempt information for better error reporting
     attempt_number = 1
-    last_exception = None
+    last_exception: Exception | None = None
 
-    while attempt_number <= retry_config.max_attempts:
-        try:
-            logger.debug(f"Attempt {attempt_number}/{retry_config.max_attempts}")
-            result = await async_func(*args, **kwargs)
-            logger.debug(f"Attempt {attempt_number} succeeded")
-            return cast(R, result)
-        except Exception as e:
-            last_exception = e
-            logger.warning(f"Attempt {attempt_number} failed: {e!s}")
+    # Add context to logs for this retry operation
+    func_name = getattr(func, "__name__", str(func))
+    logger.add_context(function=func_name)
+    logger.debug(f"Starting retry operation for {func_name}")
 
-            if attempt_number == retry_config.max_attempts:
-                # This was the last attempt, so we're done
-                break
+    try:
+        while attempt_number <= retry_config.max_attempts:
+            try:
+                logger.debug(f"Attempt {attempt_number}/{retry_config.max_attempts}")
 
-            # Calculate wait time using exponential backoff
-            wait_time = min(
-                retry_config.wait_max,
-                retry_config.wait_min
-                * (retry_config.wait_multiplier ** (attempt_number - 1)),
-            )
-            logger.debug(f"Waiting {wait_time} seconds before next attempt")
-            await asyncio.sleep(wait_time)
-            attempt_number += 1
+                # Handle both coroutine functions and regular functions that return awaitable objects
+                if inspect.iscoroutinefunction(func):
+                    # Direct coroutine function call
+                    result = await func(*args, **kwargs)
+                elif asyncio.iscoroutine(func):
+                    # Handle case where func is already a coroutine object
+                    # We need to use Any as the return type to avoid type errors
+                    result = await func  # type: ignore
+                else:
+                    # Regular function that might return an awaitable
+                    result = func(*args, **kwargs)
+                    # If result is awaitable, await it
+                    if inspect.isawaitable(result):
+                        result = await result
 
-    # If we get here, all attempts failed
-    logger.error(f"All {retry_config.max_attempts} retry attempts failed")
-    if retry_config.reraise and last_exception is not None:
-        raise last_exception
+                logger.debug(f"Attempt {attempt_number} succeeded")
+                return cast(R, result)
 
-    # Create a custom RetryError that doesn't require a last_attempt
-    msg = f"All {retry_config.max_attempts} retry attempts failed"
-    raise RetryError(msg)
+            except Exception as e:
+                last_exception = e
+                logger.warning(f"Attempt {attempt_number} failed: {e!s}", exc_info=True)
+
+                # Check if we should retry based on exception type
+                should_retry = False
+                for exc_type in retry_config.retry_exceptions:
+                    if isinstance(e, exc_type):
+                        should_retry = True
+                        break
+
+                if not should_retry:
+                    logger.debug(
+                        f"Exception {type(e).__name__} is not in retry_exceptions, not retrying"
+                    )
+                    break
+
+                if attempt_number == retry_config.max_attempts:
+                    # This was the last attempt, so we're done
+                    logger.debug("Maximum retry attempts reached")
+                    break
+
+                # Calculate wait time using exponential backoff
+                wait_time = min(
+                    retry_config.wait_max,
+                    retry_config.wait_min
+                    * (retry_config.wait_multiplier ** (attempt_number - 1)),
+                )
+                logger.debug(f"Waiting {wait_time} seconds before next attempt")
+                await asyncio.sleep(wait_time)
+                attempt_number += 1
+
+        # If we get here, all attempts failed
+        error_msg = (
+            f"All {retry_config.max_attempts} retry attempts failed for {func_name}"
+        )
+
+        if last_exception is not None:
+            logger.error(error_msg, exc_info=last_exception)
+
+            if retry_config.reraise:
+                # Add traceback information to the exception for better debugging
+                raise last_exception
+
+            error_msg += f": {last_exception!s}"
+        else:
+            logger.error(error_msg)
+
+        # Use our custom error class instead of tenacity's RetryError
+        raise CustomRetryError(error_msg, last_exception)
+    finally:
+        # Clean up the context
+        logger.remove_context("function")

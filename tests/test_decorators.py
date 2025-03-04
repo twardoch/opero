@@ -4,13 +4,14 @@
 Tests for the decorator interfaces of the opero package.
 """
 
-import pytest
 from unittest.mock import AsyncMock, patch
 
-from opero.decorators import orchestrate
-from opero.retry import RetryConfig
+import pytest
+
 from opero.concurrency import ConcurrencyConfig
 from opero.core import Orchestrator, OrchestratorConfig
+from opero.decorators import orchestrate
+from opero.retry import RetryConfig
 
 
 # Test functions

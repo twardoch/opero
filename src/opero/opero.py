@@ -4,9 +4,9 @@
 Created by Adam Twardoch
 """
 
+import logging
 from dataclasses import dataclass
 from typing import Any
-import logging
 
 __version__ = "0.1.0"
 

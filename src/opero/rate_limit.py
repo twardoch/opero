@@ -9,9 +9,9 @@ with support for both synchronous and asynchronous functions.
 
 import asyncio
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, TypeVar
-from collections.abc import Callable
 
 from asynciolimiter import Limiter
 

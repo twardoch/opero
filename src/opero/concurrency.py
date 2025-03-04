@@ -11,9 +11,9 @@ import asyncio
 import contextlib
 import logging
 import multiprocessing
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from typing import TypeVar
-from collections.abc import Callable, Iterable
 
 # Optional dependencies
 try:

@@ -4,13 +4,14 @@
 Tests for the core functionality of the opero package.
 """
 
-import pytest
 from unittest.mock import AsyncMock
 
+import pytest
+
+from opero.concurrency import ConcurrencyConfig
 from opero.core import FallbackChain, Orchestrator, OrchestratorConfig
 from opero.exceptions import AllFailedError
 from opero.retry import RetryConfig
-from opero.concurrency import ConcurrencyConfig
 
 
 # Test functions

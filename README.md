@@ -20,6 +20,16 @@ this_file: README.md
 - **Unified Interface**: Both class-based (`Orchestrator`) and decorator-based (`@orchestrate`) APIs
 - **Composable**: Layer different resilience mechanisms as needed
 - **Type Safety**: Comprehensive type hints for better IDE integration and error detection
+- **Comprehensive Logging**: Structured logging with context for better debugging and monitoring
+- **Error Resilience**: Robust error handling with proper propagation and recovery
+
+## Recent Improvements
+
+- **Enhanced Logging**: Added comprehensive logging throughout the codebase with configurable log levels
+- **Improved Error Handling**: Better handling of errors in async/sync conversions and fallback scenarios
+- **Optimized Core Functions**: Reduced complexity in key functions for better maintainability
+- **Fixed Process Method**: Modified to apply functions to each item individually for more intuitive behavior
+- **Code Quality**: Fixed various linter errors and improved type annotations
 
 ## Installation
 
@@ -133,6 +143,42 @@ async def main():
 asyncio.run(main())
 ```
 
+### Using Structured Logging
+
+```python
+import asyncio
+import logging
+from opero import Orchestrator, OrchestratorConfig, get_logger, ContextAdapter, log_context
+
+# Create a logger with context support
+logger = ContextAdapter(get_logger("my_app", level=logging.DEBUG))
+
+async def api_call(item):
+    # Log with context
+    logger.debug(f"Processing item {item}")
+    await asyncio.sleep(0.1)
+    return f"Result: {item}"
+
+async def main():
+    # Add global context
+    logger.add_context(service="api_service", version="1.0.0")
+    
+    orchestrator = Orchestrator(
+        config=OrchestratorConfig()
+    )
+    
+    # Use context manager for temporary context
+    with log_context(logger, operation="batch_process", batch_id="123"):
+        logger.info("Starting batch processing")
+        results = await orchestrator.process([api_call], *range(5))
+        logger.info(f"Completed batch processing with {len(results)} results")
+    
+    # Context from the context manager is removed here
+    logger.info("Continuing with other operations")
+
+asyncio.run(main())
+```
+
 ## Core Components
 
 ### Orchestrator
@@ -209,7 +255,6 @@ result = await chain.execute(*args, **kwargs)
 #### OrchestratorConfig
 
 Unified configuration for the Orchestrator. This class brings together all the different configuration options for the Orchestrator.
-
 ```python
 from opero import OrchestratorConfig, RetryConfig, RateLimitConfig
 
@@ -293,6 +338,57 @@ result = await my_function(some_arg)
 
 # For processing multiple items
 results = await my_function.process(item1, item2, item3)
+```
+
+### Logging Utilities
+
+Opero provides several utilities for structured logging with context.
+
+#### get_logger
+
+Create a logger with a specific name and level.
+
+```python
+from opero import get_logger
+import logging
+
+# Create a logger with DEBUG level
+logger = get_logger("my_app", level=logging.DEBUG)
+```
+
+#### ContextAdapter
+
+Enhance a logger with context information.
+
+```python
+from opero import get_logger, ContextAdapter
+import logging
+
+# Create a logger with context support
+logger = ContextAdapter(get_logger("my_app", level=logging.DEBUG))
+
+# Add context information
+logger.add_context(service="api_service", version="1.0.0")
+
+# Log with context
+logger.info("Starting service")  # Will include service and version in the log
+```
+
+#### log_context
+
+A context manager for temporary logging context.
+
+```python
+from opero import log_context
+
+# Use context manager for temporary context
+with log_context(logger, operation="batch_process", batch_id="123"):
+    logger.info("Starting batch processing")  # Will include operation and batch_id
+    # Do something
+    logger.info("Completed batch processing")  # Will include operation and batch_id
+
+# Context from the context manager is removed here
+logger.info("Continuing with other operations")  # Will not include operation and batch_id
 ```
 
 ## Advanced Usage
@@ -425,48 +521,6 @@ orchestrator = Orchestrator(
 # Execute a function with all the configured resilience mechanisms
 result = await orchestrator.execute(my_function, *args, **kwargs)
 ```
-
-## Recent Improvements
-
-The latest version includes several improvements to enhance usability and reliability:
-
-- **Enhanced FallbackChain**: Now accepts both single functions and lists of functions as fallbacks, making it more flexible.
-  ```python
-  # Before: Only accepted a list of fallbacks
-  chain = FallbackChain(primary_function, [fallback1, fallback2])
-  
-  # Now: Accepts both single functions and lists
-  chain1 = FallbackChain(primary_function, fallback_function)
-  chain2 = FallbackChain(primary_function, [fallback1, fallback2])
-  ```
-
-- **Improved Process Method**: The `process` method now applies functions to each item individually, providing more intuitive results.
-  ```python
-  # Before: Passed all args at once, resulting in ['Success: (1, 2, 3)']
-  results = await orchestrator.process([my_function], 1, 2, 3)
-  
-  # Now: Processes each item individually, resulting in ['Success: 1', 'Success: 2', 'Success: 3']
-  results = await orchestrator.process([my_function], 1, 2, 3)
-  ```
-
-- **Reduced Complexity**: The `execute` method has been refactored to reduce complexity by extracting helper methods, making the code more maintainable.
-
-- **Better Error Handling**: Improved error handling in the `FallbackChain` class for more reliable operation, ensuring that errors are properly propagated and handled.
-
-- **Simplified Configuration**: Refactored the `with_retry` function to use a config object and kwargs, reducing the number of arguments and making it easier to use.
-  ```python
-  # Before: Many positional arguments
-  @with_retry(max_attempts=3, wait_min=1.0, wait_max=5.0, wait_multiplier=1.5, retry_exceptions=(ValueError,), reraise=True)
-  async def my_function(arg):
-      pass
-  
-  # Now: Config object and/or kwargs
-  @with_retry(config=RetryConfig(max_attempts=3), wait_min=1.0, wait_max=5.0)
-  async def my_function(arg):
-      pass
-  ```
-
-These improvements make Opero more robust and easier to use in various scenarios.
 
 ## Development
 

@@ -1,34 +1,82 @@
-2025-03-04 07:04:47 - 
+2025-03-04 07:09:32 - 
 === PROJECT STATEMENT ===
-2025-03-04 07:04:47 -  
-2025-03-04 07:04:47 - 
+2025-03-04 07:09:32 - ---
+title: Opero Project Rules
+glob: "**/*.py"
+---
+
+# Opero Project Rules
+
+## Project Overview
+
+Opero is a Python library for orchestrating function execution with retries, fallbacks, and concurrency control. It provides a flexible way to handle errors and ensure reliable execution of functions.
+
+## Code Style
+
+- Follow PEP 8 for code style
+- Use type hints for all functions and methods
+- Write clear docstrings for all public functions and classes
+- Use f-strings for string formatting
+- Keep functions and methods small and focused
+- Extract complex logic into helper methods
+- Use descriptive variable names
+
+## Error Handling
+
+- Use appropriate exception types
+- Handle errors gracefully with retries and fallbacks
+- Log errors with appropriate context
+- Provide helpful error messages
+
+## Testing
+
+- Write unit tests for all functionality
+- Test edge cases and error conditions
+- Use pytest for testing
+- Aim for high test coverage
+
+## Logging
+
+- Use the built-in logging module
+- Log at appropriate levels (debug, info, warning, error)
+- Include context in log messages
+- Configure logging in a way that doesn't interfere with applications using the library
+
+## Performance
+
+- Optimize critical paths
+- Minimize overhead in the orchestration layer
+- Use async/await for I/O-bound operations
+- Use appropriate concurrency mechanisms for CPU-bound operations 
+2025-03-04 07:09:32 - 
 === Current Status ===
-2025-03-04 07:04:47 - [ 896]  .
+2025-03-04 07:09:32 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
-│       ├── [   1]  0project.mdc
+│       ├── [1.3K]  0project.mdc
 │       └── [1.9K]  filetree.mdc
 ├── [  96]  .github
 │   └── [ 128]  workflows
 │       ├── [2.7K]  push.yml
 │       └── [1.4K]  release.yml
 ├── [3.5K]  .gitignore
-├── [ 532]  .pre-commit-config.yaml
+├── [ 470]  .pre-commit-config.yaml
 ├── [  96]  .specstory
-│   └── [ 192]  history
+│   └── [ 256]  history
 │       ├── [2.7K]  .what-is-this.md
 │       ├── [574K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
 │       ├── [4.1K]  2025-03-04_05-40-cleanup-analysis-and-todo-update.md
-│       └── [112K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
-├── [2.4K]  CHANGELOG.md
-├── [ 119]  CLEANUP.txt
+│       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
+│       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
+│       └── [2.5K]  2025-03-04_07-59-untitled.md
+├── [1.7K]  CHANGELOG.md
+├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
-├── [4.5K]  PROGRESS.md
-├── [9.5K]  README.md
+├── [ 16K]  README.md
 ├── [ 61K]  REPO_CONTENT.txt
-├── [3.2K]  TODO.md
+├── [5.2K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -45,44 +93,45 @@
 │       ├── [ 563]  exceptions.py
 │       ├── [1.6K]  opero.py
 │       ├── [4.0K]  rate_limit.py
-│       ├── [7.7K]  retry.py
-│       └── [1.9K]  utils.py
+│       ├── [ 10K]  retry.py
+│       └── [6.8K]  utils.py
 ├── [ 192]  tests
 │   ├── [4.2K]  test_core.py
 │   ├── [4.1K]  test_decorators.py
 │   └── [ 139]  test_package.py
 └── [109K]  uv.lock
 
-13 directories, 36 files
+13 directories, 37 files
 
-2025-03-04 07:04:47 - 
+2025-03-04 07:09:32 - 
 Project structure:
-2025-03-04 07:04:47 - [ 896]  .
+2025-03-04 07:09:32 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
-│       ├── [   1]  0project.mdc
+│       ├── [1.3K]  0project.mdc
 │       └── [1.9K]  filetree.mdc
 ├── [  96]  .github
 │   └── [ 128]  workflows
 │       ├── [2.7K]  push.yml
 │       └── [1.4K]  release.yml
 ├── [3.5K]  .gitignore
-├── [ 532]  .pre-commit-config.yaml
+├── [ 470]  .pre-commit-config.yaml
 ├── [  96]  .specstory
-│   └── [ 192]  history
+│   └── [ 256]  history
 │       ├── [2.7K]  .what-is-this.md
 │       ├── [574K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
 │       ├── [4.1K]  2025-03-04_05-40-cleanup-analysis-and-todo-update.md
-│       └── [112K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
-├── [2.4K]  CHANGELOG.md
-├── [ 119]  CLEANUP.txt
+│       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
+│       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
+│       └── [2.5K]  2025-03-04_07-59-untitled.md
+├── [1.7K]  CHANGELOG.md
+├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
-├── [4.5K]  PROGRESS.md
-├── [9.5K]  README.md
+├── [ 16K]  README.md
 ├── [ 61K]  REPO_CONTENT.txt
-├── [3.2K]  TODO.md
+├── [5.2K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -99,75 +148,151 @@ Project structure:
 │       ├── [ 563]  exceptions.py
 │       ├── [1.6K]  opero.py
 │       ├── [4.0K]  rate_limit.py
-│       ├── [7.7K]  retry.py
-│       └── [1.9K]  utils.py
+│       ├── [ 10K]  retry.py
+│       └── [6.8K]  utils.py
 ├── [ 192]  tests
 │   ├── [4.2K]  test_core.py
 │   ├── [4.1K]  test_decorators.py
 │   └── [ 139]  test_package.py
 └── [109K]  uv.lock
 
-13 directories, 36 files
+13 directories, 37 files
 
-2025-03-04 07:04:47 - On branch main
+2025-03-04 07:09:32 - On branch main
 Your branch is up to date with 'origin/main'.
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   .cursor/rules/filetree.mdc
-	modified:   .specstory/history/2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
+	modified:   CHANGELOG.md
 	modified:   CLEANUP.txt
-	modified:   REPO_CONTENT.txt
+	modified:   README.md
 	modified:   TODO.md
+	modified:   cleanup.py
+	modified:   pyproject.toml
+	modified:   src/opero/__init__.py
+	modified:   src/opero/concurrency.py
 	modified:   src/opero/core.py
+	modified:   src/opero/decorators.py
+	modified:   src/opero/opero.py
+	modified:   src/opero/rate_limit.py
 	modified:   src/opero/retry.py
+	modified:   src/opero/utils.py
+	modified:   tests/test_core.py
+	modified:   tests/test_decorators.py
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-	.cursor/rules/0project.mdc
-	PROGRESS.md
+	.specstory/history/2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
+	.specstory/history/2025-03-04_07-59-untitled.md
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 07:04:47 - On branch main
+2025-03-04 07:09:32 - On branch main
 Your branch is up to date with 'origin/main'.
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   .cursor/rules/filetree.mdc
-	modified:   .specstory/history/2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
+	modified:   CHANGELOG.md
 	modified:   CLEANUP.txt
-	modified:   REPO_CONTENT.txt
+	modified:   README.md
 	modified:   TODO.md
+	modified:   cleanup.py
+	modified:   pyproject.toml
+	modified:   src/opero/__init__.py
+	modified:   src/opero/concurrency.py
 	modified:   src/opero/core.py
+	modified:   src/opero/decorators.py
+	modified:   src/opero/opero.py
+	modified:   src/opero/rate_limit.py
 	modified:   src/opero/retry.py
+	modified:   src/opero/utils.py
+	modified:   tests/test_core.py
+	modified:   tests/test_decorators.py
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-	.cursor/rules/0project.mdc
-	PROGRESS.md
+	.specstory/history/2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
+	.specstory/history/2025-03-04_07-59-untitled.md
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 07:04:47 - 
+2025-03-04 07:09:32 - 
 === Environment Status ===
-2025-03-04 07:04:47 - Setting up virtual environment
-2025-03-04 07:04:48 - Virtual environment created and activated
-2025-03-04 07:04:48 - Installing package with all extras
-2025-03-04 07:04:48 - Setting up virtual environment
-2025-03-04 07:04:48 - Virtual environment created and activated
-2025-03-04 07:04:48 - Package installed successfully
-2025-03-04 07:04:48 - Running code quality checks
-2025-03-04 07:04:48 - >>> Running code fixes...
-2025-03-04 07:04:48 - All checks passed!
+2025-03-04 07:09:32 - Setting up virtual environment
+2025-03-04 07:09:33 - Virtual environment created and activated
+2025-03-04 07:09:33 - Installing package with all extras
+2025-03-04 07:09:33 - Setting up virtual environment
+2025-03-04 07:09:34 - Virtual environment created and activated
+2025-03-04 07:09:35 - Package installed successfully
+2025-03-04 07:09:35 - Running code quality checks
+2025-03-04 07:09:35 - >>> Running code fixes...
+2025-03-04 07:09:35 - src/opero/retry.py:194:11: C901 `retry_async` is too complex (12 > 10)
+    |
+194 | async def retry_async(
+    |           ^^^^^^^^^^^ C901
+195 |     func: Callable[..., Any],
+196 |     *args: Any,
+    |
 
-2025-03-04 07:04:48 - 13 files left unchanged
+src/opero/retry.py:194:11: PLR0912 Too many branches (14 > 12)
+    |
+194 | async def retry_async(
+    |           ^^^^^^^^^^^ PLR0912
+195 |     func: Callable[..., Any],
+196 |     *args: Any,
+    |
 
-2025-03-04 07:04:48 - >>>Running type checks...
-2025-03-04 07:04:49 - >>> Running tests...
-2025-03-04 07:04:56 - ============================= test session starts ==============================
+src/opero/utils.py:51:5: FBT001 Boolean-typed positional argument in function definition
+   |
+49 |     level: int = logging.INFO,
+50 |     format_string: str | None = None,
+51 |     add_console_handler: bool = True,
+   |     ^^^^^^^^^^^^^^^^^^^ FBT001
+52 | ) -> logging.Logger:
+53 |     """
+   |
+
+src/opero/utils.py:51:5: FBT002 Boolean default positional argument in function definition
+   |
+49 |     level: int = logging.INFO,
+50 |     format_string: str | None = None,
+51 |     add_console_handler: bool = True,
+   |     ^^^^^^^^^^^^^^^^^^^ FBT002
+52 | ) -> logging.Logger:
+53 |     """
+   |
+
+src/opero/utils.py:199:5: FBT001 Boolean-typed positional argument in function definition
+    |
+197 |     level: int = logging.INFO,
+198 |     format_string: str | None = None,
+199 |     add_console_handler: bool = True,
+    |     ^^^^^^^^^^^^^^^^^^^ FBT001
+200 | ) -> logging.Logger:
+201 |     """
+    |
+
+src/opero/utils.py:199:5: FBT002 Boolean default positional argument in function definition
+    |
+197 |     level: int = logging.INFO,
+198 |     format_string: str | None = None,
+199 |     add_console_handler: bool = True,
+    |     ^^^^^^^^^^^^^^^^^^^ FBT002
+200 | ) -> logging.Logger:
+201 |     """
+    |
+
+Found 6 errors.
+
+2025-03-04 07:09:35 - 2 files reformatted, 11 files left unchanged
+
+2025-03-04 07:09:35 - >>>Running type checks...
+2025-03-04 07:09:36 - >>> Running tests...
+2025-03-04 07:09:40 - ============================= test session starts ==============================
 platform darwin -- Python 3.12.8, pytest-8.3.5, pluggy-1.5.0 -- /Users/adam/Developer/vcs/github.twardoch/pub/opero/.venv/bin/python
 cachedir: .pytest_cache
 rootdir: /Users/adam/Developer/vcs/github.twardoch/pub/opero
@@ -200,7 +325,14 @@ tests/test_core.py::test_orchestrator_process PASSED                     [ 43%]
 tests/test_core.py::test_orchestrator_process_with_concurrency PASSED    [ 50%]
 tests/test_core.py::test_orchestrator_with_retry 
 -------------------------------- live log call ---------------------------------
-WARNING  opero.retry:retry.py:223 Attempt 1 failed: First attempt
+WARNING  opero.retry:retry.py:256 Attempt 1 failed: First attempt
+Traceback (most recent call last):
+  File "/Users/adam/Developer/vcs/github.twardoch/pub/opero/src/opero/retry.py", line 239, in retry_async
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/unittest/mock.py", line 2300, in _execute_mock_call
+    raise result
+ValueError: First attempt
 PASSED                                                                   [ 56%]
 tests/test_decorators.py::test_orchestrate_decorator_basic PASSED        [ 62%]
 tests/test_decorators.py::test_orchestrate_decorator_fallback 
@@ -209,7 +341,17 @@ WARNING  opero.core:core.py:135 Primary function failed: Failed for value: 1
 PASSED                                                                   [ 68%]
 tests/test_decorators.py::test_orchestrate_decorator_retry 
 -------------------------------- live log call ---------------------------------
-WARNING  opero.retry:retry.py:223 Attempt 1 failed: First attempt
+WARNING  opero.retry:retry.py:256 Attempt 1 failed: First attempt
+Traceback (most recent call last):
+  File "/Users/adam/Developer/vcs/github.twardoch/pub/opero/src/opero/retry.py", line 239, in retry_async
+    result = await func(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/adam/Developer/vcs/github.twardoch/pub/opero/tests/test_decorators.py", line 76, in decorated_func
+    return await mock_func(value)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/unittest/mock.py", line 2300, in _execute_mock_call
+    raise result
+ValueError: First attempt
 PASSED                                                                   [ 75%]
 tests/test_decorators.py::test_orchestrate_decorator_process PASSED      [ 81%]
 tests/test_decorators.py::test_orchestrate_decorator_with_concurrency PASSED [ 87%]
@@ -217,161 +359,158 @@ tests/test_decorators.py::test_orchestrate_decorator_with_sync_function PASSED [
 tests/test_package.py::test_version PASSED                               [100%]
 
 ============================= slowest 10 durations =============================
-1.00s call     tests/test_core.py::test_orchestrator_with_retry
+1.01s call     tests/test_core.py::test_orchestrator_with_retry
 1.00s call     tests/test_decorators.py::test_orchestrate_decorator_retry
 
 (8 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 16 passed in 4.00s ==============================
+============================== 16 passed in 2.88s ==============================
 
-2025-03-04 07:04:56 - All checks completed
-2025-03-04 07:04:56 - 
+2025-03-04 07:09:40 - All checks completed
+2025-03-04 07:09:40 - 
 === TODO.md ===
-2025-03-04 07:04:56 - ---
+2025-03-04 07:09:40 - ---
 this_file: TODO.md
 ---
 
 # TODO
 
-Tip: Periodically run `./cleanup.py status` to see results of lints and tests.
+Tip: Periodically run `python ./cleanup.py status` to see results of lints and tests. Use `uv pip ...` not `pip ...`
 
-This document outlines the remaining tasks for the Opero project.
+## Phase 1 - Immediate Priorities
 
-## Phase 1
+1. [ ] Fix cleanup.py script errors:
+   - [ ] Fix the `_print_tree` function that's causing TypeError when running `cleanup.py status`
+   - [ ] Ensure proper argument handling in tree generation functions
 
-1. [x] Fix failing tests in `process` method:
-   - [x] Fix `test_orchestrator_process` - Currently returns `['Success: (1, 2, 3)']` instead of `['Success: 1', 'Success: 2', 'Success: 3']`
-   - [x] Fix `test_orchestrator_process_with_concurrency` - Same issue as above
-   - [x] Modify `process` method to apply function to each item individually rather than passing all args at once
+2. [ ] Fix remaining linter errors in cleanup.py:
+   - [ ] Replace `typing.List` with `list` (UP035)
+   - [ ] Remove unused imports (F401)
+   - [ ] Fix Boolean-typed positional arguments (FBT001/FBT002)
+   - [ ] Address subprocess call security issues (S603/S607)
+   - [ ] Fix unnecessary `list()` call within `sorted()` (C414)
+   - [ ] Remove unnecessary mode argument (UP015)
+   - [ ] Replace `print` with logging (T201)
 
-2. [x] Fix linter errors:
-   - [x] Resolve complexity issues in `core.py:execute` method (C901, PLR0912)
-   - [x] Fix loop variable binding issues in `core.py` (B023 for `fallback_func`)
-   - [x] Address too many arguments in `retry.py:with_retry` function (PLR0913)
+3. [ ] Fix linter errors in src/opero/retry.py:
+   - [ ] Remove unused imports (F401)
+   - [ ] Update deprecated typing imports (UP035)
+   - [ ] Use `X | Y` for type annotations (UP007)
+   - [ ] Reduce complexity in `retry_async` function (C901, PLR0912)
 
-3. [x] Create missing files:
-   - [x] Create LOG.md for tracking changes and issues
-   - [x] Create .cursor/rules/0project.mdc for project rules
+4. [ ] Fix linter errors in src/opero/utils.py:
+   - [ ] Update deprecated typing imports (UP035)
+   - [ ] Remove unused imports (F401)
+   - [ ] Use `X | Y` for type annotations (UP007)
+   - [ ] Fix Boolean-typed positional arguments (FBT001/FBT002)
+   - [ ] Use `dict` instead of `Dict` for type annotations (UP006)
 
-4. [ ] Add comprehensive logging throughout the codebase
-5. [ ] Improve error handling in `retry_async` function to properly handle coroutine objects
-6. [ ] Fix type compatibility issues in async/sync conversions
+5. [ ] Fix pyproject.toml schema validation errors:
+   - [ ] Resolve the "valid under more than one of the schemas listed in the 'oneOf' keyword" errors
 
-## Phase 2
+## Phase 2 - Next Steps
 
-- [ ] Implement proper handling of `AllFailedError` in all fallback scenarios
-- [ ] Optimize retry logic for better performance
-- [ ] Add more unit tests for edge cases in retry mechanism
-- [ ] Create integration tests for complex scenarios combining multiple features
-- [ ] Add performance benchmarks for key operations
-- [ ] Implement stress tests for concurrency and rate limiting
-- [ ] Add tests for multiprocessing with different backends
+1. [ ] Enhance test coverage:
+   - [ ] Add more unit tests for edge cases in retry mechanism
+   - [ ] Create integration tests for complex scenarios combining multiple features
+   - [ ] Add performance benchmarks for key operations
+   - [ ] Implement stress tests for concurrency and rate limiting
 
-## Phase 3
+2. [ ] Optimize performance:
+   - [ ] Optimize retry logic for better performance
+   - [ ] Reduce overhead in the orchestration layer
+   - [ ] Improve concurrency management
 
-- [ ] Add more usage examples for common patterns
-- [ ] Document best practices for error handling
-- [ ] Add docstrings to all public functions and classes
+3. [ ] Improve documentation:
+   - [ ] Add more usage examples for common patterns
+   - [ ] Document best practices for error handling
+   - [ ] Add docstrings to all public functions and classes
+   - [ ] Create API reference documentation
 
-## Features
+## Phase 3 - Future Enhancements
 
-- [ ] Implement middleware support for function transformation
-- [ ] Add metrics collection for performance monitoring
-- [ ] Create a CLI interface using `fire` and `rich`
-- [ ] Add support for distributed task queues
-- [ ] Implement streaming support with backpressure handling
+1. [ ] Add new features:
+   - [ ] Implement middleware support for function transformation
+   - [ ] Add metrics collection for performance monitoring
+   - [ ] Create a CLI interface using `fire` and `rich`
+   - [ ] Add support for distributed task queues
+   - [ ] Implement streaming support with backpressure handling
 
-## Infrastructure
+2. [ ] Infrastructure improvements:
+   - [ ] Set up CI/CD pipeline for automated testing and deployment
+   - [ ] Configure code coverage reporting
+   - [ ] Add pre-commit hooks for code quality
+   - [ ] Create GitHub Actions workflow for publishing to PyPI
+   - [ ] Set up automated dependency updates
 
-- [ ] Set up CI/CD pipeline for automated testing and deployment
-- [ ] Configure code coverage reporting
-- [ ] Add pre-commit hooks for code quality
-- [ ] Create GitHub Actions workflow for publishing to PyPI
-- [ ] Set up automated dependency updates
-
-## Optimization
-
-- [ ] Profile and optimize critical paths
-- [ ] Reduce memory usage for large-scale operations
-- [ ] Optimize concurrency management for high-throughput scenarios
-- [ ] Improve serialization for multiprocessing
-- [ ] Minimize overhead in the orchestration layer
-
-## Compatibility
-
-- [ ] Ensure compatibility with Python 3.8+
-- [ ] Test with different versions of dependencies
-- [ ] Add explicit support for asyncio event loop policies
-- [ ] Ensure thread safety for shared resources
-- [ ] Test on different operating systems
+3. [ ] Compatibility enhancements:
+   - [ ] Ensure compatibility with Python 3.8+
+   - [ ] Test with different versions of dependencies
+   - [ ] Add explicit support for asyncio event loop policies
+   - [ ] Ensure thread safety for shared resources
+   - [ ] Test on different operating systems
 
 ## Next Release (v0.2.0) Priorities
 
 1. [ ] Fix all linter errors in the codebase
-2. [ ] Complete the test suite with 90%+ coverage
-3. [ ] Improve error handling and type compatibility
-4. [ ] Add comprehensive logging
-5. [ ] Create proper API documentation
-6. [ ] Optimize performance for high-throughput scenarios
+2. [ ] Fix cleanup.py script to run properly
+3. [ ] Complete the test suite with 90%+ coverage
+4. [ ] Create proper API documentation
+5. [ ] Optimize performance for high-throughput scenarios
 
-2025-03-04 07:05:00 - 
-📦 Repomix v0.2.29
+## Completed Tasks
 
-No custom config found at repomix.config.json or global config at /Users/adam/.config/repomix/repomix.config.json.
-You can add a config file for additional settings. Please check https://github.com/yamadashy/repomix for more information.
-⠙ Searching for files...
-[2K[1A[2K[G⠹ Collecting files...
-[2K[1A[2K[G⠸ Collecting files...
-[2K[1A[2K[G⠼ Collecting files...
-[2K[1A[2K[G⠴ Collect file... (1/28) .cursor/rules/0project.mdc
-[2K[1A[2K[G⠦ Running security check...
-[2K[1A[2K[G⠧ Running security check...
-[2K[1A[2K[G⠇ Processing files...
-[2K[1A[2K[G⠏ Processing files...
-[2K[1A[2K[G⠋ Processing files...
-[2K[1A[2K[G⠙ Processing file... (6/28) src/opero/_version.py
-[2K[1A[2K[G⠹ Processing file... (15/28) tests/test_core.py
-[2K[1A[2K[G⠸ Processing file... (23/28) LOG.md
-[2K[1A[2K[G⠼ Writing output file...
-[2K[1A[2K[G⠴ Calculating metrics...
-[2K[1A[2K[G⠦ Calculating metrics...
-[2K[1A[2K[G⠧ Calculating metrics...
-[2K[1A[2K[G⠇ Calculating metrics...
-[2K[1A[2K[G⠏ Calculating metrics...
-[2K[1A[2K[G⠋ Calculating metrics...
-[2K[1A[2K[G⠙ Calculating metrics...
-[2K[1A[2K[G⠹ Calculating metrics...
-[2K[1A[2K[G⠸ Calculating metrics...
-[2K[1A[2K[G⠼ Calculating metrics...
-[2K[1A[2K[G⠴ Calculating metrics...
-[2K[1A[2K[G⠦ Calculating metrics...
-[2K[1A[2K[G⠧ Calculating metrics...
-[2K[1A[2K[G⠇ Calculating metrics...
-[2K[1A[2K[G⠏ Calculating metrics... (17/28) tests/test_package.py
-[2K[1A[2K[G✔ Packing completed successfully!
+### Phase 1
+1. [x] Fixed failing tests in `process` method:
+   - Fixed `test_orchestrator_process` - Now returns `['Success: 1', 'Success: 2', 'Success: 3']` instead of `['Success: (1, 2, 3)']`
+   - Fixed `test_orchestrator_process_with_concurrency` - Same issue as above
+   - Modified `process` method to apply function to each item individually rather than passing all args at once
 
-📈 Top 5 Files by Character Count and Token Count:
-──────────────────────────────────────────────────
-1.  README.md (9,695 chars, 2,229 tokens)
-2.  pyproject.toml (6,227 chars, 1,972 tokens)
-3.  cleanup.py (5,538 chars, 1,254 tokens)
-4.  PROGRESS.md (4,556 chars, 1,040 tokens)
-5.  .gitignore (3,633 chars, 1,391 tokens)
+2. [x] Fixed linter errors:
+   - Resolved complexity issues in `core.py:execute` method (C901, PLR0912) by extracting helper methods
+   - Fixed loop variable binding issues in `core.py` (B023 for `fallback_func`) by capturing variables in closures
+   - Addressed too many arguments in `retry.py:with_retry` function (PLR0913) by using a config object and kwargs
 
-🔎 Security Check:
-──────────────────
-✔ No suspicious files detected.
+3. [x] Created missing files:
+   - Created LOG.md for tracking changes and issues
+   - Created .cursor/rules/0project.mdc for project rules
+   - Created PROGRESS.md file (now merged into CHANGELOG.md and TODO.md)
 
-📊 Pack Summary:
-────────────────
-  Total Files: 28 files
-  Total Chars: 61,924 chars
- Total Tokens: 15,652 tokens
-       Output: REPO_CONTENT.txt
-     Security: ✔ No suspicious files detected
+4. [x] Added comprehensive logging throughout the codebase:
+   - Added debug logging for all major operations
+   - Implemented configurable log levels
+   - Added context information to log messages
 
-🎉 All Done!
-Your repository has been successfully packed.
+5. [x] Improved error handling:
+   - Fixed error handling in `retry_async` function to properly handle coroutine objects
+   - Addressed type compatibility issues in async/sync conversions
+   - Implemented proper handling of `AllFailedError` in all fallback scenarios
 
-💡 Repomix is now available in your browser! Try it at https://repomix.com
+6. [x] Fixed some linter errors in cleanup.py:
+   - Added timezone to datetime.datetime.now() calls (DTZ005)
+   - Fixed Boolean-typed positional arguments (FBT001/FBT002)
+   - Addressed subprocess call security issues (S603/S607)
 
-2025-03-04 07:05:00 - Repository content mixed into REPO_CONTENT.txt
+7. [x] Updated pyproject.toml:
+   - Moved 'per-file-ignores' to 'lint.per-file-ignores' section
+
+2025-03-04 07:09:41 -  M .cursor/rules/filetree.mdc
+ M CHANGELOG.md
+ M CLEANUP.txt
+ M README.md
+ M TODO.md
+ M cleanup.py
+ M pyproject.toml
+ M src/opero/__init__.py
+ M src/opero/concurrency.py
+ M src/opero/core.py
+ M src/opero/decorators.py
+ M src/opero/opero.py
+ M src/opero/rate_limit.py
+ M src/opero/retry.py
+ M src/opero/utils.py
+ M tests/test_core.py
+ M tests/test_decorators.py
+?? .specstory/history/2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
+?? .specstory/history/2025-03-04_07-59-untitled.md
+
+2025-03-04 07:09:41 - Changes detected in repository
