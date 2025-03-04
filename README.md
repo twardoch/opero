@@ -25,11 +25,14 @@ this_file: README.md
 
 ## Recent Improvements
 
-- **Enhanced Logging**: Added comprehensive logging throughout the codebase with configurable log levels
+- **Enhanced Logging**: Added comprehensive logging throughout the codebase with configurable log levels and context support
 - **Improved Error Handling**: Better handling of errors in async/sync conversions and fallback scenarios
 - **Optimized Core Functions**: Reduced complexity in key functions for better maintainability
 - **Fixed Process Method**: Modified to apply functions to each item individually for more intuitive behavior
-- **Code Quality**: Fixed various linter errors and improved type annotations
+- **Fixed Retry Functionality**: Corrected parameter order in retry function calls and added fallback for None configurations
+- **Enhanced Documentation**: Added detailed docstrings, usage examples, and best practices sections
+- **Type Safety**: Improved type annotations and fixed type incompatibility issues
+- **Code Quality**: Fixed various linter errors and improved overall code structure
 
 ## Installation
 
