@@ -166,11 +166,13 @@ class Cleanup:
             # Create/overwrite the file with YAML frontmatter
             rules_dir = Path(".cursor/rules")
             rules_dir.mkdir(parents=True, exist_ok=True)
-            # Get tree output
+
+            # Get tree output using the tree command
             tree_result = run_command(
                 ["tree", "-a", "-I", ".git", "--gitignore", "-n", "-h", "-I", "*_cache"]
             )
             tree_text = tree_result.stdout
+
             # Write frontmatter and tree output to file
             with open(rules_dir / "filetree.mdc", "w") as f:
                 f.write("---\ndescription: File tree of the project\nglobs: \n---\n")

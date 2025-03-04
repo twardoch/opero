@@ -1,6 +1,6 @@
-2025-03-04 07:18:12 - 
+2025-03-04 07:22:27 - 
 === PROJECT STATEMENT ===
-2025-03-04 07:18:12 - ---
+2025-03-04 07:22:27 - ---
 title: Opero Project Rules
 glob: "**/*.py"
 ---
@@ -48,9 +48,9 @@ Opero is a Python library for orchestrating function execution with retries, fal
 - Minimize overhead in the orchestration layer
 - Use async/await for I/O-bound operations
 - Use appropriate concurrency mechanisms for CPU-bound operations 
-2025-03-04 07:18:12 - 
+2025-03-04 07:22:27 - 
 === Current Status ===
-2025-03-04 07:18:12 - [ 896]  .
+2025-03-04 07:22:27 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
@@ -69,7 +69,7 @@ Opero is a Python library for orchestrating function execution with retries, fal
 │       ├── [4.1K]  2025-03-04_05-40-cleanup-analysis-and-todo-update.md
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
-│       └── [2.5K]  2025-03-04_07-59-untitled.md
+│       └── [ 22K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
 ├── [1.7K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
@@ -103,9 +103,9 @@ Opero is a Python library for orchestrating function execution with retries, fal
 
 13 directories, 37 files
 
-2025-03-04 07:18:12 - 
+2025-03-04 07:22:27 - 
 Project structure:
-2025-03-04 07:18:12 - [ 896]  .
+2025-03-04 07:22:27 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
@@ -124,7 +124,7 @@ Project structure:
 │       ├── [4.1K]  2025-03-04_05-40-cleanup-analysis-and-todo-update.md
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
-│       └── [2.5K]  2025-03-04_07-59-untitled.md
+│       └── [ 22K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
 ├── [1.7K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
@@ -158,45 +158,53 @@ Project structure:
 
 13 directories, 37 files
 
-2025-03-04 07:18:12 - On branch main
-Your branch is ahead of 'origin/main' by 1 commit.
+2025-03-04 07:22:27 - On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
   (use "git push" to publish your local commits)
 
 Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
+  (use "git add/rm <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   .cursor/rules/filetree.mdc
+	deleted:    .specstory/history/2025-03-04_07-59-untitled.md
 	modified:   CLEANUP.txt
-	modified:   REPO_CONTENT.txt
 	modified:   cleanup.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.specstory/history/2025-03-04_07-59-project-maintenance-and-documentation-update.md
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 07:18:12 - On branch main
-Your branch is ahead of 'origin/main' by 1 commit.
+2025-03-04 07:22:27 - On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
   (use "git push" to publish your local commits)
 
 Changes not staged for commit:
-  (use "git add <file>..." to update what will be committed)
+  (use "git add/rm <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   .cursor/rules/filetree.mdc
+	deleted:    .specstory/history/2025-03-04_07-59-untitled.md
 	modified:   CLEANUP.txt
-	modified:   REPO_CONTENT.txt
 	modified:   cleanup.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.specstory/history/2025-03-04_07-59-project-maintenance-and-documentation-update.md
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 07:18:12 - 
+2025-03-04 07:22:27 - 
 === Environment Status ===
-2025-03-04 07:18:12 - Setting up virtual environment
-2025-03-04 07:18:16 - Virtual environment created and activated
-2025-03-04 07:18:16 - Installing package with all extras
-2025-03-04 07:18:16 - Setting up virtual environment
-2025-03-04 07:18:16 - Virtual environment created and activated
-2025-03-04 07:18:18 - Package installed successfully
-2025-03-04 07:18:18 - Running code quality checks
-2025-03-04 07:18:18 - >>> Running code fixes...
-2025-03-04 07:18:18 - src/opero/retry.py:199:11: C901 `retry_async` is too complex (12 > 10)
+2025-03-04 07:22:27 - Setting up virtual environment
+2025-03-04 07:22:28 - Virtual environment created and activated
+2025-03-04 07:22:28 - Installing package with all extras
+2025-03-04 07:22:28 - Setting up virtual environment
+2025-03-04 07:22:28 - Virtual environment created and activated
+2025-03-04 07:22:29 - Package installed successfully
+2025-03-04 07:22:29 - Running code quality checks
+2025-03-04 07:22:29 - >>> Running code fixes...
+2025-03-04 07:22:30 - src/opero/retry.py:199:11: C901 `retry_async` is too complex (12 > 10)
     |
 199 | async def retry_async(
     |           ^^^^^^^^^^^ C901
@@ -254,11 +262,11 @@ src/opero/utils.py:197:5: FBT002 Boolean default positional argument in function
 
 Found 6 errors.
 
-2025-03-04 07:18:18 - 13 files left unchanged
+2025-03-04 07:22:30 - 13 files left unchanged
 
-2025-03-04 07:18:18 - >>>Running type checks...
-2025-03-04 07:18:20 - >>> Running tests...
-2025-03-04 07:18:30 - ============================= test session starts ==============================
+2025-03-04 07:22:30 - >>>Running type checks...
+2025-03-04 07:22:31 - >>> Running tests...
+2025-03-04 07:22:38 - ============================= test session starts ==============================
 platform darwin -- Python 3.12.8, pytest-8.3.5, pluggy-1.5.0 -- /Users/adam/Developer/vcs/github.twardoch/pub/opero/.venv/bin/python
 cachedir: .pytest_cache
 rootdir: /Users/adam/Developer/vcs/github.twardoch/pub/opero
@@ -325,20 +333,18 @@ tests/test_decorators.py::test_orchestrate_decorator_with_sync_function PASSED [
 tests/test_package.py::test_version PASSED                               [100%]
 
 ============================= slowest 10 durations =============================
-1.04s call     tests/test_core.py::test_orchestrator_with_retry
+1.01s call     tests/test_core.py::test_orchestrator_with_retry
 1.00s call     tests/test_decorators.py::test_orchestrate_decorator_retry
-0.07s setup    tests/test_core.py::test_orchestrator_execute_fallback
-0.06s call     tests/test_core.py::test_fallback_chain_all_fail
-0.04s call     tests/test_core.py::test_orchestrator_execute_fallback
-0.01s call     tests/test_core.py::test_fallback_chain_sync_function
+0.01s teardown tests/test_decorators.py::test_orchestrate_decorator_with_sync_function
+0.01s call     tests/test_decorators.py::test_orchestrate_decorator_process
 
-(4 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 16 passed in 3.79s ==============================
+(6 durations < 0.005s hidden.  Use -vv to show these durations.)
+============================== 16 passed in 2.81s ==============================
 
-2025-03-04 07:18:30 - All checks completed
-2025-03-04 07:18:30 - 
+2025-03-04 07:22:38 - All checks completed
+2025-03-04 07:22:38 - 
 === TODO.md ===
-2025-03-04 07:18:30 - ---
+2025-03-04 07:22:38 - ---
 this_file: TODO.md
 ---
 
@@ -463,9 +469,61 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 7. [x] Updated pyproject.toml:
    - Moved 'per-file-ignores' to 'lint.per-file-ignores' section
 
-2025-03-04 07:18:31 -  M .cursor/rules/filetree.mdc
- M CLEANUP.txt
- M REPO_CONTENT.txt
- M cleanup.py
+2025-03-04 07:22:41 - 
+📦 Repomix v0.2.29
 
-2025-03-04 07:18:31 - Changes detected in repository
+No custom config found at repomix.config.json or global config at /Users/adam/.config/repomix/repomix.config.json.
+You can add a config file for additional settings. Please check https://github.com/yamadashy/repomix for more information.
+⠙ Searching for files...
+[2K[1A[2K[G⠹ Collecting files...
+[2K[1A[2K[G⠸ Collecting files...
+[2K[1A[2K[G⠼ Collecting files...
+[2K[1A[2K[G⠴ Collecting files...
+[2K[1A[2K[G⠦ Running security check...
+[2K[1A[2K[G⠧ Running security check...
+[2K[1A[2K[G⠇ Running security check...
+[2K[1A[2K[G⠏ Running security check...
+[2K[1A[2K[G⠋ Running security check... (16/27) tests/test_decorators.py
+[2K[1A[2K[G⠙ Processing files...
+[2K[1A[2K[G⠹ Processing files...
+[2K[1A[2K[G⠸ Processing files...
+[2K[1A[2K[G⠼ Processing file... (4/27) .github/workflows/release.yml
+[2K[1A[2K[G⠴ Processing file... (13/27) src/opero/retry.py
+[2K[1A[2K[G⠦ Calculating metrics...
+[2K[1A[2K[G⠧ Calculating metrics...
+[2K[1A[2K[G⠇ Calculating metrics...
+[2K[1A[2K[G⠏ Calculating metrics...
+[2K[1A[2K[G⠋ Calculating metrics...
+[2K[1A[2K[G⠙ Calculating metrics...
+[2K[1A[2K[G⠹ Calculating metrics...
+[2K[1A[2K[G⠸ Calculating metrics...
+[2K[1A[2K[G⠼ Calculating metrics...
+[2K[1A[2K[G⠴ Calculating metrics... (17/27) tests/test_package.py
+[2K[1A[2K[G✔ Packing completed successfully!
+
+📈 Top 5 Files by Character Count and Token Count:
+──────────────────────────────────────────────────
+1.  README.md (16,322 chars, 3,639 tokens)
+2.  pyproject.toml (6,230 chars, 1,973 tokens)
+3.  cleanup.py (5,904 chars, 1,316 tokens)
+4.  TODO.md (5,288 chars, 1,324 tokens)
+5.  .gitignore (3,633 chars, 1,391 tokens)
+
+🔎 Security Check:
+──────────────────
+✔ No suspicious files detected.
+
+📊 Pack Summary:
+────────────────
+  Total Files: 27 files
+  Total Chars: 68,990 chars
+ Total Tokens: 17,149 tokens
+       Output: REPO_CONTENT.txt
+     Security: ✔ No suspicious files detected
+
+🎉 All Done!
+Your repository has been successfully packed.
+
+💡 Repomix is now available in your browser! Try it at https://repomix.com
+
+2025-03-04 07:22:41 - Repository content mixed into REPO_CONTENT.txt
