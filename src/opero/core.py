@@ -61,17 +61,27 @@ class FallbackChain:
     """
 
     def __init__(
-        self, primary: Callable[..., Any], fallbacks: list[Callable[..., Any]]
+        self,
+        primary: Callable[..., Any],
+        fallbacks: Callable[..., Any] | list[Callable[..., Any]] | None = None,
     ) -> None:
         """
         Initialize a fallback chain.
 
         Args:
             primary: The primary function to try first
-            fallbacks: List of fallback functions to try in sequence
+            fallbacks: Fallback function or list of fallback functions to try in sequence
         """
         self.primary = primary
-        self.fallbacks = fallbacks
+
+        # Handle both single function and list of functions
+        if fallbacks is None:
+            self.fallbacks = []
+        elif callable(fallbacks) and not isinstance(fallbacks, list):
+            self.fallbacks = [fallbacks]
+        else:
+            self.fallbacks = fallbacks
+
         self.logger = logger
 
     def has_fallbacks(self) -> bool:
@@ -272,12 +282,11 @@ class Orchestrator:
             else:
                 # No fallbacks, just execute the function with retry
                 result = await self._execute_with_retry(func, *args, **kwargs)
+        # Execute without retry
+        elif chain.has_fallbacks():
+            result = await chain.execute(*args, **kwargs)
         else:
-            # Execute without retry
-            if chain.has_fallbacks():
-                result = await chain.execute(*args, **kwargs)
-            else:
-                result = await ensure_async(func, *args, **kwargs)
+            result = await ensure_async(func, *args, **kwargs)
 
         return cast(R, result)
 

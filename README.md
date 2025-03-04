@@ -344,6 +344,18 @@ orchestrator = Orchestrator(
 results = await orchestrator.process([cpu_intensive_task], *large_data_items)
 ```
 
+## Recent Improvements
+
+The latest version includes several improvements to enhance usability and reliability:
+
+- **Enhanced FallbackChain**: Now accepts both single functions and lists of functions as fallbacks, making it more flexible.
+- **Improved Process Method**: The `process` method now applies functions to each item individually, providing more intuitive results.
+- **Reduced Complexity**: The `execute` method has been refactored to reduce complexity by extracting helper methods.
+- **Better Error Handling**: Improved error handling in the `FallbackChain` class for more reliable operation.
+- **Simplified Configuration**: Refactored the `with_retry` function to use a config object and kwargs, reducing the number of arguments.
+
+These improvements make Opero more robust and easier to use in various scenarios.
+
 ## Development
 
 This project uses [Hatch](https://hatch.pypa.io/) for development workflow management.

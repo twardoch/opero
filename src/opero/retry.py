@@ -13,7 +13,7 @@ import asyncio
 import functools
 import inspect
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from typing import Any, TypeVar, ParamSpec, cast
 from collections.abc import Callable
 
@@ -84,44 +84,28 @@ class RetryConfig:
 def with_retry(
     *,  # Force keyword arguments
     config: RetryConfig | None = None,
-    max_attempts: int | None = None,
-    wait_min: float | None = None,
-    wait_max: float | None = None,
-    wait_multiplier: float | None = None,
-    retry_exceptions: tuple[type[Exception], ...] | None = None,
-    reraise: bool | None = None,
+    **kwargs: Any,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Decorator that applies retry logic to a function.
 
     Args:
-        config: RetryConfig object with retry settings (overrides other parameters if provided)
-        max_attempts: Maximum number of attempts
-        wait_min: Minimum wait time between retries (seconds)
-        wait_max: Maximum wait time between retries (seconds)
-        wait_multiplier: Multiplier for wait time between retries
-        retry_exceptions: Exception types that should trigger a retry
-        reraise: Whether to reraise the last exception after all retries fail
+        config: RetryConfig object with retry settings
+        **kwargs: Additional retry settings to override the defaults
+                  (max_attempts, wait_min, wait_max, wait_multiplier,
+                   retry_exceptions, reraise)
 
     Returns:
         Decorator function that applies retry logic
     """
     # Create a config object if one wasn't provided
     if config is None:
-        config = RetryConfig(
-            max_attempts=max_attempts
-            if max_attempts is not None
-            else RetryConfig.max_attempts,
-            wait_min=wait_min if wait_min is not None else RetryConfig.wait_min,
-            wait_max=wait_max if wait_max is not None else RetryConfig.wait_max,
-            wait_multiplier=wait_multiplier
-            if wait_multiplier is not None
-            else RetryConfig.wait_multiplier,
-            retry_exceptions=retry_exceptions
-            if retry_exceptions is not None
-            else RetryConfig.retry_exceptions,
-            reraise=reraise if reraise is not None else RetryConfig.reraise,
-        )
+        config = RetryConfig(**kwargs)
+    elif kwargs:
+        # Update the config with any provided kwargs
+        config_dict = asdict(config)
+        config_dict.update(kwargs)
+        config = RetryConfig(**config_dict)
 
     return _with_retry_config(config)
 

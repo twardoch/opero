@@ -9,6 +9,25 @@ All notable changes to the Opero project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+- Fixed `FallbackChain` class to accept both a single function and a list of functions for fallbacks
+- Fixed `process` method in `Orchestrator` class to apply function to each item individually rather than passing all args at once
+- Refactored `execute` method in `Orchestrator` class to reduce complexity by extracting helper methods
+- Fixed loop variable binding issues in `core.py` for `fallback_func` by capturing variables in closures
+- Refactored `with_retry` function in `retry.py` to use a config object and kwargs to reduce the number of arguments
+
+### Added
+- Added `has_fallbacks` method to `FallbackChain` class
+- Created LOG.md file for tracking changes and issues
+- Created .cursor/rules/0project.mdc for project rules
+- Created PROGRESS.md file to track implementation progress
+
+### Changed
+- Improved error handling in the `FallbackChain` class
+- Enhanced type annotations throughout the codebase
+
 ## [0.1.0] - 2024-03-04
 
 ### Added
