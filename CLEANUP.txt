@@ -1,12 +1,12 @@
-2025-03-04 05:37:32 - 
+2025-03-04 06:04:03 -
 === Current Status ===
-2025-03-04 05:37:32 - Error: LOG.md is missing
-2025-03-04 05:37:32 - Error: .cursor/rules/0project.mdc is missing
-2025-03-04 05:37:32 - [ 832]  .
+2025-03-04 06:04:03 - Error: LOG.md is missing
+2025-03-04 06:04:03 - Error: .cursor/rules/0project.mdc is missing
+2025-03-04 06:04:03 - [ 864]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [  96]  rules
-│       └── [1.5K]  filetree.mdc
+│       └── [1.6K]  filetree.mdc
 ├── [  96]  .github
 │   └── [ 128]  workflows
 │       ├── [2.7K]  push.yml
@@ -15,14 +15,14 @@
 ├── [ 532]  .pre-commit-config.yaml
 ├── [  96]  .specstory
 │   └── [ 128]  history
-│       ├── [2.7K]  .what-is-this.md
-│       └── [578K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
+│       ├── [2.6K]  .what-is-this.md
+│       └── [574K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
 ├── [2.4K]  CHANGELOG.md
 ├── [ 160]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [9.5K]  README.md
-├── [2.5K]  TODO.md
-├── [ 12K]  cleanup.py
+├── [2.6K]  TODO.md
+├── [ 13K]  cleanup.py
 ├── [  96]  dist
 │   └── [   0]  .gitkeep
 ├── [ 426]  package.toml
@@ -35,7 +35,7 @@
 │       ├── [9.9K]  concurrency.py
 │       ├── [9.5K]  core.py
 │       ├── [3.1K]  decorators.py
-│       ├── [ 564]  exceptions.py
+│       ├── [ 563]  exceptions.py
 │       ├── [1.6K]  opero.py
 │       ├── [4.0K]  rate_limit.py
 │       ├── [7.8K]  retry.py
@@ -49,13 +49,13 @@
 
 13 directories, 31 files
 
-2025-03-04 05:37:32 - 
+2025-03-04 06:04:03 -
 Project structure:
-2025-03-04 05:37:32 - [ 832]  .
+2025-03-04 06:04:03 - [ 864]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [  96]  rules
-│       └── [1.5K]  filetree.mdc
+│       └── [1.6K]  filetree.mdc
 ├── [  96]  .github
 │   └── [ 128]  workflows
 │       ├── [2.7K]  push.yml
@@ -64,14 +64,14 @@ Project structure:
 ├── [ 532]  .pre-commit-config.yaml
 ├── [  96]  .specstory
 │   └── [ 128]  history
-│       ├── [2.7K]  .what-is-this.md
-│       └── [578K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
+│       ├── [2.6K]  .what-is-this.md
+│       └── [574K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
 ├── [2.4K]  CHANGELOG.md
 ├── [ 160]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [9.5K]  README.md
-├── [2.5K]  TODO.md
-├── [ 12K]  cleanup.py
+├── [2.6K]  TODO.md
+├── [ 13K]  cleanup.py
 ├── [  96]  dist
 │   └── [   0]  .gitkeep
 ├── [ 426]  package.toml
@@ -84,7 +84,7 @@ Project structure:
 │       ├── [9.9K]  concurrency.py
 │       ├── [9.5K]  core.py
 │       ├── [3.1K]  decorators.py
-│       ├── [ 564]  exceptions.py
+│       ├── [ 563]  exceptions.py
 │       ├── [1.6K]  opero.py
 │       ├── [4.0K]  rate_limit.py
 │       ├── [7.8K]  retry.py
@@ -98,99 +98,57 @@ Project structure:
 
 13 directories, 31 files
 
-2025-03-04 05:37:32 - On branch main
+2025-03-04 06:04:03 - On branch main
 Your branch is up to date with 'origin/main'.
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-	modified:   .github/workflows/push.yml
-	modified:   .github/workflows/release.yml
-	modified:   .pre-commit-config.yaml
-	modified:   LICENSE
-	modified:   README.md
-	modified:   dist/.gitkeep
-	modified:   package.toml
-	modified:   pyproject.toml
-	modified:   src/opero/opero.py
-	modified:   tests/test_package.py
+	modified:   .cursor/rules/filetree.mdc
+	modified:   .specstory/history/.what-is-this.md
+	modified:   .specstory/history/2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
+	modified:   CHANGELOG.md
+	modified:   CLEANUP.txt
+	modified:   TODO.md
+	modified:   cleanup.py
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-	.cursor/
-	.specstory/
-	CHANGELOG.md
-	CLEANUP.txt
-	TODO.md
-	cleanup.py
-	src/opero/__init__.py
-	src/opero/_version.py
-	src/opero/concurrency.py
-	src/opero/core.py
-	src/opero/decorators.py
-	src/opero/exceptions.py
-	src/opero/rate_limit.py
-	src/opero/retry.py
-	src/opero/utils.py
-	tests/test_core.py
-	tests/test_decorators.py
 	twat_search.txt
-	uv.lock
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 05:37:32 - On branch main
+2025-03-04 06:04:03 - On branch main
 Your branch is up to date with 'origin/main'.
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-	modified:   .github/workflows/push.yml
-	modified:   .github/workflows/release.yml
-	modified:   .pre-commit-config.yaml
-	modified:   LICENSE
-	modified:   README.md
-	modified:   dist/.gitkeep
-	modified:   package.toml
-	modified:   pyproject.toml
-	modified:   src/opero/opero.py
-	modified:   tests/test_package.py
+	modified:   .cursor/rules/filetree.mdc
+	modified:   .specstory/history/.what-is-this.md
+	modified:   .specstory/history/2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
+	modified:   CHANGELOG.md
+	modified:   CLEANUP.txt
+	modified:   TODO.md
+	modified:   cleanup.py
 
 Untracked files:
   (use "git add <file>..." to include in what will be committed)
-	.cursor/
-	.specstory/
-	CHANGELOG.md
-	CLEANUP.txt
-	TODO.md
-	cleanup.py
-	src/opero/__init__.py
-	src/opero/_version.py
-	src/opero/concurrency.py
-	src/opero/core.py
-	src/opero/decorators.py
-	src/opero/exceptions.py
-	src/opero/rate_limit.py
-	src/opero/retry.py
-	src/opero/utils.py
-	tests/test_core.py
-	tests/test_decorators.py
 	twat_search.txt
-	uv.lock
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 05:37:32 - 
+2025-03-04 06:04:03 -
 === Environment Status ===
-2025-03-04 05:37:32 - Setting up virtual environment
-2025-03-04 05:37:32 - Virtual environment created and activated
-2025-03-04 05:37:32 - Installing package with all extras
-2025-03-04 05:37:32 - Setting up virtual environment
-2025-03-04 05:37:32 - Virtual environment created and activated
-2025-03-04 05:37:32 - Package installed successfully
-2025-03-04 05:37:32 - Running code quality checks
-2025-03-04 05:37:32 - >>> Running code fixes...
-2025-03-04 05:37:32 - src/opero/core.py:170:15: C901 `execute` is too complex (11 > 10)
+2025-03-04 06:04:03 - Setting up virtual environment
+2025-03-04 06:04:04 - Virtual environment created and activated
+2025-03-04 06:04:04 - Installing package with all extras
+2025-03-04 06:04:04 - Setting up virtual environment
+2025-03-04 06:04:04 - Virtual environment created and activated
+2025-03-04 06:04:04 - Package installed successfully
+2025-03-04 06:04:04 - Running code quality checks
+2025-03-04 06:04:04 - >>> Running code fixes...
+2025-03-04 06:04:04 - src/opero/core.py:170:15: C901 `execute` is too complex (11 > 10)
     |
 168 |         self.logger = self.config.logger or logger
 169 |
@@ -238,11 +196,11 @@ src/opero/retry.py:84:5: PLR0913 Too many arguments in function definition (6 > 
 
 Found 5 errors.
 
-2025-03-04 05:37:32 - 1 file reformatted, 12 files left unchanged
+2025-03-04 06:04:04 - 13 files left unchanged
 
-2025-03-04 05:37:32 - >>>Running type checks...
-2025-03-04 05:37:33 - >>> Running tests...
-2025-03-04 05:37:36 - ============================= test session starts ==============================
+2025-03-04 06:04:04 - >>>Running type checks...
+2025-03-04 06:04:05 - >>> Running tests...
+2025-03-04 06:04:08 - ============================= test session starts ==============================
 platform darwin -- Python 3.12.8, pytest-8.3.5, pluggy-1.5.0 -- /Users/adam/Developer/vcs/github.twardoch/pub/opero/.venv/bin/python
 cachedir: .pytest_cache
 rootdir: /Users/adam/Developer/vcs/github.twardoch/pub/opero
@@ -252,37 +210,37 @@ asyncio: mode=Mode.AUTO, asyncio_default_fixture_loop_scope=None
 collecting ... collected 16 items
 
 tests/test_core.py::test_fallback_chain_success PASSED                   [  6%]
-tests/test_core.py::test_fallback_chain_fallback 
+tests/test_core.py::test_fallback_chain_fallback
 -------------------------------- live log call ---------------------------------
 WARNING  opero.core:core.py:126 Primary function failed: Failed for value: 1
 PASSED                                                                   [ 12%]
-tests/test_core.py::test_fallback_chain_all_fail 
+tests/test_core.py::test_fallback_chain_all_fail
 -------------------------------- live log call ---------------------------------
 WARNING  opero.core:core.py:126 Primary function failed: Failed for value: 1
 WARNING  opero.core:core.py:140 Fallback 1 failed: Failed for value: 1
 ERROR    opero.core:core.py:144 All fallbacks failed
 PASSED                                                                   [ 18%]
-tests/test_core.py::test_fallback_chain_sync_function 
+tests/test_core.py::test_fallback_chain_sync_function
 -------------------------------- live log call ---------------------------------
 WARNING  opero.core:core.py:126 Primary function failed: Sync Failed for value: 1
 PASSED                                                                   [ 25%]
 tests/test_core.py::test_orchestrator_execute_success PASSED             [ 31%]
-tests/test_core.py::test_orchestrator_execute_fallback 
+tests/test_core.py::test_orchestrator_execute_fallback
 -------------------------------- live log call ---------------------------------
 WARNING  opero.core:core.py:126 Primary function failed: Failed for value: 1
 PASSED                                                                   [ 37%]
 tests/test_core.py::test_orchestrator_process FAILED                     [ 43%]
 tests/test_core.py::test_orchestrator_process_with_concurrency FAILED    [ 50%]
-tests/test_core.py::test_orchestrator_with_retry 
+tests/test_core.py::test_orchestrator_with_retry
 -------------------------------- live log call ---------------------------------
 WARNING  opero.retry:retry.py:229 Attempt 1 failed: First attempt
 PASSED                                                                   [ 56%]
 tests/test_decorators.py::test_orchestrate_decorator_basic PASSED        [ 62%]
-tests/test_decorators.py::test_orchestrate_decorator_fallback 
+tests/test_decorators.py::test_orchestrate_decorator_fallback
 -------------------------------- live log call ---------------------------------
 WARNING  opero.core:core.py:126 Primary function failed: Failed for value: 1
 PASSED                                                                   [ 68%]
-tests/test_decorators.py::test_orchestrate_decorator_retry 
+tests/test_decorators.py::test_orchestrate_decorator_retry
 -------------------------------- live log call ---------------------------------
 WARNING  opero.retry:retry.py:229 Attempt 1 failed: First attempt
 PASSED                                                                   [ 75%]
@@ -302,14 +260,14 @@ __________________________ test_orchestrator_process ___________________________
         results = await orchestrator.process([async_process_success], 1, 2, 3)
 >       assert results == ["Success: 1", "Success: 2", "Success: 3"]
 E       AssertionError: assert ['Success: (1, 2, 3)'] == ['Success: 1'... 'Success: 3']
-E         
+E
 E         At index 0 diff: 'Success: (1, 2, 3)' != 'Success: 1'
 E         Right contains 2 more items, first extra item: 'Success: 2'
-E         
+E
 E         Full diff:
 E           [
 E         -     'Success: 1',...
-E         
+E
 E         ...Full output truncated (5 lines hidden), use '-vv' to show
 
 tests/test_core.py:113: AssertionError
@@ -326,40 +284,41 @@ __________________ test_orchestrator_process_with_concurrency __________________
         results = await orchestrator.process([async_process_success], 1, 2, 3)
 >       assert results == ["Success: 1", "Success: 2", "Success: 3"]
 E       AssertionError: assert ['Success: (1, 2, 3)'] == ['Success: 1'... 'Success: 3']
-E         
+E
 E         At index 0 diff: 'Success: (1, 2, 3)' != 'Success: 1'
 E         Right contains 2 more items, first extra item: 'Success: 2'
-E         
+E
 E         Full diff:
 E           [
 E         -     'Success: 1',...
-E         
+E
 E         ...Full output truncated (5 lines hidden), use '-vv' to show
 
 tests/test_core.py:125: AssertionError
 ============================= slowest 10 durations =============================
-1.00s call     tests/test_core.py::test_orchestrator_with_retry
 1.00s call     tests/test_decorators.py::test_orchestrate_decorator_retry
-0.16s call     tests/test_core.py::test_fallback_chain_success
+1.00s call     tests/test_core.py::test_orchestrator_with_retry
 
-(7 durations < 0.005s hidden.  Use -vv to show these durations.)
+(8 durations < 0.005s hidden.  Use -vv to show these durations.)
 =========================== short test summary info ============================
 FAILED tests/test_core.py::test_orchestrator_process - AssertionError: assert...
 FAILED tests/test_core.py::test_orchestrator_process_with_concurrency - Asser...
-========================= 2 failed, 14 passed in 2.51s =========================
+========================= 2 failed, 14 passed in 2.39s =========================
 
-2025-03-04 05:37:36 - All checks completed
-2025-03-04 05:37:36 - 
+2025-03-04 06:04:08 - All checks completed
+2025-03-04 06:04:08 -
 === TODO.md ===
-2025-03-04 05:37:36 - ---
+2025-03-04 06:04:08 - ---
 this_file: TODO.md
 ---
 
-# Opero: TODO List
+# TODO
+
+Tip: Periodically run `./cleanup.py status` to see results of lints and tests.
 
 This document outlines the remaining tasks for the Opero project.
 
-## Core Functionality
+## Phase 1
 
 - [ ] Improve error handling in `retry_async` function to properly handle coroutine objects
 - [ ] Fix type compatibility issues in async/sync conversions
@@ -368,7 +327,7 @@ This document outlines the remaining tasks for the Opero project.
 - [ ] Add comprehensive logging throughout the codebase
 - [ ] Optimize retry logic for better performance
 
-## Testing
+## Phase 2
 
 - [ ] Add more unit tests for edge cases in retry mechanism
 - [ ] Create integration tests for complex scenarios combining multiple features
@@ -376,7 +335,7 @@ This document outlines the remaining tasks for the Opero project.
 - [ ] Implement stress tests for concurrency and rate limiting
 - [ ] Add tests for multiprocessing with different backends
 
-## Documentation
+## Phase 3
 
 - [ ] Create comprehensive API documentation with Sphinx
 - [ ] Add more usage examples for common patterns
@@ -423,91 +382,37 @@ This document outlines the remaining tasks for the Opero project.
 3. [ ] Improve error handling and type compatibility
 4. [ ] Add comprehensive logging
 5. [ ] Create proper API documentation
-6. [ ] Optimize performance for high-throughput scenarios 
-2025-03-04 05:37:36 -  M .github/workflows/push.yml
- M .github/workflows/release.yml
- M .pre-commit-config.yaml
- M LICENSE
- M README.md
- M dist/.gitkeep
- M package.toml
- M pyproject.toml
- M src/opero/opero.py
- M tests/test_package.py
-?? .cursor/
-?? .specstory/
-?? CHANGELOG.md
-?? CLEANUP.txt
-?? TODO.md
-?? cleanup.py
-?? src/opero/__init__.py
-?? src/opero/_version.py
-?? src/opero/concurrency.py
-?? src/opero/core.py
-?? src/opero/decorators.py
-?? src/opero/exceptions.py
-?? src/opero/rate_limit.py
-?? src/opero/retry.py
-?? src/opero/utils.py
-?? tests/test_core.py
-?? tests/test_decorators.py
+6. [ ] Optimize performance for high-throughput scenarios
+
+2025-03-04 06:04:09 -  M .cursor/rules/filetree.mdc
+ M .specstory/history/.what-is-this.md
+ M .specstory/history/2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
+ M CHANGELOG.md
+ M CLEANUP.txt
+ M TODO.md
+ M cleanup.py
 ?? twat_search.txt
-?? uv.lock
 
-2025-03-04 05:37:36 - Changes detected in repository
-2025-03-04 05:37:38 - ruff.....................................................................Passed
-ruff-format..............................................................Passed
-trim trailing whitespace.................................................Passed
-fix end of files.........................................................Passed
-check yaml...............................................................Passed
-check toml...............................................................Passed
-check for added large files..............................................Passed
-debug statements (python)................................................Passed
-check for case conflicts.................................................Passed
-mixed line ending........................................................Passed
-
-2025-03-04 05:37:39 - [main e5e7356] Update repository files
- 30 files changed, 22280 insertions(+), 55 deletions(-)
- create mode 100644 .cursor/rules/filetree.mdc
- create mode 100644 .specstory/history/.what-is-this.md
- create mode 100644 .specstory/history/2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
- create mode 100644 CHANGELOG.md
- create mode 100644 CLEANUP.txt
- create mode 100644 TODO.md
- create mode 100755 cleanup.py
- create mode 100644 src/opero/__init__.py
- create mode 100644 src/opero/_version.py
- create mode 100644 src/opero/concurrency.py
- create mode 100644 src/opero/core.py
- create mode 100644 src/opero/decorators.py
- create mode 100644 src/opero/exceptions.py
- create mode 100644 src/opero/rate_limit.py
- create mode 100644 src/opero/retry.py
- create mode 100644 src/opero/utils.py
- create mode 100644 tests/test_core.py
- create mode 100644 tests/test_decorators.py
- create mode 100644 twat_search.txt
- create mode 100644 uv.lock
-
-2025-03-04 05:37:39 - Changes committed successfully
-2025-03-04 05:37:40 - 
+2025-03-04 06:04:09 - Changes detected in repository
+2025-03-04 06:04:12 - Command failed: pre-commit run --all-files
+2025-03-04 06:04:12 - Error: 
+2025-03-04 06:04:12 - Failed to commit changes: Command '['pre-commit', 'run', '--all-files']' returned non-zero exit status 1.
+2025-03-04 06:04:13 - 
 📦 Repomix v0.2.29
 
 No custom config found at repomix.config.json or global config at /Users/adam/.config/repomix/repomix.config.json.
 You can add a config file for additional settings. Please check https://github.com/yamadashy/repomix for more information.
 ⠙ Collecting files...
 [2K[1A[2K[G⠹ Collecting files...
-[2K[1A[2K[G⠸ Collecting files...
-[2K[1A[2K[G⠼ Running security check...
-[2K[1A[2K[G⠴ Running security check... (7/25) src/opero/core.py
-[2K[1A[2K[G⠦ Processing files...
-[2K[1A[2K[G⠧ Processing file... (3/25) .github/workflows/release.yml
-[2K[1A[2K[G⠇ Writing output file...
+[2K[1A[2K[G⠸ Running security check...
+[2K[1A[2K[G⠼ Running security check... (19/25) CHANGELOG.md
+[2K[1A[2K[G⠴ Processing files...
+[2K[1A[2K[G⠦ Processing file... (5/25) src/opero/_version.py
+[2K[1A[2K[G⠧ Calculating metrics...
+[2K[1A[2K[G⠇ Calculating metrics...
 [2K[1A[2K[G⠏ Calculating metrics...
 [2K[1A[2K[G⠋ Calculating metrics...
 [2K[1A[2K[G⠙ Calculating metrics...
-[2K[1A[2K[G⠹ Calculating metrics...
-[2K[1A[2K[G⠸ Calculating metrics... (6/25) src/opero/concurrency.py
 [2K[1A[2K[G✔ Packing completed successfully!
 
 📈 Top 5 Files by Character Count and Token Count:
@@ -525,9 +430,9 @@ You can add a config file for additional settings. Please check https://github.c
 📊 Pack Summary:
 ────────────────
   Total Files: 25 files
-  Total Chars: 54,792 chars
- Total Tokens: 13,859 tokens
-       Output: twat_search.txt
+  Total Chars: 54,842 chars
+ Total Tokens: 13,878 tokens
+       Output: REPO_CONTENT.txt
      Security: ✔ No suspicious files detected
 
 🎉 All Done!
@@ -535,4 +440,4 @@ Your repository has been successfully packed.
 
 💡 Repomix is now available in your browser! Try it at https://repomix.com
 
-2025-03-04 05:37:40 - Repository content mixed into twat_search.txt
+2025-03-04 06:04:13 - Repository content mixed into REPO_CONTENT.txt

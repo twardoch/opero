@@ -10,15 +10,28 @@ This document outlines the remaining tasks for the Opero project.
 
 ## Phase 1
 
-- [ ] Improve error handling in `retry_async` function to properly handle coroutine objects
-- [ ] Fix type compatibility issues in async/sync conversions
-- [ ] Ensure proper execution of individual functions in the `process` method
-- [ ] Implement proper handling of `AllFailedError` in all fallback scenarios
-- [ ] Add comprehensive logging throughout the codebase
-- [ ] Optimize retry logic for better performance
+1. [ ] Fix failing tests in `process` method:
+   - [ ] Fix `test_orchestrator_process` - Currently returns `['Success: (1, 2, 3)']` instead of `['Success: 1', 'Success: 2', 'Success: 3']`
+   - [ ] Fix `test_orchestrator_process_with_concurrency` - Same issue as above
+   - [ ] Modify `process` method to apply function to each item individually rather than passing all args at once
+
+2. [ ] Fix linter errors:
+   - [ ] Resolve complexity issues in `core.py:execute` method (C901, PLR0912)
+   - [ ] Fix loop variable binding issues in `core.py` (B023 for `fallback_func`)
+   - [ ] Address too many arguments in `retry.py:with_retry` function (PLR0913)
+
+3. [ ] Create missing files:
+   - [ ] Create LOG.md for tracking changes and issues
+   - [ ] Create .cursor/rules/0project.mdc for project rules
+
+4. [ ] Add comprehensive logging throughout the codebase
+5. [ ] Improve error handling in `retry_async` function to properly handle coroutine objects
+6. [ ] Fix type compatibility issues in async/sync conversions
 
 ## Phase 2
 
+- [ ] Implement proper handling of `AllFailedError` in all fallback scenarios
+- [ ] Optimize retry logic for better performance
 - [ ] Add more unit tests for edge cases in retry mechanism
 - [ ] Create integration tests for complex scenarios combining multiple features
 - [ ] Add performance benchmarks for key operations
@@ -27,10 +40,8 @@ This document outlines the remaining tasks for the Opero project.
 
 ## Phase 3
 
-- [ ] Create comprehensive API documentation with Sphinx
 - [ ] Add more usage examples for common patterns
 - [ ] Document best practices for error handling
-- [ ] Create tutorials for advanced use cases
 - [ ] Add docstrings to all public functions and classes
 
 ## Features
@@ -72,4 +83,4 @@ This document outlines the remaining tasks for the Opero project.
 3. [ ] Improve error handling and type compatibility
 4. [ ] Add comprehensive logging
 5. [ ] Create proper API documentation
-6. [ ] Optimize performance for high-throughput scenarios 
+6. [ ] Optimize performance for high-throughput scenarios

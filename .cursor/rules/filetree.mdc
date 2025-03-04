@@ -1,12 +1,12 @@
 ---
 description: File tree of the project
-globs: 
+globs:
 ---
-[ 832]  .
+[ 864]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [  96]  rules
-│       └── [1.5K]  filetree.mdc
+│       └── [1.6K]  filetree.mdc
 ├── [  96]  .github
 │   └── [ 128]  workflows
 │       ├── [2.7K]  push.yml
@@ -15,14 +15,14 @@ globs:
 ├── [ 532]  .pre-commit-config.yaml
 ├── [  96]  .specstory
 │   └── [ 128]  history
-│       ├── [2.7K]  .what-is-this.md
-│       └── [578K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
+│       ├── [2.6K]  .what-is-this.md
+│       └── [574K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
 ├── [2.4K]  CHANGELOG.md
 ├── [ 160]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [9.5K]  README.md
-├── [2.5K]  TODO.md
-├── [ 12K]  cleanup.py
+├── [2.6K]  TODO.md
+├── [ 13K]  cleanup.py
 ├── [  96]  dist
 │   └── [   0]  .gitkeep
 ├── [ 426]  package.toml
@@ -35,7 +35,7 @@ globs:
 │       ├── [9.9K]  concurrency.py
 │       ├── [9.5K]  core.py
 │       ├── [3.1K]  decorators.py
-│       ├── [ 564]  exceptions.py
+│       ├── [ 563]  exceptions.py
 │       ├── [1.6K]  opero.py
 │       ├── [4.0K]  rate_limit.py
 │       ├── [7.8K]  retry.py

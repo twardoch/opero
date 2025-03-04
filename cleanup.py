@@ -160,7 +160,9 @@ class Cleanup:
             venv_path = self.workspace / ".venv" / "bin" / "activate"
             if venv_path.exists():
                 os.environ["VIRTUAL_ENV"] = str(self.workspace / ".venv")
-                os.environ["PATH"] = f"{self.workspace / '.venv' / 'bin'}{os.pathsep}{os.environ['PATH']}"
+                os.environ["PATH"] = (
+                    f"{self.workspace / '.venv' / 'bin'}{os.pathsep}{os.environ['PATH']}"
+                )
                 log_message("Virtual environment created and activated")
             else:
                 log_message(
@@ -346,7 +348,7 @@ def repomix(
     compress: bool = True,
     remove_empty_lines: bool = True,
     ignore_patterns: str = ".specstory/**/*.md,.venv/**,_private/**,CLEANUP.txt,**/*.json,*.lock",
-    output_file: str = "twat_search.txt",
+    output_file: str = "REPO_CONTENT.txt",
 ) -> None:
     """Combine repository files into a single text file.
 

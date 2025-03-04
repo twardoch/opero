@@ -65,4 +65,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored `Orchestrator` to use unified `OrchestratorConfig`
 - Improved error handling in `FallbackChain` to raise `AllFailedError`
 - Enhanced logging throughout the codebase
-- Optimized retry logic for better performance 
+- Optimized retry logic for better performance
