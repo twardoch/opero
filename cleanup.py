@@ -397,6 +397,7 @@ def main() -> NoReturn:
     except Exception as e:
         log_message(f"Error: {e}")
     repomix()
+    sys.stdout.write(Path("CLEANUP.txt").read_text())
     sys.exit(0)  # Ensure we exit with a status code
 
 

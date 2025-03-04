@@ -1,6 +1,6 @@
-2025-03-04 07:09:32 - 
+2025-03-04 07:18:12 - 
 === PROJECT STATEMENT ===
-2025-03-04 07:09:32 - ---
+2025-03-04 07:18:12 - ---
 title: Opero Project Rules
 glob: "**/*.py"
 ---
@@ -48,14 +48,14 @@ Opero is a Python library for orchestrating function execution with retries, fal
 - Minimize overhead in the orchestration layer
 - Use async/await for I/O-bound operations
 - Use appropriate concurrency mechanisms for CPU-bound operations 
-2025-03-04 07:09:32 - 
+2025-03-04 07:18:12 - 
 === Current Status ===
-2025-03-04 07:09:32 - [ 896]  .
+2025-03-04 07:18:12 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
 │       ├── [1.3K]  0project.mdc
-│       └── [1.9K]  filetree.mdc
+│       └── [2.0K]  filetree.mdc
 ├── [  96]  .github
 │   └── [ 128]  workflows
 │       ├── [2.7K]  push.yml
@@ -75,7 +75,7 @@ Opero is a Python library for orchestrating function execution with retries, fal
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
 ├── [ 16K]  README.md
-├── [ 61K]  REPO_CONTENT.txt
+├── [ 68K]  REPO_CONTENT.txt
 ├── [5.2K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
@@ -103,14 +103,14 @@ Opero is a Python library for orchestrating function execution with retries, fal
 
 13 directories, 37 files
 
-2025-03-04 07:09:32 - 
+2025-03-04 07:18:12 - 
 Project structure:
-2025-03-04 07:09:32 - [ 896]  .
+2025-03-04 07:18:12 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
 │       ├── [1.3K]  0project.mdc
-│       └── [1.9K]  filetree.mdc
+│       └── [2.0K]  filetree.mdc
 ├── [  96]  .github
 │   └── [ 128]  workflows
 │       ├── [2.7K]  push.yml
@@ -130,7 +130,7 @@ Project structure:
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
 ├── [ 16K]  README.md
-├── [ 61K]  REPO_CONTENT.txt
+├── [ 68K]  REPO_CONTENT.txt
 ├── [5.2K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
@@ -158,92 +158,58 @@ Project structure:
 
 13 directories, 37 files
 
-2025-03-04 07:09:32 - On branch main
-Your branch is up to date with 'origin/main'.
+2025-03-04 07:18:12 - On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   .cursor/rules/filetree.mdc
-	modified:   CHANGELOG.md
 	modified:   CLEANUP.txt
-	modified:   README.md
-	modified:   TODO.md
+	modified:   REPO_CONTENT.txt
 	modified:   cleanup.py
-	modified:   pyproject.toml
-	modified:   src/opero/__init__.py
-	modified:   src/opero/concurrency.py
-	modified:   src/opero/core.py
-	modified:   src/opero/decorators.py
-	modified:   src/opero/opero.py
-	modified:   src/opero/rate_limit.py
-	modified:   src/opero/retry.py
-	modified:   src/opero/utils.py
-	modified:   tests/test_core.py
-	modified:   tests/test_decorators.py
-
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-	.specstory/history/2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
-	.specstory/history/2025-03-04_07-59-untitled.md
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 07:09:32 - On branch main
-Your branch is up to date with 'origin/main'.
+2025-03-04 07:18:12 - On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
 	modified:   .cursor/rules/filetree.mdc
-	modified:   CHANGELOG.md
 	modified:   CLEANUP.txt
-	modified:   README.md
-	modified:   TODO.md
+	modified:   REPO_CONTENT.txt
 	modified:   cleanup.py
-	modified:   pyproject.toml
-	modified:   src/opero/__init__.py
-	modified:   src/opero/concurrency.py
-	modified:   src/opero/core.py
-	modified:   src/opero/decorators.py
-	modified:   src/opero/opero.py
-	modified:   src/opero/rate_limit.py
-	modified:   src/opero/retry.py
-	modified:   src/opero/utils.py
-	modified:   tests/test_core.py
-	modified:   tests/test_decorators.py
-
-Untracked files:
-  (use "git add <file>..." to include in what will be committed)
-	.specstory/history/2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
-	.specstory/history/2025-03-04_07-59-untitled.md
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 07:09:32 - 
+2025-03-04 07:18:12 - 
 === Environment Status ===
-2025-03-04 07:09:32 - Setting up virtual environment
-2025-03-04 07:09:33 - Virtual environment created and activated
-2025-03-04 07:09:33 - Installing package with all extras
-2025-03-04 07:09:33 - Setting up virtual environment
-2025-03-04 07:09:34 - Virtual environment created and activated
-2025-03-04 07:09:35 - Package installed successfully
-2025-03-04 07:09:35 - Running code quality checks
-2025-03-04 07:09:35 - >>> Running code fixes...
-2025-03-04 07:09:35 - src/opero/retry.py:194:11: C901 `retry_async` is too complex (12 > 10)
+2025-03-04 07:18:12 - Setting up virtual environment
+2025-03-04 07:18:16 - Virtual environment created and activated
+2025-03-04 07:18:16 - Installing package with all extras
+2025-03-04 07:18:16 - Setting up virtual environment
+2025-03-04 07:18:16 - Virtual environment created and activated
+2025-03-04 07:18:18 - Package installed successfully
+2025-03-04 07:18:18 - Running code quality checks
+2025-03-04 07:18:18 - >>> Running code fixes...
+2025-03-04 07:18:18 - src/opero/retry.py:199:11: C901 `retry_async` is too complex (12 > 10)
     |
-194 | async def retry_async(
+199 | async def retry_async(
     |           ^^^^^^^^^^^ C901
-195 |     func: Callable[..., Any],
-196 |     *args: Any,
+200 |     func: Callable[..., Any],
+201 |     *args: Any,
     |
 
-src/opero/retry.py:194:11: PLR0912 Too many branches (14 > 12)
+src/opero/retry.py:199:11: PLR0912 Too many branches (14 > 12)
     |
-194 | async def retry_async(
+199 | async def retry_async(
     |           ^^^^^^^^^^^ PLR0912
-195 |     func: Callable[..., Any],
-196 |     *args: Any,
+200 |     func: Callable[..., Any],
+201 |     *args: Any,
     |
 
 src/opero/utils.py:51:5: FBT001 Boolean-typed positional argument in function definition
@@ -266,33 +232,33 @@ src/opero/utils.py:51:5: FBT002 Boolean default positional argument in function 
 53 |     """
    |
 
-src/opero/utils.py:199:5: FBT001 Boolean-typed positional argument in function definition
+src/opero/utils.py:197:5: FBT001 Boolean-typed positional argument in function definition
     |
-197 |     level: int = logging.INFO,
-198 |     format_string: str | None = None,
-199 |     add_console_handler: bool = True,
+195 |     level: int = logging.INFO,
+196 |     format_string: str | None = None,
+197 |     add_console_handler: bool = True,
     |     ^^^^^^^^^^^^^^^^^^^ FBT001
-200 | ) -> logging.Logger:
-201 |     """
+198 | ) -> logging.Logger:
+199 |     """
     |
 
-src/opero/utils.py:199:5: FBT002 Boolean default positional argument in function definition
+src/opero/utils.py:197:5: FBT002 Boolean default positional argument in function definition
     |
-197 |     level: int = logging.INFO,
-198 |     format_string: str | None = None,
-199 |     add_console_handler: bool = True,
+195 |     level: int = logging.INFO,
+196 |     format_string: str | None = None,
+197 |     add_console_handler: bool = True,
     |     ^^^^^^^^^^^^^^^^^^^ FBT002
-200 | ) -> logging.Logger:
-201 |     """
+198 | ) -> logging.Logger:
+199 |     """
     |
 
 Found 6 errors.
 
-2025-03-04 07:09:35 - 2 files reformatted, 11 files left unchanged
+2025-03-04 07:18:18 - 13 files left unchanged
 
-2025-03-04 07:09:35 - >>>Running type checks...
-2025-03-04 07:09:36 - >>> Running tests...
-2025-03-04 07:09:40 - ============================= test session starts ==============================
+2025-03-04 07:18:18 - >>>Running type checks...
+2025-03-04 07:18:20 - >>> Running tests...
+2025-03-04 07:18:30 - ============================= test session starts ==============================
 platform darwin -- Python 3.12.8, pytest-8.3.5, pluggy-1.5.0 -- /Users/adam/Developer/vcs/github.twardoch/pub/opero/.venv/bin/python
 cachedir: .pytest_cache
 rootdir: /Users/adam/Developer/vcs/github.twardoch/pub/opero
@@ -359,16 +325,20 @@ tests/test_decorators.py::test_orchestrate_decorator_with_sync_function PASSED [
 tests/test_package.py::test_version PASSED                               [100%]
 
 ============================= slowest 10 durations =============================
-1.01s call     tests/test_core.py::test_orchestrator_with_retry
+1.04s call     tests/test_core.py::test_orchestrator_with_retry
 1.00s call     tests/test_decorators.py::test_orchestrate_decorator_retry
+0.07s setup    tests/test_core.py::test_orchestrator_execute_fallback
+0.06s call     tests/test_core.py::test_fallback_chain_all_fail
+0.04s call     tests/test_core.py::test_orchestrator_execute_fallback
+0.01s call     tests/test_core.py::test_fallback_chain_sync_function
 
-(8 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 16 passed in 2.88s ==============================
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
+============================== 16 passed in 3.79s ==============================
 
-2025-03-04 07:09:40 - All checks completed
-2025-03-04 07:09:40 - 
+2025-03-04 07:18:30 - All checks completed
+2025-03-04 07:18:30 - 
 === TODO.md ===
-2025-03-04 07:09:40 - ---
+2025-03-04 07:18:30 - ---
 this_file: TODO.md
 ---
 
@@ -493,24 +463,9 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 7. [x] Updated pyproject.toml:
    - Moved 'per-file-ignores' to 'lint.per-file-ignores' section
 
-2025-03-04 07:09:41 -  M .cursor/rules/filetree.mdc
- M CHANGELOG.md
+2025-03-04 07:18:31 -  M .cursor/rules/filetree.mdc
  M CLEANUP.txt
- M README.md
- M TODO.md
+ M REPO_CONTENT.txt
  M cleanup.py
- M pyproject.toml
- M src/opero/__init__.py
- M src/opero/concurrency.py
- M src/opero/core.py
- M src/opero/decorators.py
- M src/opero/opero.py
- M src/opero/rate_limit.py
- M src/opero/retry.py
- M src/opero/utils.py
- M tests/test_core.py
- M tests/test_decorators.py
-?? .specstory/history/2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
-?? .specstory/history/2025-03-04_07-59-untitled.md
 
-2025-03-04 07:09:41 - Changes detected in repository
+2025-03-04 07:18:31 - Changes detected in repository
