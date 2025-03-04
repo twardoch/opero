@@ -259,12 +259,13 @@ class Orchestrator:
         Raises:
             AllFailedError: If all execution attempts (including fallbacks) fail
         """
+        # Ensure we have a valid retry config
+        retry_config = self.config.retry_config or RetryConfig()
+
         if asyncio.iscoroutinefunction(func):
             # Async function
             try:
-                result = await retry_async(
-                    func, *args, config=self.config.retry_config, **kwargs
-                )
+                result = await retry_async(func, retry_config, *args, **kwargs)
                 return result
             except Exception as e:
                 self.logger.warning(f"Retry failed: {e}")
@@ -272,9 +273,7 @@ class Orchestrator:
         else:
             # Sync function
             try:
-                result = retry_sync(
-                    func, *args, config=self.config.retry_config, **kwargs
-                )
+                result = retry_sync(func, retry_config, *args, **kwargs)
                 return result
             except Exception as e:
                 self.logger.warning(f"Retry failed: {e}")

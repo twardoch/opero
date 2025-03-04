@@ -22,14 +22,14 @@ globs:
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
 │       ├── [ 67K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
-│       └── [3.0K]  2025-03-04_08-40-managing-todo-list-tasks.md
+│       └── [ 99K]  2025-03-04_08-40-managing-todo-list-tasks.md
 ├── [1.8K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
-├── [ 16K]  README.md
+├── [ 23K]  README.md
 ├── [ 69K]  REPO_CONTENT.txt
-├── [5.4K]  TODO.md
+├── [2.2K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -41,12 +41,12 @@ globs:
 │       ├── [1.1K]  __init__.py
 │       ├── [ 130]  _version.py
 │       ├── [9.9K]  concurrency.py
-│       ├── [ 10K]  core.py
+│       ├── [ 13K]  core.py
 │       ├── [3.1K]  decorators.py
 │       ├── [ 563]  exceptions.py
 │       ├── [1.6K]  opero.py
 │       ├── [4.0K]  rate_limit.py
-│       ├── [ 11K]  retry.py
+│       ├── [ 13K]  retry.py
 │       └── [6.8K]  utils.py
 ├── [ 192]  tests
 │   ├── [4.2K]  test_core.py

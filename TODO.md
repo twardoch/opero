@@ -47,3 +47,16 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
    - [ ] Ensure thread safety for shared resources
    - [ ] Test on different operating systems
 
+5. [x] Improve documentation:
+   - [x] Add more usage examples for common patterns
+   - [x] Document best practices for error handling
+   - [x] Add docstrings to all public functions and classes
+   - [x] Create API reference documentation
+
+## Next Release (v0.2.0) Priorities
+
+1. [x] Fix all linter errors in the codebase
+2. [ ] Complete the test suite with 90%+ coverage
+3. [x] Create proper API documentation
+4. [ ] Optimize performance for high-throughput scenarios
+
