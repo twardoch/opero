@@ -165,14 +165,14 @@ globs:
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
 │       ├── [ 67K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
-│       └── [3.0K]  2025-03-04_08-40-managing-todo-list-tasks.md
+│       └── [ 99K]  2025-03-04_08-40-managing-todo-list-tasks.md
 ├── [1.8K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
-├── [ 16K]  README.md
+├── [ 23K]  README.md
 ├── [ 69K]  REPO_CONTENT.txt
-├── [5.4K]  TODO.md
+├── [2.2K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -184,12 +184,12 @@ globs:
 │       ├── [1.1K]  __init__.py
 │       ├── [ 130]  _version.py
 │       ├── [9.9K]  concurrency.py
-│       ├── [ 10K]  core.py
+│       ├── [ 13K]  core.py
 │       ├── [3.1K]  decorators.py
 │       ├── [ 563]  exceptions.py
 │       ├── [1.6K]  opero.py
 │       ├── [4.0K]  rate_limit.py
-│       ├── [ 11K]  retry.py
+│       ├── [ 13K]  retry.py
 │       └── [6.8K]  utils.py
 ├── [ 192]  tests
 │   ├── [4.2K]  test_core.py
@@ -445,21 +445,21 @@ class Orchestrator:
     def __init__(self, *, config: OrchestratorConfig | None = None):
         self.config = config or OrchestratorConfig()
     def _wrap_fallback_with_retry(
-        if asyncio.iscoroutinefunction(fallback_func):
-            async def retry_wrapped_async_fallback(*a: Any, **kw: Any) -> Any:
-                return await retry_async(
-            def retry_wrapped_sync_fallback(*a: Any, **kw: Any) -> Any:
-                return retry_sync(
-    def _create_fallback_chain(self, func: Callable[..., Any]) -> FallbackChain:
-                self._wrap_fallback_with_retry(fallback)
-            return FallbackChain(func, retry_wrapped_fallbacks)
-            return FallbackChain(func, self.config.fallbacks)
-            return FallbackChain(func, [])
+            async def wrapped_fallback(*args: Any, **kwargs: Any) -> Any:
+                return await self._execute_with_retry(fallback_func, *args, **kwargs)
+    def _create_fallback_chain(self, primary: Callable[..., Any]) -> FallbackChain:
+        fallbacks = list(self.config.fallbacks or [])
+            fallbacks = [self._wrap_fallback_with_retry(f) for f in fallbacks]
+        return FallbackChain(primary=primary, fallbacks=fallbacks)
     async def _execute_with_retry(
+        retry_config = self.config.retry_config or RetryConfig()
         if asyncio.iscoroutinefunction(func):
-            result = retry_sync(func, *args, config=self.config.retry_config, **kwargs)
+                result = await retry_async(func, retry_config, *args, **kwargs)
+                self.logger.warning(f"Retry failed: {e}")
+                result = retry_sync(func, retry_config, *args, **kwargs)
     async def execute(self, func: Callable[..., R], *args: Any, **kwargs: Any) -> R:
         chain = self._create_fallback_chain(func)
+            await self._apply_rate_limit()
             if chain.has_fallbacks():
                 result = await self._execute_with_retry(chain.execute, *args, **kwargs)
                 result = await self._execute_with_retry(func, *args, **kwargs)
@@ -470,6 +470,12 @@ class Orchestrator:
     async def process(
                 result = await self.execute(func, arg, **kwargs)
                 results.append(result)
+    async def _apply_rate_limit(self) -> None:
+            now = time.time()
+            if hasattr(self, "_last_request_time"):
+                    self.logger.debug(f"Rate limiting: waiting {wait_time:.4f} seconds")
+                    await asyncio.sleep(wait_time)
+            self._last_request_time = time.time()
 
 ================
 File: src/opero/decorators.py
@@ -541,6 +547,7 @@ File: src/opero/retry.py
 ================
 P = ParamSpec("P")
 R = TypeVar("R")
+T = TypeVar("T")  # Additional type variable for _execute_function
 _logger = get_logger(__name__)
 logger = ContextAdapter(_logger)
 class CustomRetryError(Exception):
@@ -553,53 +560,48 @@ class RetryConfig:
             "retry": retry_if_exception_type(self.retry_exceptions),
             "before_sleep": lambda retry_state: logger.debug(
 def with_retry(
-        config = RetryConfig(**kwargs)
-        config_dict = asdict(config)
-        config_dict.update(kwargs)
-        config = RetryConfig(**config_dict)
-    return _with_retry_config(config)
-def _with_retry_config(
+    retry_config = config or RetryConfig()
+        retry_config = RetryConfig(**{**asdict(retry_config), **kwargs})
     def decorator(func: Callable[P, R]) -> Callable[P, R]:
         if inspect.iscoroutinefunction(func):
             @functools.wraps(func)
             async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                return await retry_async(func, *args, config=config, **kwargs)
+                return await retry_async(func, retry_config, *args, **kwargs)
             return cast(Callable[P, R], async_wrapper)
             def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-                return retry_sync(func, *args, config=config, **kwargs)
+                return retry_sync(func, retry_config, *args, **kwargs)
             return cast(Callable[P, R], sync_wrapper)
 def retry_sync(
-    retry_config = config or RetryConfig()
-    retry_args = retry_config.get_retry_arguments()
+    retry_args = config.get_retry_arguments()
     retrying = Retrying(**retry_args)
         return retrying(func, *args, **kwargs)
-        logger.error(
+        logger.error(f"All {config.max_attempts} retry attempts failed", exc_info=True)
             if e.last_attempt.exception() is not None:
                 raise e.last_attempt.exception() from e
 async def retry_async(
     func_name = getattr(func, "__name__", str(func))
     logger.add_context(function=func_name)
     logger.debug(f"Starting retry operation for {func_name}")
-                logger.debug(f"Attempt {attempt_number}/{retry_config.max_attempts}")
+                logger.debug(f"Attempt {attempt_number}/{config.max_attempts}")
                 result = await _execute_function(func, *args, **kwargs)
                 logger.debug(f"Attempt {attempt_number} succeeded")
                 return cast(R, result)
                 logger.warning(f"Attempt {attempt_number} failed: {e!s}", exc_info=True)
-                if not _should_retry_exception(e, retry_config.retry_exceptions):
+                if not _should_retry_exception(e, config.retry_exceptions):
                     logger.debug(
                         f"Exception {type(e).__name__} is not in retry_exceptions, not retrying"
                     logger.debug("Maximum retry attempts reached")
-                wait_time = _calculate_wait_time(attempt_number, retry_config)
+                wait_time = _calculate_wait_time(attempt_number, config)
                 logger.debug(f"Waiting {wait_time} seconds before next attempt")
                 await asyncio.sleep(wait_time)
-        _handle_retry_failure(func_name, retry_config, last_exception)
+        _handle_retry_failure(func_name, config, last_exception)
         raise RuntimeError(msg)
         logger.remove_context("function")
 async def _execute_function(func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
         return await func(*args, **kwargs)
     elif asyncio.iscoroutine(func):
-        result = func(*args, **kwargs)
-        if inspect.isawaitable(result):
+        loop = asyncio.get_event_loop()
+        return await loop.run_in_executor(None, lambda: func(*args, **kwargs))
 def _should_retry_exception(
         if isinstance(exception, exc_type):
 def _calculate_wait_time(attempt_number: int, config: RetryConfig) -> float:
@@ -1766,7 +1768,9 @@ async def main():
     logger.add_context(service="api_service", version="1.0.0")
     
     orchestrator = Orchestrator(
-        config=OrchestratorConfig()
+        config=OrchestratorConfig(
+            logger=logger
+        )
     )
     
     # Use context manager for temporary context
@@ -1779,6 +1783,278 @@ async def main():
     logger.info("Continuing with other operations")
 
 asyncio.run(main())
+```
+
+## Best Practices
+
+### Error Handling
+
+Opero provides several mechanisms for handling errors gracefully. Here are some best practices:
+
+1. **Use Fallbacks for Critical Operations**: Always provide fallback functions for critical operations that must succeed.
+
+```python
+from opero import Orchestrator, OrchestratorConfig
+
+# Primary function that might fail
+async def fetch_from_primary_api(item_id):
+    # Implementation that might fail
+    ...
+
+# Fallback function that uses a different approach
+async def fetch_from_backup_api(item_id):
+    # More reliable but possibly slower implementation
+    ...
+
+# Last resort fallback that returns cached data
+async def fetch_from_cache(item_id):
+    # Return cached data
+    ...
+
+# Create an orchestrator with multiple fallbacks in order of preference
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        fallbacks=[fetch_from_backup_api, fetch_from_cache]
+    )
+)
+
+# Execute with fallbacks
+result = await orchestrator.execute(fetch_from_primary_api, "item123")
+```
+
+2. **Configure Retries Appropriately**: Adjust retry parameters based on the operation's characteristics.
+
+```python
+from opero import RetryConfig, orchestrate
+
+# For quick operations that might fail due to temporary issues
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(
+            max_attempts=5,
+            wait_min=0.1,
+            wait_max=1.0,
+            wait_multiplier=1.2
+        )
+    )
+)
+async def quick_operation():
+    # Implementation
+    ...
+
+# For operations that might take longer to recover
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(
+            max_attempts=3,
+            wait_min=2.0,
+            wait_max=30.0,
+            wait_multiplier=2.0,
+            # Only retry specific exceptions
+            retry_exceptions=(ConnectionError, TimeoutError)
+        )
+    )
+)
+async def slow_operation():
+    # Implementation
+    ...
+```
+
+3. **Handle Specific Exceptions**: Configure retries to only trigger for specific exceptions.
+
+```python
+from opero import RetryConfig, orchestrate
+
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(
+            max_attempts=3,
+            # Only retry these specific exceptions
+            retry_exceptions=(ConnectionError, TimeoutError, ValueError)
+        )
+    )
+)
+async def network_operation():
+    # Implementation
+    ...
+```
+
+### Performance Optimization
+
+1. **Use Concurrency for I/O-Bound Operations**: Limit concurrency based on your application's needs and the target system's capacity.
+
+```python
+from opero import Orchestrator, OrchestratorConfig, ConcurrencyConfig
+
+# Create an orchestrator with concurrency control
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        concurrency_config=ConcurrencyConfig(
+            limit=10  # Limit to 10 concurrent operations
+        )
+    )
+)
+
+# Process many items efficiently
+urls = [f"https://example.com/api/{i}" for i in range(100)]
+results = await orchestrator.process([fetch_url], *urls)
+```
+
+2. **Use Rate Limiting for API Calls**: Respect API rate limits to avoid being throttled.
+
+```python
+from opero import Orchestrator, OrchestratorConfig, RateLimitConfig
+
+# Create an orchestrator with rate limiting
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        rate_limit_config=RateLimitConfig(
+            rate=5  # Limit to 5 requests per second
+        )
+    )
+)
+
+# Process API calls without exceeding rate limits
+api_ids = list(range(100))
+results = await orchestrator.process([api_call], *api_ids)
+```
+
+3. **Combine Multiple Resilience Patterns**: For complex scenarios, combine multiple patterns.
+
+```python
+from opero import (
+    Orchestrator, OrchestratorConfig, 
+    RetryConfig, RateLimitConfig, ConcurrencyConfig
+)
+
+# Create an orchestrator with multiple resilience patterns
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(max_attempts=3),
+        rate_limit_config=RateLimitConfig(rate=10),
+        concurrency_config=ConcurrencyConfig(limit=5),
+        fallbacks=[fallback_function]
+    )
+)
+
+# Process items with full resilience
+results = await orchestrator.process([primary_function], *items)
+```
+
+### Logging Best Practices
+
+1. **Configure Comprehensive Logging**: Set up logging to capture important events and errors.
+
+```python
+import logging
+from opero import Orchestrator, OrchestratorConfig
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("my_app")
+
+# Pass the logger to the orchestrator
+orchestrator = Orchestrator(
+    config=OrchestratorConfig(
+        logger=logger
+    )
+)
+```
+
+2. **Log Context Information**: Include relevant context in your function logs.
+
+```python
+import logging
+from opero import orchestrate, OrchestratorConfig
+
+logger = logging.getLogger("my_app")
+
+@orchestrate(
+    config=OrchestratorConfig(
+        logger=logger
+    )
+)
+async def process_item(item_id, context=None):
+    context = context or {}
+    logger.info(f"Processing item {item_id}", extra={"context": context})
+    # Implementation
+    ...
+```
+
+### Advanced Patterns
+
+1. **Chaining Operations**: Chain multiple orchestrated operations together.
+
+```python
+from opero import orchestrate, OrchestratorConfig, RetryConfig
+
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(max_attempts=3)
+    )
+)
+async def fetch_data(item_id):
+    # Fetch data implementation
+    ...
+
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(max_attempts=2)
+    )
+)
+async def process_data(data):
+    # Process data implementation
+    ...
+
+@orchestrate(
+    config=OrchestratorConfig(
+        retry_config=RetryConfig(max_attempts=2)
+    )
+)
+async def save_result(processed_data):
+    # Save result implementation
+    ...
+
+async def pipeline(item_id):
+    # Chain operations together
+    data = await fetch_data(item_id)
+    processed = await process_data(data)
+    result = await save_result(processed)
+    return result
+```
+
+2. **Dynamic Configuration**: Adjust configuration based on runtime conditions.
+
+```python
+from opero import Orchestrator, OrchestratorConfig, RetryConfig
+
+async def get_config_for_item(item):
+    # Determine appropriate configuration based on item characteristics
+    if item.priority == "high":
+        return OrchestratorConfig(
+            retry_config=RetryConfig(max_attempts=5),
+            fallbacks=[high_priority_fallback]
+        )
+    else:
+        return OrchestratorConfig(
+            retry_config=RetryConfig(max_attempts=2),
+            fallbacks=[standard_fallback]
+        )
+
+async def process_items(items):
+    results = []
+    for item in items:
+        # Create orchestrator with dynamic configuration
+        config = await get_config_for_item(item)
+        orchestrator = Orchestrator(config=config)
+        
+        # Process item with appropriate resilience
+        result = await orchestrator.execute(process_item, item)
+        results.append(result)
+    return results
 ```
 
 ## Core Components
@@ -1815,7 +2091,7 @@ results = await orchestrator.process([my_function], *items)
 
 - **process**: Processes multiple items with the same function or functions. Each item is processed individually.
   ```python
-  results = await orchestrator.process([my_function], *items, **kwargs)
+  results = await orchestrator.process([my_function], *items)
   ```
 
 ### FallbackChain
@@ -2169,124 +2445,59 @@ this_file: TODO.md
 
 Tip: Periodically run `python ./cleanup.py status` to see results of lints and tests. Use `uv pip ...` not `pip ...`
 
-## Phase 1 - Immediate Priorities
+## Phase 1
 
-1. [x] Fix remaining linter errors in cleanup.py:
-   - [x] Replace `typing.List` with `list` (UP035)
-   - [x] Remove unused imports (F401)
-   - [x] Fix Boolean-typed positional arguments (FBT001/FBT002)
-   - [x] Address subprocess call security issues (S603/S607)
-   - [x] Fix unnecessary `list()` call within `sorted()` (C414)
-   - [x] Remove unnecessary mode argument (UP015)
-   - [x] Replace `print` with logging (T201)
+- [ ] Complete the test suite with 90%+ coverage
+- [ ] Optimize performance for high-throughput scenarios
+- [ ] Add more usage examples for common patterns
+- [ ] Document best practices for error handling
+- [ ] Add docstrings to all public functions and classes
+- [ ] Create API reference documentation
 
-2. [x] Fix linter errors in src/opero/retry.py:
-   - [x] Remove unused imports (F401)
-   - [x] Update deprecated typing imports (UP035)
-   - [x] Use `X | Y` for type annotations (UP007)
-   - [x] Reduce complexity in `retry_async` function (C901, PLR0912)
+## Phase 2 
 
-3. [x] Fix linter errors in src/opero/utils.py:
-   - [x] Update deprecated typing imports (UP035)
-   - [x] Remove unused imports (F401)
-   - [x] Use `X | Y` for type annotations (UP007)
-   - [x] Fix Boolean-typed positional arguments (FBT001/FBT002)
-   - [x] Use `dict` instead of `Dict` for type annotations (UP006)
+- [ ] Add more unit tests for edge cases in retry mechanism
+- [ ] Create integration tests for complex scenarios combining multiple features
+- [ ] Add performance benchmarks for key operations
+- [ ] Implement stress tests for concurrency and rate limiting
+- [ ] Optimize retry logic for better performance
+- [ ] Reduce overhead in the orchestration layer
+- [ ] Improve concurrency management
 
-4. [x] Fix pyproject.toml schema validation errors:
-   - [x] Resolve the "valid under more than one of the schemas listed in the 'oneOf' keyword" errors
+## Phase 3
 
-5. [ ] Improve documentation:
-   - [ ] Add more usage examples for common patterns
-   - [ ] Document best practices for error handling
-   - [ ] Add docstrings to all public functions and classes
-   - [ ] Create API reference documentation
+- [ ] Implement middleware support for function transformation
+- [ ] Add metrics collection for performance monitoring
+- [ ] Create a CLI interface using `fire` and `rich`
+- [ ] Add support for distributed task queues
+- [ ] Implement streaming support with backpressure handling
 
-## Phase 2 - Next Steps
-
-1. [ ] Enhance test coverage:
-   - [ ] Add more unit tests for edge cases in retry mechanism
-   - [ ] Create integration tests for complex scenarios combining multiple features
-   - [ ] Add performance benchmarks for key operations
-   - [ ] Implement stress tests for concurrency and rate limiting
-
-2. [ ] Optimize performance:
-   - [ ] Optimize retry logic for better performance
-   - [ ] Reduce overhead in the orchestration layer
-   - [ ] Improve concurrency management
-
-## Phase 3 - Future Enhancements
-
-1. [ ] Add new features:
-   - [ ] Implement middleware support for function transformation
-   - [ ] Add metrics collection for performance monitoring
-   - [ ] Create a CLI interface using `fire` and `rich`
-   - [ ] Add support for distributed task queues
-   - [ ] Implement streaming support with backpressure handling
-
-2. [ ] Infrastructure improvements:
+1. [ ] Infrastructure improvements:
    - [ ] Set up CI/CD pipeline for automated testing and deployment
    - [ ] Configure code coverage reporting
    - [ ] Add pre-commit hooks for code quality
    - [ ] Create GitHub Actions workflow for publishing to PyPI
    - [ ] Set up automated dependency updates
 
-3. [ ] Compatibility enhancements:
+2. [ ] Compatibility enhancements:
    - [ ] Ensure compatibility with Python 3.8+
    - [ ] Test with different versions of dependencies
    - [ ] Add explicit support for asyncio event loop policies
    - [ ] Ensure thread safety for shared resources
    - [ ] Test on different operating systems
 
+5. [x] Improve documentation:
+   - [x] Add more usage examples for common patterns
+   - [x] Document best practices for error handling
+   - [x] Add docstrings to all public functions and classes
+   - [x] Create API reference documentation
+
 ## Next Release (v0.2.0) Priorities
 
 1. [x] Fix all linter errors in the codebase
 2. [ ] Complete the test suite with 90%+ coverage
-3. [ ] Create proper API documentation
+3. [x] Create proper API documentation
 4. [ ] Optimize performance for high-throughput scenarios
-
-## Completed Tasks
-
-### Phase 1
-1. [x] Fixed failing tests in `process` method:
-   - Fixed `test_orchestrator_process` - Now returns `['Success: 1', 'Success: 2', 'Success: 3']` instead of `['Success: (1, 2, 3)']`
-   - Fixed `test_orchestrator_process_with_concurrency` - Same issue as above
-   - Modified `process` method to apply function to each item individually rather than passing all args at once
-
-2. [x] Fixed linter errors:
-   - Resolved complexity issues in `core.py:execute` method (C901, PLR0912) by extracting helper methods
-   - Fixed loop variable binding issues in `core.py` (B023 for `fallback_func`) by capturing variables in closures
-   - Addressed too many arguments in `retry.py:with_retry` function (PLR0913) by using a config object and kwargs
-
-3. [x] Created missing files:
-   - Created LOG.md for tracking changes and issues
-   - Created .cursor/rules/0project.mdc for project rules
-   - Created PROGRESS.md file (now merged into CHANGELOG.md and TODO.md)
-
-4. [x] Added comprehensive logging throughout the codebase:
-   - Added debug logging for all major operations
-   - Implemented configurable log levels
-   - Added context information to log messages
-
-5. [x] Improved error handling:
-   - Fixed error handling in `retry_async` function to properly handle coroutine objects
-   - Addressed type compatibility issues in async/sync conversions
-   - Implemented proper handling of `AllFailedError` in all fallback scenarios
-
-6. [x] Fixed linter errors in cleanup.py, retry.py, and utils.py:
-   - Added timezone to datetime.datetime.now() calls (DTZ005)
-   - Fixed Boolean-typed positional arguments (FBT001/FBT002)
-   - Addressed subprocess call security issues (S603/S607)
-   - Reduced complexity in retry_async function by extracting helper methods
-   - Updated deprecated typing imports and used modern type annotation syntax
-
-7. [x] Updated pyproject.toml:
-   - Fixed schema validation errors by cleaning up the structure
-   - Removed extra blank lines between sections
-
-8. [x] Fixed cleanup.py script errors:
-   - Fixed the `_print_tree` function issue by removing the nested function and using the tree command directly
-   - Simplified the tree generation process to avoid argument handling issues
 
 
 
