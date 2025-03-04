@@ -46,6 +46,7 @@ async def ensure_async(func: Callable[..., T], *args: Any, **kwargs: Any) -> T:
 
 def get_logger(
     name: str,
+    *,
     level: int = logging.INFO,
     format_string: str | None = None,
     add_console_handler: bool = True,
@@ -192,6 +193,7 @@ def log_context(logger: ContextAdapter, **context: Any) -> Generator[None, None,
 
 
 def configure_root_logger(
+    *,  # Force keyword-only arguments
     level: int = logging.INFO,
     format_string: str | None = None,
     add_console_handler: bool = True,

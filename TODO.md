@@ -8,30 +8,30 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 
 ## Phase 1 - Immediate Priorities
 
-1. [ ] Fix remaining linter errors in cleanup.py:
-   - [ ] Replace `typing.List` with `list` (UP035)
-   - [ ] Remove unused imports (F401)
-   - [ ] Fix Boolean-typed positional arguments (FBT001/FBT002)
-   - [ ] Address subprocess call security issues (S603/S607)
-   - [ ] Fix unnecessary `list()` call within `sorted()` (C414)
-   - [ ] Remove unnecessary mode argument (UP015)
-   - [ ] Replace `print` with logging (T201)
+1. [x] Fix remaining linter errors in cleanup.py:
+   - [x] Replace `typing.List` with `list` (UP035)
+   - [x] Remove unused imports (F401)
+   - [x] Fix Boolean-typed positional arguments (FBT001/FBT002)
+   - [x] Address subprocess call security issues (S603/S607)
+   - [x] Fix unnecessary `list()` call within `sorted()` (C414)
+   - [x] Remove unnecessary mode argument (UP015)
+   - [x] Replace `print` with logging (T201)
 
-2. [ ] Fix linter errors in src/opero/retry.py:
-   - [ ] Remove unused imports (F401)
-   - [ ] Update deprecated typing imports (UP035)
-   - [ ] Use `X | Y` for type annotations (UP007)
-   - [ ] Reduce complexity in `retry_async` function (C901, PLR0912)
+2. [x] Fix linter errors in src/opero/retry.py:
+   - [x] Remove unused imports (F401)
+   - [x] Update deprecated typing imports (UP035)
+   - [x] Use `X | Y` for type annotations (UP007)
+   - [x] Reduce complexity in `retry_async` function (C901, PLR0912)
 
-3. [ ] Fix linter errors in src/opero/utils.py:
-   - [ ] Update deprecated typing imports (UP035)
-   - [ ] Remove unused imports (F401)
-   - [ ] Use `X | Y` for type annotations (UP007)
-   - [ ] Fix Boolean-typed positional arguments (FBT001/FBT002)
-   - [ ] Use `dict` instead of `Dict` for type annotations (UP006)
+3. [x] Fix linter errors in src/opero/utils.py:
+   - [x] Update deprecated typing imports (UP035)
+   - [x] Remove unused imports (F401)
+   - [x] Use `X | Y` for type annotations (UP007)
+   - [x] Fix Boolean-typed positional arguments (FBT001/FBT002)
+   - [x] Use `dict` instead of `Dict` for type annotations (UP006)
 
-4. [ ] Fix pyproject.toml schema validation errors:
-   - [ ] Resolve the "valid under more than one of the schemas listed in the 'oneOf' keyword" errors
+4. [x] Fix pyproject.toml schema validation errors:
+   - [x] Resolve the "valid under more than one of the schemas listed in the 'oneOf' keyword" errors
 
 5. [ ] Improve documentation:
    - [ ] Add more usage examples for common patterns
@@ -77,7 +77,7 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 
 ## Next Release (v0.2.0) Priorities
 
-1. [ ] Fix all linter errors in the codebase
+1. [x] Fix all linter errors in the codebase
 2. [ ] Complete the test suite with 90%+ coverage
 3. [ ] Create proper API documentation
 4. [ ] Optimize performance for high-throughput scenarios
@@ -110,13 +110,16 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
    - Addressed type compatibility issues in async/sync conversions
    - Implemented proper handling of `AllFailedError` in all fallback scenarios
 
-6. [x] Fixed some linter errors in cleanup.py:
+6. [x] Fixed linter errors in cleanup.py, retry.py, and utils.py:
    - Added timezone to datetime.datetime.now() calls (DTZ005)
    - Fixed Boolean-typed positional arguments (FBT001/FBT002)
    - Addressed subprocess call security issues (S603/S607)
+   - Reduced complexity in retry_async function by extracting helper methods
+   - Updated deprecated typing imports and used modern type annotation syntax
 
 7. [x] Updated pyproject.toml:
-   - Moved 'per-file-ignores' to 'lint.per-file-ignores' section
+   - Fixed schema validation errors by cleaning up the structure
+   - Removed extra blank lines between sections
 
 8. [x] Fixed cleanup.py script errors:
    - Fixed the `_print_tree` function issue by removing the nested function and using the tree command directly

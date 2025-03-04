@@ -233,20 +233,8 @@ async def retry_async(
             try:
                 logger.debug(f"Attempt {attempt_number}/{retry_config.max_attempts}")
 
-                # Handle both coroutine functions and regular functions that return awaitable objects
-                if inspect.iscoroutinefunction(func):
-                    # Direct coroutine function call
-                    result = await func(*args, **kwargs)
-                elif asyncio.iscoroutine(func):
-                    # Handle case where func is already a coroutine object
-                    # We need to use Any as the return type to avoid type errors
-                    result = await func  # type: ignore
-                else:
-                    # Regular function that might return an awaitable
-                    result = func(*args, **kwargs)
-                    # If result is awaitable, await it
-                    if inspect.isawaitable(result):
-                        result = await result
+                # Handle function execution based on its type
+                result = await _execute_function(func, *args, **kwargs)
 
                 logger.debug(f"Attempt {attempt_number} succeeded")
                 return cast(R, result)
@@ -256,13 +244,7 @@ async def retry_async(
                 logger.warning(f"Attempt {attempt_number} failed: {e!s}", exc_info=True)
 
                 # Check if we should retry based on exception type
-                should_retry = False
-                for exc_type in retry_config.retry_exceptions:
-                    if isinstance(e, exc_type):
-                        should_retry = True
-                        break
-
-                if not should_retry:
+                if not _should_retry_exception(e, retry_config.retry_exceptions):
                     logger.debug(
                         f"Exception {type(e).__name__} is not in retry_exceptions, not retrying"
                     )
@@ -274,33 +256,73 @@ async def retry_async(
                     break
 
                 # Calculate wait time using exponential backoff
-                wait_time = min(
-                    retry_config.wait_max,
-                    retry_config.wait_min
-                    * (retry_config.wait_multiplier ** (attempt_number - 1)),
-                )
+                wait_time = _calculate_wait_time(attempt_number, retry_config)
                 logger.debug(f"Waiting {wait_time} seconds before next attempt")
                 await asyncio.sleep(wait_time)
                 attempt_number += 1
 
         # If we get here, all attempts failed
-        error_msg = (
-            f"All {retry_config.max_attempts} retry attempts failed for {func_name}"
-        )
-
-        if last_exception is not None:
-            logger.error(error_msg, exc_info=last_exception)
-
-            if retry_config.reraise:
-                # Add traceback information to the exception for better debugging
-                raise last_exception
-
-            error_msg += f": {last_exception!s}"
-        else:
-            logger.error(error_msg)
-
-        # Use our custom error class instead of tenacity's RetryError
-        raise CustomRetryError(error_msg, last_exception)
+        _handle_retry_failure(func_name, retry_config, last_exception)
+        # This line is never reached as _handle_retry_failure always raises an exception
+        # But we need it for type checking
+        msg = "This code should never be reached"
+        raise RuntimeError(msg)
     finally:
         # Clean up the context
         logger.remove_context("function")
+
+
+async def _execute_function(func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    """Execute a function that could be sync, async, or a coroutine object."""
+    if inspect.iscoroutinefunction(func):
+        # Direct coroutine function call
+        return await func(*args, **kwargs)
+    elif asyncio.iscoroutine(func):
+        # Handle case where func is already a coroutine object
+        return await func  # type: ignore
+    else:
+        # Regular function that might return an awaitable
+        result = func(*args, **kwargs)
+        # If result is awaitable, await it
+        if inspect.isawaitable(result):
+            return await result
+        return result
+
+
+def _should_retry_exception(
+    exception: Exception, retry_exceptions: tuple[type[Exception], ...]
+) -> bool:
+    """Check if an exception should trigger a retry."""
+    for exc_type in retry_exceptions:
+        if isinstance(exception, exc_type):
+            return True
+    return False
+
+
+def _calculate_wait_time(attempt_number: int, config: RetryConfig) -> float:
+    """Calculate the wait time for the next retry attempt."""
+    return min(
+        config.wait_max,
+        config.wait_min * (config.wait_multiplier ** (attempt_number - 1)),
+    )
+
+
+def _handle_retry_failure(
+    func_name: str, config: RetryConfig, last_exception: Exception | None
+) -> None:
+    """Handle the case where all retry attempts have failed."""
+    error_msg = f"All {config.max_attempts} retry attempts failed for {func_name}"
+
+    if last_exception is not None:
+        logger.error(error_msg, exc_info=last_exception)
+
+        if config.reraise:
+            # Add traceback information to the exception for better debugging
+            raise last_exception
+
+        error_msg += f": {last_exception!s}"
+    else:
+        logger.error(error_msg)
+
+    # Use our custom error class instead of tenacity's RetryError
+    raise CustomRetryError(error_msg, last_exception)

@@ -54,10 +54,19 @@ Required Files:
 import subprocess
 import os
 import sys
+import logging
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import NoReturn
 from shutil import which
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+logger = logging.getLogger(__name__)
 
 # Configuration
 IGNORE_PATTERNS = [
@@ -87,7 +96,7 @@ def prefix() -> None:
     readme = Path(".cursor/rules/0project.mdc")
     if readme.exists():
         log_message("\n=== PROJECT STATEMENT ===")
-        content = readme.read_text()
+        content = readme.read_text(encoding="utf-8")
         log_message(content)
 
 
@@ -96,7 +105,7 @@ def suffix() -> None:
     todo = Path("TODO.md")
     if todo.exists():
         log_message("\n=== TODO.md ===")
-        content = todo.read_text()
+        content = todo.read_text(encoding="utf-8")
         log_message(content)
 
 
@@ -104,14 +113,17 @@ def log_message(message: str) -> None:
     """Log a message to file and console with timestamp."""
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
     log_line = f"{timestamp} - {message}\n"
-    with LOG_FILE.open("a") as f:
+    with LOG_FILE.open("a", encoding="utf-8") as f:
         f.write(log_line)
+    logger.info(message)
 
 
-def run_command(cmd: list[str], check: bool = True) -> subprocess.CompletedProcess:
+def run_command(cmd: list[str], *, check: bool = True) -> subprocess.CompletedProcess:
     """Run a shell command and return the result."""
     try:
-        result = subprocess.run(
+        # We're explicitly using shell=False and passing a list of arguments,
+        # which is secure against command injection
+        result = subprocess.run(  # noqa: S603
             cmd,
             check=check,
             capture_output=True,
@@ -174,7 +186,7 @@ class Cleanup:
             tree_text = tree_result.stdout
 
             # Write frontmatter and tree output to file
-            with open(rules_dir / "filetree.mdc", "w") as f:
+            with open(rules_dir / "filetree.mdc", "w", encoding="utf-8") as f:
                 f.write("---\ndescription: File tree of the project\nglobs: \n---\n")
                 f.write(tree_text)
 
@@ -399,7 +411,7 @@ def main() -> NoReturn:
     except Exception as e:
         log_message(f"Error: {e}")
     repomix()
-    sys.stdout.write(Path("CLEANUP.txt").read_text())
+    sys.stdout.write(Path("CLEANUP.txt").read_text(encoding="utf-8"))
     sys.exit(0)  # Ensure we exit with a status code
 
 
