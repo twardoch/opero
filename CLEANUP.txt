@@ -1,6 +1,6 @@
-2025-03-04 08:45:19 - 
+2025-03-05 11:35:43 - 
 === PROJECT STATEMENT ===
-2025-03-04 08:45:19 - ---
+2025-03-05 11:35:43 - ---
 title: Opero Project Rules
 glob: "**/*.py"
 ---
@@ -48,9 +48,9 @@ Opero is a Python library for orchestrating function execution with retries, fal
 - Minimize overhead in the orchestration layer
 - Use async/await for I/O-bound operations
 - Use appropriate concurrency mechanisms for CPU-bound operations 
-2025-03-04 08:45:19 - 
+2025-03-05 11:35:43 - 
 === Current Status ===
-2025-03-04 08:45:19 - [ 896]  .
+2025-03-05 11:35:43 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
@@ -104,9 +104,9 @@ Opero is a Python library for orchestrating function execution with retries, fal
 
 13 directories, 38 files
 
-2025-03-04 08:45:19 - 
+2025-03-05 11:35:43 - 
 Project structure:
-2025-03-04 08:45:19 - [ 896]  .
+2025-03-05 11:35:43 - [ 896]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
@@ -160,51 +160,47 @@ Project structure:
 
 13 directories, 38 files
 
-2025-03-04 08:45:19 - On branch main
-Your branch is ahead of 'origin/main' by 1 commit.
+2025-03-05 11:35:43 - On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
   (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-	modified:   .cursor/rules/filetree.mdc
-	modified:   .specstory/history/2025-03-04_08-40-managing-todo-list-tasks.md
 	modified:   CLEANUP.txt
 	modified:   REPO_CONTENT.txt
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 08:45:19 - On branch main
-Your branch is ahead of 'origin/main' by 1 commit.
+2025-03-05 11:35:43 - On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
   (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-	modified:   .cursor/rules/filetree.mdc
-	modified:   .specstory/history/2025-03-04_08-40-managing-todo-list-tasks.md
 	modified:   CLEANUP.txt
 	modified:   REPO_CONTENT.txt
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-04 08:45:19 - 
+2025-03-05 11:35:43 - 
 === Environment Status ===
-2025-03-04 08:45:19 - Setting up virtual environment
-2025-03-04 08:45:19 - Virtual environment created and activated
-2025-03-04 08:45:19 - Installing package with all extras
-2025-03-04 08:45:19 - Setting up virtual environment
-2025-03-04 08:45:19 - Virtual environment created and activated
-2025-03-04 08:45:19 - Package installed successfully
-2025-03-04 08:45:19 - Running code quality checks
-2025-03-04 08:45:19 - >>> Running code fixes...
-2025-03-04 08:45:20 - All checks passed!
+2025-03-05 11:35:43 - Setting up virtual environment
+2025-03-05 11:35:43 - Virtual environment created and activated
+2025-03-05 11:35:43 - Installing package with all extras
+2025-03-05 11:35:43 - Setting up virtual environment
+2025-03-05 11:35:43 - Virtual environment created and activated
+2025-03-05 11:35:44 - Package installed successfully
+2025-03-05 11:35:44 - Running code quality checks
+2025-03-05 11:35:44 - >>> Running code fixes...
+2025-03-05 11:35:44 - All checks passed!
 
-2025-03-04 08:45:20 - 13 files left unchanged
+2025-03-05 11:35:44 - 13 files left unchanged
 
-2025-03-04 08:45:20 - >>>Running type checks...
-2025-03-04 08:45:21 - >>> Running tests...
-2025-03-04 08:45:26 - ============================= test session starts ==============================
+2025-03-05 11:35:44 - >>>Running type checks...
+2025-03-05 11:35:44 - >>> Running tests...
+2025-03-05 11:35:47 - ============================= test session starts ==============================
 platform darwin -- Python 3.12.8, pytest-8.3.5, pluggy-1.5.0 -- /Users/adam/Developer/vcs/github.twardoch/pub/opero/.venv/bin/python
 cachedir: .pytest_cache
 rootdir: /Users/adam/Developer/vcs/github.twardoch/pub/opero
@@ -281,12 +277,12 @@ tests/test_package.py::test_version PASSED                               [100%]
 1.00s call     tests/test_decorators.py::test_orchestrate_decorator_retry
 
 (8 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 16 passed in 2.91s ==============================
+============================== 16 passed in 2.27s ==============================
 
-2025-03-04 08:45:26 - All checks completed
-2025-03-04 08:45:26 - 
+2025-03-05 11:35:47 - All checks completed
+2025-03-05 11:35:47 - 
 === TODO.md ===
-2025-03-04 08:45:26 - ---
+2025-03-05 11:35:47 - ---
 this_file: TODO.md
 ---
 
@@ -364,9 +360,7 @@ Tip: Periodically run `python ./cleanup.py status` to see results of lints and t
 5. [ ] Fix remaining type issues in pyproject.toml
 
 
-2025-03-04 08:45:26 -  M .cursor/rules/filetree.mdc
- M .specstory/history/2025-03-04_08-40-managing-todo-list-tasks.md
- M CLEANUP.txt
+2025-03-05 11:35:47 -  M CLEANUP.txt
  M REPO_CONTENT.txt
 
-2025-03-04 08:45:26 - Changes detected in repository
+2025-03-05 11:35:47 - Changes detected in repository
