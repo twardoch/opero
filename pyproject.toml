@@ -21,6 +21,8 @@ classifiers = [
 dependencies = [
     "tenacity>=8.0.0",
     "asynciolimiter>=1.0.0",
+    "twat-cache>=2.3.0",
+    "twat-mp>=1.0.0",
 ]
 
 [project.optional-dependencies]

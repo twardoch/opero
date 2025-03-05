@@ -2,7 +2,7 @@
 description: File tree of the project
 globs: 
 ---
-[ 896]  .
+[ 960]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
@@ -15,21 +15,22 @@ globs:
 ├── [3.5K]  .gitignore
 ├── [ 470]  .pre-commit-config.yaml
 ├── [  96]  .specstory
-│   └── [ 288]  history
+│   └── [ 320]  history
 │       ├── [2.7K]  .what-is-this.md
 │       ├── [574K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
 │       ├── [4.1K]  2025-03-04_05-40-cleanup-analysis-and-todo-update.md
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
 │       ├── [ 67K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
-│       └── [198K]  2025-03-04_08-40-managing-todo-list-tasks.md
+│       ├── [198K]  2025-03-04_08-40-managing-todo-list-tasks.md
+│       └── [138K]  2025-03-05_12-35-improving-opero-api-with-new-decorators.md
 ├── [2.4K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
 ├── [ 23K]  README.md
 ├── [ 74K]  REPO_CONTENT.txt
-├── [2.7K]  TODO.md
+├── [ 28K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -52,6 +53,8 @@ globs:
 │   ├── [4.2K]  test_core.py
 │   ├── [4.1K]  test_decorators.py
 │   └── [ 139]  test_package.py
+├── [194K]  twat-cache.txt
+├── [ 78K]  twat-mp.txt
 └── [109K]  uv.lock
 
-13 directories, 38 files
+13 directories, 41 files

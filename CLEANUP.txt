@@ -1,6 +1,6 @@
-2025-03-05 11:35:43 - 
+2025-03-05 12:36:30 - 
 === PROJECT STATEMENT ===
-2025-03-05 11:35:43 - ---
+2025-03-05 12:36:30 - ---
 title: Opero Project Rules
 glob: "**/*.py"
 ---
@@ -48,9 +48,9 @@ Opero is a Python library for orchestrating function execution with retries, fal
 - Minimize overhead in the orchestration layer
 - Use async/await for I/O-bound operations
 - Use appropriate concurrency mechanisms for CPU-bound operations 
-2025-03-05 11:35:43 - 
+2025-03-05 12:36:30 - 
 === Current Status ===
-2025-03-05 11:35:43 - [ 896]  .
+2025-03-05 12:36:30 - [ 960]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
@@ -63,21 +63,22 @@ Opero is a Python library for orchestrating function execution with retries, fal
 ├── [3.5K]  .gitignore
 ├── [ 470]  .pre-commit-config.yaml
 ├── [  96]  .specstory
-│   └── [ 288]  history
+│   └── [ 320]  history
 │       ├── [2.7K]  .what-is-this.md
 │       ├── [574K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
 │       ├── [4.1K]  2025-03-04_05-40-cleanup-analysis-and-todo-update.md
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
 │       ├── [ 67K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
-│       └── [198K]  2025-03-04_08-40-managing-todo-list-tasks.md
+│       ├── [198K]  2025-03-04_08-40-managing-todo-list-tasks.md
+│       └── [138K]  2025-03-05_12-35-improving-opero-api-with-new-decorators.md
 ├── [2.4K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
 ├── [ 23K]  README.md
 ├── [ 74K]  REPO_CONTENT.txt
-├── [2.7K]  TODO.md
+├── [ 28K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -100,13 +101,15 @@ Opero is a Python library for orchestrating function execution with retries, fal
 │   ├── [4.2K]  test_core.py
 │   ├── [4.1K]  test_decorators.py
 │   └── [ 139]  test_package.py
+├── [194K]  twat-cache.txt
+├── [ 78K]  twat-mp.txt
 └── [109K]  uv.lock
 
-13 directories, 38 files
+13 directories, 41 files
 
-2025-03-05 11:35:43 - 
+2025-03-05 12:36:30 - 
 Project structure:
-2025-03-05 11:35:43 - [ 896]  .
+2025-03-05 12:36:30 - [ 960]  .
 ├── [  64]  .benchmarks
 ├── [  96]  .cursor
 │   └── [ 128]  rules
@@ -119,21 +122,22 @@ Project structure:
 ├── [3.5K]  .gitignore
 ├── [ 470]  .pre-commit-config.yaml
 ├── [  96]  .specstory
-│   └── [ 288]  history
+│   └── [ 320]  history
 │       ├── [2.7K]  .what-is-this.md
 │       ├── [574K]  2025-03-04_03-16-comprehensive-plan-for-opero-package-implementation.md
 │       ├── [4.1K]  2025-03-04_05-40-cleanup-analysis-and-todo-update.md
 │       ├── [157K]  2025-03-04_06-07-implementing-todo-md-phases-1-and-2.md
 │       ├── [129K]  2025-03-04_07-28-implementing-todo-md-phases-1-and-2.md
 │       ├── [ 67K]  2025-03-04_07-59-project-maintenance-and-documentation-update.md
-│       └── [198K]  2025-03-04_08-40-managing-todo-list-tasks.md
+│       ├── [198K]  2025-03-04_08-40-managing-todo-list-tasks.md
+│       └── [138K]  2025-03-05_12-35-improving-opero-api-with-new-decorators.md
 ├── [2.4K]  CHANGELOG.md
 ├── [1.4K]  CLEANUP.txt
 ├── [1.0K]  LICENSE
 ├── [ 959]  LOG.md
 ├── [ 23K]  README.md
 ├── [ 74K]  REPO_CONTENT.txt
-├── [2.7K]  TODO.md
+├── [ 28K]  TODO.md
 ├── [ 13K]  cleanup.py
 ├── [ 224]  dist
 │   └── [   0]  .gitkeep
@@ -156,51 +160,67 @@ Project structure:
 │   ├── [4.2K]  test_core.py
 │   ├── [4.1K]  test_decorators.py
 │   └── [ 139]  test_package.py
+├── [194K]  twat-cache.txt
+├── [ 78K]  twat-mp.txt
 └── [109K]  uv.lock
 
-13 directories, 38 files
+13 directories, 41 files
 
-2025-03-05 11:35:43 - On branch main
-Your branch is ahead of 'origin/main' by 2 commits.
+2025-03-05 12:36:30 - On branch main
+Your branch is ahead of 'origin/main' by 3 commits.
   (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
+	modified:   .cursor/rules/filetree.mdc
 	modified:   CLEANUP.txt
-	modified:   REPO_CONTENT.txt
+	modified:   TODO.md
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.specstory/history/2025-03-05_12-35-improving-opero-api-with-new-decorators.md
+	twat-cache.txt
+	twat-mp.txt
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-05 11:35:43 - On branch main
-Your branch is ahead of 'origin/main' by 2 commits.
+2025-03-05 12:36:30 - On branch main
+Your branch is ahead of 'origin/main' by 3 commits.
   (use "git push" to publish your local commits)
 
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
+	modified:   .cursor/rules/filetree.mdc
 	modified:   CLEANUP.txt
-	modified:   REPO_CONTENT.txt
+	modified:   TODO.md
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	.specstory/history/2025-03-05_12-35-improving-opero-api-with-new-decorators.md
+	twat-cache.txt
+	twat-mp.txt
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
-2025-03-05 11:35:43 - 
+2025-03-05 12:36:30 - 
 === Environment Status ===
-2025-03-05 11:35:43 - Setting up virtual environment
-2025-03-05 11:35:43 - Virtual environment created and activated
-2025-03-05 11:35:43 - Installing package with all extras
-2025-03-05 11:35:43 - Setting up virtual environment
-2025-03-05 11:35:43 - Virtual environment created and activated
-2025-03-05 11:35:44 - Package installed successfully
-2025-03-05 11:35:44 - Running code quality checks
-2025-03-05 11:35:44 - >>> Running code fixes...
-2025-03-05 11:35:44 - All checks passed!
+2025-03-05 12:36:30 - Setting up virtual environment
+2025-03-05 12:36:31 - Virtual environment created and activated
+2025-03-05 12:36:31 - Installing package with all extras
+2025-03-05 12:36:31 - Setting up virtual environment
+2025-03-05 12:36:31 - Virtual environment created and activated
+2025-03-05 12:36:31 - Package installed successfully
+2025-03-05 12:36:31 - Running code quality checks
+2025-03-05 12:36:31 - >>> Running code fixes...
+2025-03-05 12:36:31 - All checks passed!
 
-2025-03-05 11:35:44 - 13 files left unchanged
+2025-03-05 12:36:31 - 13 files left unchanged
 
-2025-03-05 11:35:44 - >>>Running type checks...
-2025-03-05 11:35:44 - >>> Running tests...
-2025-03-05 11:35:47 - ============================= test session starts ==============================
+2025-03-05 12:36:31 - >>>Running type checks...
+2025-03-05 12:36:32 - >>> Running tests...
+2025-03-05 12:36:36 - ============================= test session starts ==============================
 platform darwin -- Python 3.12.8, pytest-8.3.5, pluggy-1.5.0 -- /Users/adam/Developer/vcs/github.twardoch/pub/opero/.venv/bin/python
 cachedir: .pytest_cache
 rootdir: /Users/adam/Developer/vcs/github.twardoch/pub/opero
@@ -275,14 +295,15 @@ tests/test_package.py::test_version PASSED                               [100%]
 ============================= slowest 10 durations =============================
 1.00s call     tests/test_core.py::test_orchestrator_with_retry
 1.00s call     tests/test_decorators.py::test_orchestrate_decorator_retry
+0.01s call     tests/test_core.py::test_orchestrator_execute_success
 
-(8 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 16 passed in 2.27s ==============================
+(7 durations < 0.005s hidden.  Use -vv to show these durations.)
+============================== 16 passed in 2.96s ==============================
 
-2025-03-05 11:35:47 - All checks completed
-2025-03-05 11:35:47 - 
+2025-03-05 12:36:36 - All checks completed
+2025-03-05 12:36:36 - 
 === TODO.md ===
-2025-03-05 11:35:47 - ---
+2025-03-05 12:36:36 - ---
 this_file: TODO.md
 ---
 
@@ -290,77 +311,798 @@ this_file: TODO.md
 
 Tip: Periodically run `python ./cleanup.py status` to see results of lints and tests. Use `uv pip ...` not `pip ...`
 
-## High Priority Tasks
+## 1. Plan for Rewriting `opero`
 
-- [ ] Complete the test suite with 90%+ coverage
-  - [ ] Add tests for edge cases in retry mechanism
-  - [ ] Create integration tests for complex scenarios
-  - [ ] Add tests for error handling in concurrent operations
-  - [ ] Implement test coverage reporting
+### 1.1. Restructure API into Two Primary Decorators
 
-- [ ] Optimize performance for high-throughput scenarios
-  - [ ] Profile code to identify bottlenecks
-  - [ ] Reduce overhead in the orchestration layer
-  - [ ] Optimize retry logic for better performance
-  - [ ] Improve concurrency management
+#### 1.1.1. `@opero` Decorator
+- Focus on providing resilience mechanisms for single functions
+- Support both sync and async functions
+- Integrate the following capabilities in a logical order:
+  1. Caching (via twat-cache)
+  2. Retry mechanisms
+  3. Parameter-based fallbacks with `arg_fallback`
+  4. Rate limiting
+- Allow simple configuration of each capability
+- Support parameter-based fallbacks with `arg_fallback`
 
-- [ ] Fix remaining type issues in pyproject.toml
-  - [ ] Resolve schema validation errors in hatch configuration
-  - [ ] Update deprecated settings
+#### 1.1.2. `@operomap` Decorator
+- Inspired by `twat-mp`'s map functions (`pmap`, `imap`, `amap`, `apmap`)
+- Support parallel execution of functions over multiple inputs
+- Integrate the following capabilities in a logical order:
+  1. Caching (via twat-cache)
+  2. Retry mechanisms
+  3. Parameter-based fallbacks with `arg_fallback`
+  4. Rate limiting
+  5. Parallel execution (via twat-mp)
+- Support various concurrency modes (process, thread, async)
+- Support parameter-based fallbacks with `arg_fallback`
 
-## Medium Priority Tasks
+### 1.2. Simplify Configuration
 
-- [ ] Add performance benchmarks
-  - [ ] Create benchmark suite for key operations
-  - [ ] Implement stress tests for concurrency and rate limiting
-  - [ ] Add comparison benchmarks against similar libraries
+- Remove the complex nested configuration classes
+- Use simple function parameters with sensible defaults
+- Make the API more intuitive with clear parameter names
+- Focus exclusively on parameter-based fallbacks (trying the same function with different parameter values)
+- Provide a logical order of operations for all resilience mechanisms
 
-- [ ] Infrastructure improvements
-  - [ ] Set up CI/CD pipeline for automated testing and deployment
-  - [ ] Configure code coverage reporting
-  - [ ] Add pre-commit hooks for code quality
-  - [ ] Create GitHub Actions workflow for publishing to PyPI
-  - [ ] Set up automated dependency updates
+### 1.3. Implementation Plan
 
-- [ ] Compatibility enhancements
-  - [ ] Test with different versions of dependencies
-  - [ ] Add explicit support for asyncio event loop policies
-  - [ ] Ensure thread safety for shared resources
-  - [ ] Test on different operating systems
+1. **Dependencies Integration**
+   - Add `twat-mp` as a dependency for parallel execution
+   - Add `twat-cache` as a dependency for caching functionality
+   - Ensure compatibility between these libraries and opero
 
-## Low Priority Tasks
+2. **Core Module Refactoring**
+   - Identify and preserve the essential resilience mechanisms
+   - Simplify the internal implementation
+   - Remove unnecessary abstraction layers
+   - Implement parameter-based fallback mechanism
 
-- [ ] Feature enhancements
-  - [ ] Implement middleware support for function transformation
-  - [ ] Add metrics collection for performance monitoring
-  - [ ] Create a CLI interface using `fire` and `rich`
-  - [ ] Add support for distributed task queues
-  - [ ] Implement streaming support with backpressure handling
+3. **New Decorator API**
+   - Implement the `@opero` decorator for single function resilience
+   - Implement the `@operomap` decorator for parallel operations
+   - DROP backward compatibility with the existing API, it's not important
+   - Support parameter-based fallbacks exclusively
 
-## Completed Tasks
+4. **Logical Processing Order**
+   - Establish a clear order of operations for resilience mechanisms:
+     1. Caching (check cache first before any execution)
+     2. Retry mechanism (attempt execution multiple times)
+     3. Parameter-based fallbacks (try alternative parameters)
+     4. Rate limiting (control execution frequency)
+     5. Concurrency (for operomap only)
 
-- [x] Fix all linter errors in the codebase
-- [x] Create proper API documentation
-- [x] Improve documentation
-  - [x] Add more usage examples for common patterns
-  - [x] Document best practices for error handling
-  - [x] Add docstrings to all public functions and classes
-  - [x] Create API reference documentation
-- [x] Fix parameter order in retry function calls
-- [x] Add fallback mechanism for handling None configurations
-- [x] Fix type incompatibility issues in async/sync conversions
-- [x] Enhance structured logging with context support
+5. **Function Signatures**
+   ```python
+   # @opero decorator with caching, retry, parameter-based fallbacks, and rate limiting
+   @opero(
+       # Caching options (via twat-cache)
+       cache=True,                     # Enable caching
+       cache_ttl=3600,                 # Cache time-to-live in seconds
+       cache_backend="memory",         # Cache backend: "memory", "disk", "redis", etc.
+       cache_key=None,                 # Custom cache key function
+       cache_namespace="opero",        # Cache namespace
+       
+       # Retry options
+       retries=3,                      # Number of retry attempts
+       backoff_factor=1.5,             # Backoff multiplier between retries
+       min_delay=0.1,                  # Minimum delay between retries (seconds)
+       max_delay=30,                   # Maximum delay between retries (seconds)
+       retry_on=(Exception,),          # Exception types to retry on
+       
+       # Fallback options
+       arg_fallback="model",           # Parameter name containing fallback values
+       
+       # Rate limiting options
+       rate_limit=None,                # Operations per second (if needed)
+   )
+   def call_llm(prompt: str, model: list[str] = ["gpt-4", "gpt-3.5"]):
+       # Will try with model="gpt-4" first, then model="gpt-3.5" if it fails
+       pass
 
-## Next Release (v0.2.0) Priorities
+   # @operomap decorator with caching, retry, parameter-based fallbacks, rate limiting, and concurrency
+   @operomap(
+       # Caching options (via twat-cache)
+       cache=True,                     # Enable caching
+       cache_ttl=3600,                 # Cache time-to-live in seconds
+       cache_backend="memory",         # Cache backend: "memory", "disk", "redis", etc.
+       cache_key=None,                 # Custom cache key function
+       cache_namespace="opero",        # Cache namespace
+       
+       # Retry options
+       retries=3,                      # Number of retry attempts
+       backoff_factor=1.5,             # Backoff multiplier between retries
+       min_delay=0.1,                  # Minimum delay between retries (seconds)
+       max_delay=30,                   # Maximum delay between retries (seconds)
+       retry_on=(Exception,),          # Exception types to retry on
+       
+       # Fallback options
+       arg_fallback="model",           # Parameter name containing fallback values
+       
+       # Rate limiting options
+       rate_limit=None,                # Operations per second (if needed)
+       
+       # Concurrency options (via twat-mp)
+       mode="process",                 # "process", "thread", or "async"
+       workers=4,                      # Number of workers
+       ordered=True                    # Whether to preserve input order in results
+   )
+   def process_item(item, model: list[str] = ["gpt-4", "gpt-3.5"]):
+       # Process a single item
+       return result
+   
+   # Usage
+   results = process_item([item1, item2, item3])
+   ```
 
-1. [x] Fix all linter errors in the codebase
-2. [ ] Complete the test suite with 90%+ coverage
-3. [x] Create proper API documentation
-4. [ ] Optimize performance for high-throughput scenarios
-5. [ ] Fix remaining type issues in pyproject.toml
+### 1.4. Testing Strategy
+
+1. Create unit tests for both decorators
+2. Test each resilience mechanism individually:
+   - Caching functionality
+   - Retry mechanisms
+   - Parameter-based fallbacks
+   - Rate limiting
+   - Concurrency modes
+3. Test the integration of multiple resilience mechanisms
+4. Test edge cases and error scenarios
+5. Ensure performance is comparable to or better than the previous implementation
+
+### 1.5. Documentation Updates
+
+1. Rewrite README.md with the new API
+2. Create clear, concise examples for both decorators
+3. Provide migration guide for users of the old API
+4. Document all parameters and their behavior
+5. Include examples of each resilience mechanism
+6. Document the logical order of operations
+
+### 1.6. Code Cleanup
+
+1. Remove deprecated functionality
+2. Simplify internal implementation
+3. Use modern Python features (match statements, type hints)
+4. Minimize dependencies (except for twat-mp and twat-cache)
+
+### 1.7. Release Plan
+
+1. Implement core functionality first
+2. Release an alpha version for feedback
+3. Refine based on user feedback
+4. Complete documentation
+5. Release beta version
+6. Final release
+
+### 1.8. Example Usage After Refactoring
+
+```python
+from opero import opero, operomap
+
+# Using caching and parameter-based fallbacks
+@opero(cache=True, cache_ttl=3600, arg_fallback="model")
+async def call_llm(prompt: str, model: list[str] = ["gpt-4", "gpt-3.5"]):
+    # Will try with model="gpt-4" first, then model="gpt-3.5" if it fails
+    # Results will be cached for 1 hour
+    response = await api_call(prompt=prompt, model=model)
+    return response
+
+# Simple retry with no fallbacks or caching
+@opero(retries=3, cache=False)
+async def fetch_data(item_id):
+    # Implementation that might fail
+    ...
+
+# Parallel processing with caching, resilience, and rate limiting
+@operomap(mode="process", workers=4, retries=2, rate_limit=10, cache=True)
+def process_item(item):
+    # Process a single item
+    return result
+
+# Parameter-based fallbacks with parallel processing and caching
+@operomap(mode="thread", workers=4, arg_fallback="api_key", cache=True, cache_ttl=1800)
+def call_api(item, api_key: list[str] = ["primary_key", "backup_key", "emergency_key"]):
+    # Will try each API key in order if previous ones fail
+    # Results will be cached for 30 minutes
+    return make_request(item, api_key=api_key)
+
+# Usage examples
+data = await call_llm("Tell me about Python")  # Will try with gpt-4, fallback to gpt-3.5, and cache results
+results = call_api([item1, item2, item3])      # Process items in parallel with key fallbacks and caching
+```
+
+### 1.9. Timeline
+
+1. Core refactoring: 1-2 weeks
+2. New decorator implementation: 1 week
+3. Testing and bug fixes: 1 week
+4. Documentation: 2-3 days
+5. Release process: 1 week
+
+Total estimated time: ~4 weeks
+
+### 1.10. Implementation Details for Parameter-Based Fallbacks
+
+To implement parameter-based fallbacks, the decorator will:
+
+1. Parse and validate the decorated function's signature
+2. Check if the specified `arg_fallback` parameter exists and has a sequence type
+3. When the function is called:
+   - Store the original parameter value (list of fallback options)
+   - Try executing the function with the first value in the list
+   - If an exception occurs, retry with the next value in the list
+   - Continue until success or all values are exhausted
+   
+This implementation must handle:
+- Proper type annotation preservation
+- Documentation generation
+- Graceful failure if the parameter isn't a sequence
+- Integration with other resilience mechanisms (caching, retries, rate limiting)
+
+## 2. Detailed Implementation Steps
+
+### 2.1. Create New File Structure
+
+1. Create new core modules:
+   ```
+   src/opero/
+   ├── __init__.py            # Re-exports public API
+   ├── _version.py            # Version information
+   ├── decorators/            # New directory for decorators
+   │   ├── __init__.py        # Re-exports decorators
+   │   ├── opero.py           # @opero decorator implementation
+   │   └── operomap.py        # @operomap decorator implementation
+   ├── core/                  # Core functionality
+   │   ├── __init__.py
+   │   ├── cache.py           # Integration with twat-cache
+   │   ├── retry.py           # Retry mechanisms
+   │   ├── fallback.py        # Parameter-based fallback implementation
+   │   └── rate_limit.py      # Rate limiting mechanisms
+   ├── concurrency/           # Concurrency implementations (using twat-mp)
+   │   ├── __init__.py
+   │   └── pool.py            # Integration with twat-mp
+   └── utils/                 # Utility functions
+       ├── __init__.py
+       ├── async_utils.py     # Async utilities
+       └── logging.py         # Logging utilities
+   ```
+
+2. Rename existing modules to avoid conflicts during development:
+   - `core.py` → `_old_core.py`
+   - `decorators.py` → `_old_decorators.py`
+   - etc.
+
+### 2.2. Implement Cache Integration with twat-cache
+
+1. Create `core/cache.py` with key features:
+   ```python
+   from typing import Any, Callable, TypeVar, ParamSpec, Optional, Union, Dict
+   import functools
+   import inspect
+   
+   # Import from twat-cache
+   from twat_cache import ucache, CacheContext
+   
+   P = ParamSpec('P')
+   R = TypeVar('R')
+   
+   def get_cache_decorator(
+       cache: bool = True,
+       cache_ttl: Optional[int] = None,
+       cache_backend: str = "memory",
+       cache_key: Optional[Callable] = None,
+       cache_namespace: str = "opero",
+       **kwargs
+   ) -> Callable[[Callable[P, R]], Callable[P, R]]:
+       """
+       Get a cache decorator from twat-cache based on the provided configuration.
+       
+       Args:
+           cache: Whether to enable caching
+           cache_ttl: Time-to-live for cache entries in seconds
+           cache_backend: Cache backend to use ("memory", "disk", "redis", etc.)
+           cache_key: Custom function to generate cache keys
+           cache_namespace: Namespace for cache entries
+           **kwargs: Additional arguments to pass to the cache decorator
+           
+       Returns:
+           A cache decorator function
+       """
+       if not cache:
+           # Return a no-op decorator if caching is disabled
+           return lambda func: func
+       
+       # Configure the cache decorator
+       cache_config = {
+           "ttl": cache_ttl,
+           "preferred_engine": cache_backend,
+           "namespace": cache_namespace,
+       }
+       
+       if cache_key:
+           cache_config["key_builder"] = cache_key
+           
+       # Add any additional kwargs
+       cache_config.update(kwargs)
+       
+       # Return the configured cache decorator
+       return lambda func: ucache(**cache_config)(func)
+   
+   def get_cache_context(
+       cache_backend: str = "memory",
+       cache_namespace: str = "opero",
+       **kwargs
+   ) -> CacheContext:
+       """
+       Get a cache context for manual cache operations.
+       
+       Args:
+           cache_backend: Cache backend to use
+           cache_namespace: Namespace for cache entries
+           **kwargs: Additional arguments for the cache context
+           
+       Returns:
+           A cache context object
+       """
+       return CacheContext(
+           engine_name=cache_backend,
+           namespace=cache_namespace,
+           **kwargs
+       )
+   ```
+
+### 2.3. Implement Parameter-Based Fallback Mechanism
+
+1. Create `core/fallback.py` with key features:
+   ```python
+   from typing import Any, Callable, TypeVar, ParamSpec, cast, get_type_hints, Sequence
+   import inspect
+   import functools
+   import asyncio
+   
+   P = ParamSpec('P')
+   R = TypeVar('R')
+   
+   class ArgFallbackError(Exception):
+       """Error raised when all parameter-based fallbacks have been exhausted."""
+       pass
+   
+   def get_parameter_fallbacks(func: Callable, arg_name: str, args: tuple, kwargs: dict) -> list:
+       """Extract fallback options from function arguments."""
+       sig = inspect.signature(func)
+       param_dict = dict(zip(list(sig.parameters.keys())[:len(args)], args))
+       param_dict.update(kwargs)
+       
+       if arg_name not in param_dict:
+           raise ValueError(f"Parameter '{arg_name}' not found in function signature")
+           
+       fallback_values = param_dict[arg_name]
+       if not isinstance(fallback_values, Sequence) or isinstance(fallback_values, (str, bytes)):
+           raise ValueError(f"Parameter '{arg_name}' must be a sequence (list, tuple)")
+           
+       return list(fallback_values)
+   
+   async def try_with_arg_fallback(
+       func: Callable[P, R], 
+       arg_name: str,
+       args: P.args,
+       kwargs: P.kwargs,
+   ) -> R:
+       """Try to execute a function with parameter-based fallbacks."""
+       fallback_values = get_parameter_fallbacks(func, arg_name, args, kwargs)
+       if not fallback_values:
+           raise ValueError(f"No fallback values found in parameter '{arg_name}'")
+       
+       # Convert args to a list so we can modify it if needed
+       args_list = list(args)
+       
+       # Find if the fallback argument is in args or kwargs
+       sig = inspect.signature(func)
+       param_names = list(sig.parameters.keys())
+       
+       last_error = None
+       for i, value in enumerate(fallback_values):
+           try:
+               # Update the argument with the current fallback value
+               if arg_name in kwargs:
+                   kwargs[arg_name] = value
+               elif arg_name in param_names:
+                   arg_index = param_names.index(arg_name)
+                   if arg_index < len(args_list):
+                       args_list[arg_index] = value
+                   else:
+                       kwargs[arg_name] = value
+               
+               # Call the function with updated arguments
+               if asyncio.iscoroutinefunction(func):
+                   return await func(*args_list, **kwargs)
+               else:
+                   return func(*args_list, **kwargs)
+           except Exception as e:
+               last_error = e
+               continue
+       
+       # If we've exhausted all fallbacks, raise an error
+       if last_error:
+           raise ArgFallbackError(f"All fallback values for '{arg_name}' failed") from last_error
+       else:
+           raise ArgFallbackError(f"No fallback values provided for '{arg_name}'")
+   ```
+
+### 2.4. Implement the New Decorators
+
+1. Create `decorators/opero.py`:
+   ```python
+   from typing import Any, Callable, TypeVar, ParamSpec, Optional, Union, Type, Tuple
+   import functools
+   import inspect
+   import asyncio
+   
+   from ..core.cache import get_cache_decorator
+   from ..core.fallback import try_with_arg_fallback
+   from ..core.retry import retry_async, RetryConfig
+   from ..core.rate_limit import RateLimiter
+   
+   P = ParamSpec('P')
+   R = TypeVar('R')
+   
+   def opero(
+       # Caching options
+       cache: bool = True,
+       cache_ttl: Optional[int] = None,
+       cache_backend: str = "memory",
+       cache_key: Optional[Callable] = None,
+       cache_namespace: str = "opero",
+       
+       # Retry options
+       retries: int = 3,
+       backoff_factor: float = 1.5,
+       min_delay: float = 0.1,
+       max_delay: float = 30.0,
+       retry_on: Union[Type[Exception], Tuple[Type[Exception], ...]] = (Exception,),
+       
+       # Fallback options
+       arg_fallback: Optional[str] = None,
+       
+       # Rate limiting options
+       rate_limit: Optional[float] = None,
+   ) -> Callable[[Callable[P, R]], Callable[P, R]]:
+       """
+       Decorator for adding resilience to functions with caching, retries, parameter-based fallbacks, and rate limiting.
+       
+       The order of operations is:
+       1. Check cache (if enabled)
+       2. Apply rate limiting (if enabled)
+       3. Try with parameter-based fallbacks (if enabled)
+       4. Apply retry mechanism (if enabled)
+       
+       Args:
+           # Caching options
+           cache: Whether to enable caching
+           cache_ttl: Time-to-live for cache entries in seconds
+           cache_backend: Cache backend to use ("memory", "disk", "redis", etc.)
+           cache_key: Custom function to generate cache keys
+           cache_namespace: Namespace for cache entries
+           
+           # Retry options
+           retries: Number of retry attempts before giving up
+           backoff_factor: Multiplier for exponential backoff between retries
+           min_delay: Minimum delay between retries in seconds
+           max_delay: Maximum delay between retries in seconds
+           retry_on: Exception type(s) that should trigger a retry
+           
+           # Fallback options
+           arg_fallback: Name of the parameter containing fallback values
+           
+           # Rate limiting options
+           rate_limit: Maximum operations per second
+           
+       Returns:
+           Decorated function with enhanced resilience
+       """
+       # Configure retry mechanism
+       retry_config = RetryConfig(
+           max_attempts=retries,
+           wait_multiplier=backoff_factor,
+           wait_min=min_delay,
+           wait_max=max_delay,
+           retry_exceptions=retry_on if isinstance(retry_on, tuple) else (retry_on,),
+       )
+       
+       # Get cache decorator
+       cache_decorator = get_cache_decorator(
+           cache=cache,
+           cache_ttl=cache_ttl,
+           cache_backend=cache_backend,
+           cache_key=cache_key,
+           cache_namespace=cache_namespace,
+       )
+       
+       def decorator(func: Callable[P, R]) -> Callable[P, R]:
+           # Apply cache decorator first (outermost)
+           cached_func = cache_decorator(func)
+           
+           @functools.wraps(func)
+           async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+               # Apply rate limiting if enabled
+               if rate_limit:
+                   limiter = RateLimiter(rate_limit)
+                   async with limiter:
+                       # Apply fallbacks and retries
+                       if arg_fallback:
+                           try:
+                               return await try_with_arg_fallback(
+                                   lambda *a, **kw: retry_async(cached_func, retry_config, *a, **kw),
+                                   arg_fallback,
+                                   args,
+                                   kwargs
+                               )
+                           except Exception as e:
+                               if retries > 0:
+                                   return await retry_async(cached_func, retry_config, *args, **kwargs)
+                               raise e
+                       else:
+                           return await retry_async(cached_func, retry_config, *args, **kwargs)
+               else:
+                   # No rate limiting, just apply fallbacks and retries
+                   if arg_fallback:
+                       try:
+                           return await try_with_arg_fallback(
+                               lambda *a, **kw: retry_async(cached_func, retry_config, *a, **kw),
+                               arg_fallback,
+                               args,
+                               kwargs
+                           )
+                       except Exception as e:
+                           if retries > 0:
+                               return await retry_async(cached_func, retry_config, *args, **kwargs)
+                           raise e
+                   else:
+                       return await retry_async(cached_func, retry_config, *args, **kwargs)
+           
+           @functools.wraps(func)
+           def sync_wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+               return asyncio.run(async_wrapper(*args, **kwargs))
+           
+           if asyncio.iscoroutinefunction(func):
+               return async_wrapper
+           else:
+               return sync_wrapper
+               
+       return decorator
+   ```
+
+2. Create `decorators/operomap.py`:
+   ```python
+   from typing import Any, Callable, TypeVar, ParamSpec, Optional, Union, Type, Tuple, List, Iterable
+   import functools
+   import inspect
+   import asyncio
+   
+   from ..core.cache import get_cache_decorator
+   from ..core.fallback import try_with_arg_fallback
+   from ..core.retry import retry_async, RetryConfig
+   from ..core.rate_limit import RateLimiter
+   
+   # Import from twat-mp
+   from twat_mp import pmap, tmap, amap, apmap
+   
+   P = ParamSpec('P')
+   R = TypeVar('R')
+   T = TypeVar('T')  # Input item type
+   
+   def operomap(
+       # Caching options
+       cache: bool = True,
+       cache_ttl: Optional[int] = None,
+       cache_backend: str = "memory",
+       cache_key: Optional[Callable] = None,
+       cache_namespace: str = "opero",
+       
+       # Retry options
+       retries: int = 3,
+       backoff_factor: float = 1.5,
+       min_delay: float = 0.1,
+       max_delay: float = 30.0,
+       retry_on: Union[Type[Exception], Tuple[Type[Exception], ...]] = (Exception,),
+       
+       # Fallback options
+       arg_fallback: Optional[str] = None,
+       
+       # Rate limiting options
+       rate_limit: Optional[float] = None,
+       
+       # Concurrency options
+       mode: str = "process",
+       workers: Optional[int] = None,
+       ordered: bool = True,
+   ) -> Callable[[Callable[..., R]], Callable[[Iterable[T]], List[R]]]:
+       """
+       Decorator for parallel processing with caching, resilience features, and rate limiting.
+       
+       The order of operations is:
+       1. Check cache (if enabled)
+       2. Apply rate limiting (if enabled)
+       3. Try with parameter-based fallbacks (if enabled)
+       4. Apply retry mechanism (if enabled)
+       5. Execute in parallel (using twat-mp)
+       
+       Args:
+           # Caching options
+           cache: Whether to enable caching
+           cache_ttl: Time-to-live for cache entries in seconds
+           cache_backend: Cache backend to use ("memory", "disk", "redis", etc.)
+           cache_key: Custom function to generate cache keys
+           cache_namespace: Namespace for cache entries
+           
+           # Retry options
+           retries: Number of retry attempts before giving up
+           backoff_factor: Multiplier for exponential backoff between retries
+           min_delay: Minimum delay between retries in seconds
+           max_delay: Maximum delay between retries in seconds
+           retry_on: Exception type(s) that should trigger a retry
+           
+           # Fallback options
+           arg_fallback: Name of the parameter containing fallback values
+           
+           # Rate limiting options
+           rate_limit: Maximum operations per second
+           
+           # Concurrency options
+           mode: Concurrency mode: "process", "thread", or "async"
+           workers: Number of worker processes/threads
+           ordered: Whether to preserve the order of results
+           
+       Returns:
+           Decorated function that processes items in parallel
+       """
+       # Configure retry mechanism
+       retry_config = RetryConfig(
+           max_attempts=retries,
+           wait_multiplier=backoff_factor,
+           wait_min=min_delay,
+           wait_max=max_delay,
+           retry_exceptions=retry_on if isinstance(retry_on, tuple) else (retry_on,),
+       )
+       
+       # Get cache decorator
+       cache_decorator = get_cache_decorator(
+           cache=cache,
+           cache_ttl=cache_ttl,
+           cache_backend=cache_backend,
+           cache_key=cache_key,
+           cache_namespace=cache_namespace,
+       )
+       
+       def decorator(func: Callable[..., R]) -> Callable[[Iterable[T]], List[R]]:
+           # Apply cache decorator first (outermost)
+           cached_func = cache_decorator(func)
+           
+           async def process_item(item: T) -> R:
+               """Process a single item with retries and fallbacks."""
+               if arg_fallback:
+                   try:
+                       return await try_with_arg_fallback(
+                           lambda *a, **kw: retry_async(cached_func, retry_config, *a, **kw),
+                           arg_fallback,
+                           (item,),
+                           {}
+                       )
+                   except Exception as e:
+                       if retries > 0:
+                           return await retry_async(cached_func, retry_config, item)
+                       raise e
+               else:
+                   return await retry_async(cached_func, retry_config, item)
+           
+           async def process_with_rate_limit(item: T) -> R:
+               """Process an item with rate limiting."""
+               if rate_limit:
+                   limiter = RateLimiter(rate_limit)
+                   async with limiter:
+                       return await process_item(item)
+               return await process_item(item)
+               
+           def process_items(items: Iterable[T]) -> List[R]:
+               """Process multiple items in parallel using twat-mp."""
+               items_list = list(items)
+               
+               # Select the appropriate map function based on mode
+               if mode == "process":
+                   return pmap(process_with_rate_limit, items_list, workers=workers, ordered=ordered)
+               elif mode == "thread":
+                   return tmap(process_with_rate_limit, items_list, workers=workers, ordered=ordered)
+               elif mode == "async":
+                   return asyncio.run(amap(process_with_rate_limit, items_list, workers=workers, ordered=ordered))
+               else:
+                   raise ValueError(f"Unknown mode: {mode}")
+           
+           @functools.wraps(func)
+           def wrapper(items: Iterable[T]) -> List[R]:
+               return process_items(items)
+               
+           return wrapper
+       
+       return decorator
+   ```
+
+### 2.5. Update Dependencies in pyproject.toml
+
+```toml
+[project]
+dependencies = [
+    "twat-mp>=1.0.0",        # For parallel execution
+    "twat-cache>=2.3.0",     # For caching functionality
+]
+
+[project.optional-dependencies]
+all = [
+    "twat-mp[all]>=1.0.0",   # All parallel execution backends
+    "twat-cache[all]>=2.3.0", # All caching backends
+]
+```
+
+## 3. Migration Strategy
+
+1. New code should be developed alongside existing code
+2. Rename old modules with underscore prefix (`_old_*.py`)
+3. Gradually refactor tests to use new API
+4. Release alpha version with both old and new APIs
+5. Get feedback and finalize the new API
+6. Release final version with only the new API
+
+## 4. Success Criteria
+
+The rewrite will be considered successful if:
+
+1. Code is significantly simpler (measured by complexity metrics)
+2. API is more intuitive and easier to understand
+3. Tests pass with the same or better coverage
+4. Performance is comparable or improved
+5. Documentation is clear and comprehensive
 
 
-2025-03-05 11:35:47 -  M CLEANUP.txt
- M REPO_CONTENT.txt
+2025-03-05 12:36:37 - 
+📦 Repomix v0.2.29
 
-2025-03-05 11:35:47 - Changes detected in repository
+No custom config found at repomix.config.json or global config at /Users/adam/.config/repomix/repomix.config.json.
+You can add a config file for additional settings. Please check https://github.com/yamadashy/repomix for more information.
+⠙ Collecting files...
+[2K[1A[2K[G⠹ Collect file... (26/29) README.md
+[2K[1A[2K[G⠸ Collect file... (28/29) twat-cache.txt
+[2K[1A[2K[G⠼ Running security check... (1/29) .cursor/rules/0project.mdc
+[2K[1A[2K[G⠴ Processing files...
+[2K[1A[2K[G⠦ Processing file... (20/29) CHANGELOG.md
+[2K[1A[2K[G⠧ Calculating metrics...
+[2K[1A[2K[G⠇ Calculating metrics...
+[2K[1A[2K[G⠏ Calculating metrics...
+[2K[1A[2K[G⠋ Calculating metrics... (1/29) .cursor/rules/0project.mdc
+[2K[1A[2K[G⠙ Calculating metrics... (27/29) TODO.md
+[2K[1A[2K[G✔ Packing completed successfully!
+
+📈 Top 5 Files by Character Count and Token Count:
+──────────────────────────────────────────────────
+1.  twat-cache.txt (198,097 chars, 47,960 tokens)
+2.  twat-mp.txt (79,940 chars, 19,212 tokens)
+3.  TODO.md (28,449 chars, 6,205 tokens)
+4.  README.md (23,779 chars, 5,270 tokens)
+5.  pyproject.toml (6,199 chars, 1,965 tokens)
+
+🔎 Security Check:
+──────────────────
+✔ No suspicious files detected.
+
+📊 Pack Summary:
+────────────────
+  Total Files: 29 files
+  Total Chars: 379,773 chars
+ Total Tokens: 91,353 tokens
+       Output: REPO_CONTENT.txt
+     Security: ✔ No suspicious files detected
+
+🎉 All Done!
+Your repository has been successfully packed.
+
+💡 Repomix is now available in your browser! Try it at https://repomix.com
+
+2025-03-05 12:36:37 - Repository content mixed into REPO_CONTENT.txt

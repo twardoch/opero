@@ -2,26 +2,24 @@
 this_file: README.md
 ---
 
-# Opero
+# Opero: Resilient, Parallel Task Orchestration for Python
 
 [![PyPI version](https://img.shields.io/pypi/v/opero.svg)](https://pypi.org/project/opero/)
 [![Python versions](https://img.shields.io/pypi/pyversions/opero.svg)](https://pypi.org/project/opero/)
 [![License](https://img.shields.io/github/license/twardoch/opero.svg)](https://github.com/twardoch/opero/blob/main/LICENSE)
 
-**Opero** is a Python package that provides a clean, Pythonic interface for orchestrating resilient, parallelized operations with fallback mechanisms, retry logic, rate limiting, and multiprocessing support. The name "Opero" comes from the Latin word for "to work" or "to operate."
+Opero provides a clean, Pythonic interface for orchestrating resilient, parallelized operations with parameter-based fallbacks, retry logic, rate limiting, and multiprocessing support.
 
 ## Key Features
 
-- **Fallback Chains**: Automatically try alternative functions when primary operations fail
-- **Automatic Retries**: Robust retry mechanism with configurable backoff strategies
-- **Rate Limiting**: Control operation frequency to prevent resource exhaustion
-- **Parallel Processing**: Execute operations concurrently with configurable limits
-- **Async First**: Built for modern async workflows while fully supporting sync functions
-- **Unified Interface**: Both class-based (`Orchestrator`) and decorator-based (`@orchestrate`) APIs
-- **Composable**: Layer different resilience mechanisms as needed
-- **Type Safety**: Comprehensive type hints for better IDE integration and error detection
-- **Comprehensive Logging**: Structured logging with context for better debugging and monitoring
-- **Error Resilience**: Robust error handling with proper propagation and recovery
+- **Simple, focused decorators**: `@opero` and `@operomap` for resilient operations
+- **Parameter-based fallbacks**: Try the same function with different parameter values
+- **Integrated caching**: Efficient caching with multiple backends via `twat-cache`
+- **Retry mechanisms**: Exponential backoff, jitter, and customizable retry conditions
+- **Rate limiting**: Control execution frequency to avoid overwhelming resources
+- **Parallel execution**: Process, thread, and async-based parallelism via `twat-mp`
+- **Async support**: Full support for async/await functions
+- **Logical processing order**: Clear order of operations for all resilience mechanisms
 
 ## Recent Improvements
 
@@ -55,133 +53,167 @@ pip install opero[all]
 
 ## Quick Start
 
-### Basic Usage with Fallbacks
+### Basic Usage with `@opero`
 
 ```python
-import asyncio
-from opero import Orchestrator, OrchestratorConfig
+from opero import opero
 
-async def primary_function(value):
-    if value % 2 == 0:
-        raise ValueError(f"Failed for value: {value}")
-    return f"Primary: {value}"
-
-async def fallback_function(value):
-    return f"Fallback: {value}"
-
-async def main():
-    # Create an orchestrator with a fallback
-    orchestrator = Orchestrator(
-        config=OrchestratorConfig(
-            fallbacks=[fallback_function]
-        )
-    )
-
-    # Execute a single operation
-    result = await orchestrator.execute(primary_function, 2)
-    print(result)  # "Fallback: 2"
-
-    # Process multiple items
-    results = await orchestrator.process([primary_function], 1, 2, 3, 4)
-    print(results)  # ["Primary: 1", "Fallback: 2", "Primary: 3", "Fallback: 4"]
-
-asyncio.run(main())
-```
-
-### Using the Decorator with Retry
-
-```python
-import asyncio
-from opero import orchestrate, RetryConfig, OrchestratorConfig
-
-@orchestrate(
-    config=OrchestratorConfig(
-        retry_config=RetryConfig(
-            max_attempts=3,
-            wait_min=1.0,
-            wait_max=5.0,
-            wait_multiplier=1.5
-        )
-    )
+# Add caching, retries, and parameter-based fallbacks to a function
+@opero(
+    # Caching options
+    cache=True,
+    cache_ttl=3600,  # Cache for 1 hour
+    
+    # Retry options
+    retries=3,
+    backoff_factor=1.5,
+    
+    # Fallback options
+    arg_fallback="model"
 )
-async def unreliable_function(value):
-    # This function will be retried up to 3 times if it fails
-    if value % 3 == 0:
-        raise ValueError(f"Failed for value: {value}")
-    return f"Success: {value}"
-
-async def main():
-    # The function will be retried automatically if it fails
-    result = await unreliable_function(3)  # Will retry but eventually use fallback
-    print(result)
-
-asyncio.run(main())
+async def call_llm(prompt: str, model: list[str] = ["gpt-4", "gpt-3.5"]):
+    # Will try with model="gpt-4" first, then model="gpt-3.5" if it fails
+    # Results will be cached for 1 hour
+    response = await api_call(prompt=prompt, model=model)
+    return response
 ```
 
-### Rate Limiting and Concurrency
+### Parallel Processing with `@operomap`
 
 ```python
-import asyncio
-from opero import Orchestrator, OrchestratorConfig, RateLimitConfig, ConcurrencyConfig
+from opero import operomap
 
-async def api_call(item):
-    # Simulate an API call
-    await asyncio.sleep(0.1)
-    return f"Result: {item}"
+# Process items in parallel with resilience mechanisms
+@operomap(
+    # Concurrency options
+    mode="process",  # Use process-based parallelism
+    workers=4,       # Use 4 worker processes
+    
+    # Caching options
+    cache=True,
+    cache_ttl=1800,  # Cache for 30 minutes
+    
+    # Fallback options
+    arg_fallback="api_key"
+)
+def call_api(item, api_key: list[str] = ["primary_key", "backup_key"]):
+    # Will try each API key in order if previous ones fail
+    # Results will be cached for 30 minutes
+    return make_request(item, api_key=api_key)
 
-async def main():
-    # Create an orchestrator with rate limiting and concurrency control
-    orchestrator = Orchestrator(
-        config=OrchestratorConfig(
-            rate_limit_config=RateLimitConfig(rate=5),  # 5 operations per second
-            concurrency_config=ConcurrencyConfig(limit=3)  # Max 3 concurrent operations
-        )
-    )
-
-    # Process multiple items with controlled concurrency and rate
-    items = list(range(10))
-    results = await orchestrator.process([api_call], *items)
-    print(results)
-
-asyncio.run(main())
+# Usage
+results = call_api([item1, item2, item3])
 ```
 
-### Using Structured Logging
+## Decorator Options
+
+### `@opero` Decorator
 
 ```python
-import asyncio
-import logging
-from opero import Orchestrator, OrchestratorConfig, get_logger, ContextAdapter, log_context
-
-# Create a logger with context support
-logger = ContextAdapter(get_logger("my_app", level=logging.DEBUG))
-
-async def api_call(item):
-    # Log with context
-    logger.debug(f"Processing item {item}")
-    await asyncio.sleep(0.1)
-    return f"Result: {item}"
-
-async def main():
-    # Add global context
-    logger.add_context(service="api_service", version="1.0.0")
+@opero(
+    # Caching options
+    cache=True,                     # Enable caching
+    cache_ttl=3600,                 # Cache time-to-live in seconds
+    cache_backend="memory",         # Cache backend: "memory", "disk", "redis", etc.
+    cache_key=None,                 # Custom cache key function
+    cache_namespace="opero",        # Cache namespace
     
-    orchestrator = Orchestrator(
-        config=OrchestratorConfig(
-            logger=logger
-        )
-    )
+    # Retry options
+    retries=3,                      # Number of retry attempts
+    backoff_factor=1.5,             # Backoff multiplier between retries
+    min_delay=0.1,                  # Minimum delay between retries (seconds)
+    max_delay=30,                   # Maximum delay between retries (seconds)
+    retry_on=Exception,             # Exception types to retry on
     
-    # Use context manager for temporary context
-    with log_context(logger, operation="batch_process", batch_id="123"):
-        logger.info("Starting batch processing")
-        results = await orchestrator.process([api_call], *range(5))
-        logger.info(f"Completed batch processing with {len(results)} results")
+    # Fallback options
+    arg_fallback="model",           # Parameter name containing fallback values
     
-    # Context from the context manager is removed here
-    logger.info("Continuing with other operations")
+    # Rate limiting options
+    rate_limit=None,                # Operations per second (if needed)
+)
+def my_function(arg1, arg2, model=["option1", "option2"]):
+    # Function implementation
+    pass
+```
 
-asyncio.run(main())
+### `@operomap` Decorator
+
+```python
+@operomap(
+    # Caching options
+    cache=True,                     # Enable caching
+    cache_ttl=3600,                 # Cache time-to-live in seconds
+    cache_backend="memory",         # Cache backend: "memory", "disk", "redis", etc.
+    cache_key=None,                 # Custom cache key function
+    cache_namespace="opero",        # Cache namespace
+    
+    # Retry options
+    retries=3,                      # Number of retry attempts
+    backoff_factor=1.5,             # Backoff multiplier between retries
+    min_delay=0.1,                  # Minimum delay between retries (seconds)
+    max_delay=30,                   # Maximum delay between retries (seconds)
+    retry_on=Exception,             # Exception types to retry on
+    
+    # Fallback options
+    arg_fallback="model",           # Parameter name containing fallback values
+    
+    # Rate limiting options
+    rate_limit=None,                # Operations per second (if needed)
+    
+    # Concurrency options
+    mode="process",                 # "process", "thread", "async", or "async_process"
+    workers=4,                      # Number of workers
+    ordered=True,                   # Whether to preserve input order in results
+    progress=True                   # Enable progress tracking
+)
+def process_item(item, model=["option1", "option2"]):
+    # Process a single item
+    return result
+
+# Usage
+results = process_item([item1, item2, item3])
+```
+
+## Advanced Usage
+
+### Async Functions
+
+Both decorators fully support async functions:
+
+```python
+@opero(cache=True, retries=3)
+async def fetch_data(url):
+    # Async implementation
+    response = await aiohttp.get(url)
+    return await response.json()
+
+# Usage
+data = await fetch_data("https://api.example.com/data")
+```
+
+### Parameter-Based Fallbacks
+
+The `arg_fallback` parameter allows you to specify a parameter that contains fallback values:
+
+```python
+@opero(arg_fallback="api_key")
+def call_api(data, api_key=["primary", "secondary", "tertiary"]):
+    # Will try with each API key in sequence until one succeeds
+    return make_request(data, api_key=api_key)
+```
+
+### Caching with Different Backends
+
+```python
+@opero(
+    cache=True,
+    cache_backend="redis",
+    cache_namespace="my_app",
+    cache_ttl=3600
+)
+def expensive_calculation(x):
+    # Results will be cached in Redis
+    return x * x
 ```
 
 ## Best Practices
@@ -666,137 +698,6 @@ with log_context(logger, operation="batch_process", batch_id="123"):
 
 # Context from the context manager is removed here
 logger.info("Continuing with other operations")  # Will not include operation and batch_id
-```
-
-## Advanced Usage
-
-### Mixing Sync and Async Functions
-
-Opero seamlessly handles both synchronous and asynchronous functions. You can mix and match sync and async functions in fallback chains.
-
-```python
-from opero import Orchestrator, OrchestratorConfig
-
-# Synchronous function
-def sync_function(value):
-    if value % 2 == 0:
-        raise ValueError("Sync function failed")
-    return f"Sync: {value}"
-
-# Asynchronous function
-async def async_function(value):
-    return f"Async: {value}"
-
-# Mix them in a fallback chain
-orchestrator = Orchestrator(
-    config=OrchestratorConfig(
-        fallbacks=[async_function]
-    )
-)
-
-# Works with both sync and async primary functions
-result1 = await orchestrator.execute(sync_function, 2)   # "Async: 2"
-result2 = await orchestrator.execute(async_function, 1)  # "Async: 1"
-```
-
-### Custom Retry Logic
-
-Fine-tune retry behavior for specific exception types. You can configure which exceptions trigger retries and how the retries are performed.
-
-```python
-from opero import RetryConfig, orchestrate, OrchestratorConfig
-
-# Only retry on specific exceptions
-retry_config = RetryConfig(
-    max_attempts=5,
-    retry_exceptions=(ConnectionError, TimeoutError),
-    wait_min=0.5,
-    wait_max=10.0,
-    wait_multiplier=2.0
-)
-
-@orchestrate(
-    config=OrchestratorConfig(
-        retry_config=retry_config
-    )
-)
-async def network_operation(url):
-    # Implementation...
-    pass
-```
-
-### Multiprocessing for CPU-Bound Tasks
-
-Use multiprocessing for CPU-intensive operations. This can significantly improve performance for CPU-bound tasks.
-
-```python
-from opero import Orchestrator, OrchestratorConfig, MultiprocessConfig
-
-def cpu_intensive_task(data):
-    # Heavy computation...
-    return result
-
-orchestrator = Orchestrator(
-    config=OrchestratorConfig(
-        multiprocess_config=MultiprocessConfig(
-            max_workers=4,
-            backend="pathos"  # More flexible serialization
-        )
-    )
-)
-
-# Process items in parallel using multiple processes
-results = await orchestrator.process([cpu_intensive_task], *large_data_items)
-```
-
-### Using FallbackChain Directly
-
-You can use the `FallbackChain` class directly for more control over fallback behavior. This is useful when you need to customize how fallbacks are executed.
-
-```python
-from opero import FallbackChain
-
-async def primary_function(value):
-    if value < 0:
-        raise ValueError("Value must be non-negative")
-    return f"Primary: {value}"
-
-async def fallback1(value):
-    if value == 0:
-        raise ValueError("Value must be non-zero")
-    return f"Fallback1: {value}"
-
-async def fallback2(value):
-    return f"Fallback2: {value}"
-
-# Create a fallback chain with multiple fallbacks
-chain = FallbackChain(primary_function, [fallback1, fallback2])
-
-# Execute the chain with different values
-result1 = await chain.execute(5)    # "Primary: 5"
-result2 = await chain.execute(-5)   # "Fallback1: -5"
-result3 = await chain.execute(0)    # "Fallback2: 0"
-```
-
-### Combining Multiple Resilience Mechanisms
-
-Combine multiple resilience mechanisms for robust operations. This is useful for operations that need to be both resilient and performant.
-
-```python
-from opero import Orchestrator, OrchestratorConfig, RetryConfig, RateLimitConfig, ConcurrencyConfig
-
-# Create an orchestrator with multiple resilience mechanisms
-orchestrator = Orchestrator(
-    config=OrchestratorConfig(
-        retry_config=RetryConfig(max_attempts=3),
-        rate_limit_config=RateLimitConfig(rate=10),
-        concurrency_config=ConcurrencyConfig(limit=5),
-        fallbacks=[backup_function]
-    )
-)
-
-# Execute a function with all the configured resilience mechanisms
-result = await orchestrator.execute(my_function, *args, **kwargs)
 ```
 
 ## Development
