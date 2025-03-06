@@ -9,54 +9,54 @@ and multiprocessing support.
 
 Key components:
 - @opero: Decorator for adding resilience mechanisms to functions
-- @operomap: Decorator for adding resilience mechanisms and parallel execution to functions
+- @opmap: Decorator for adding resilience mechanisms and parallel execution to functions
 """
 
 from opero.__version__ import __version__
-from opero.decorators import opero, operomap
-from opero.core import (
-    get_cache_decorator,
-    get_cache_context,
-    clear_cache,
-    get_retry_decorator,
-    get_fallback_decorator,
-    FallbackError,
-    get_rate_limit_decorator,
-    RateLimiter,
-)
 from opero.concurrency import get_parallel_executor, get_parallel_map_decorator
+from opero.core import (
+    FallbackError,
+    RateLimiter,
+    clear_cache,
+    get_cache_context,
+    get_cache_decorator,
+    get_fallback_decorator,
+    get_rate_limit_decorator,
+    get_retry_decorator,
+)
+from opero.decorators import opero, opmap
 from opero.utils import (
-    is_async_function,
-    ensure_async,
-    run_async,
     configure_logging,
+    ensure_async,
     get_logger,
+    is_async_function,
     logger,
+    run_async,
 )
 
 __all__ = [
+    "FallbackError",
+    "RateLimiter",
     # Version
     "__version__",
-    # Decorators
-    "opero",
-    "operomap",
+    "clear_cache",
+    "configure_logging",
+    "ensure_async",
+    "get_cache_context",
     # Core
     "get_cache_decorator",
-    "get_cache_context",
-    "clear_cache",
-    "get_retry_decorator",
     "get_fallback_decorator",
-    "FallbackError",
-    "get_rate_limit_decorator",
-    "RateLimiter",
+    "get_logger",
     # Concurrency
     "get_parallel_executor",
     "get_parallel_map_decorator",
+    "get_rate_limit_decorator",
+    "get_retry_decorator",
     # Utils
     "is_async_function",
-    "ensure_async",
-    "run_async",
-    "configure_logging",
-    "get_logger",
     "logger",
+    # Decorators
+    "opero",
+    "opmap",
+    "run_async",
 ]

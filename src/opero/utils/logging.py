@@ -8,16 +8,16 @@ This module provides utility functions for logging in the opero package.
 
 import logging
 import sys
-from typing import Optional, Union, TextIO
+from typing import TextIO
 
 # Default logger
 logger = logging.getLogger("opero")
 
 
 def configure_logging(
-    level: Union[int, str] = logging.INFO,
-    format_string: Optional[str] = None,
-    stream: Optional[TextIO] = None,
+    level: int | str = logging.INFO,
+    format_string: str | None = None,
+    stream: TextIO | None = None,
     verbose: bool = False,
 ) -> logging.Logger:
     """
@@ -53,7 +53,7 @@ def configure_logging(
     return logger
 
 
-def get_logger(name: Optional[str] = None) -> logging.Logger:
+def get_logger(name: str | None = None) -> logging.Logger:
     """
     Get a logger for the opero package.
 

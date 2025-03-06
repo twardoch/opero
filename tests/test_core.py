@@ -8,10 +8,8 @@ from unittest.mock import AsyncMock
 
 import pytest
 
-from opero.concurrency import ConcurrencyConfig
-from opero.core import FallbackChain, Orchestrator, OrchestratorConfig
-from opero.exceptions import AllFailedError
-from opero.retry import RetryConfig
+from opero.core.fallback import FallbackError, get_fallback_decorator
+from opero.core.retry import get_retry_decorator
 
 
 # Test functions
@@ -54,84 +52,121 @@ def sync_fallback(value):
     return f"Sync Fallback: {value}"
 
 
-# Tests for FallbackChain
+# Tests for fallback functionality
 @pytest.mark.asyncio
-async def test_fallback_chain_success():
-    """Test that the first successful function in a fallback chain returns the correct result."""
-    chain = FallbackChain(async_success, async_fallback)
-    result = await chain(1)
+async def test_fallback_success():
+    """Test that the first successful function returns the correct result."""
+    fallback_decorator = get_fallback_decorator(arg_fallback="fallback_values")
+
+    @fallback_decorator
+    async def test_func(value, fallback_values=None):
+        return await async_success(value)
+
+    result = await test_func(1)
     assert result == "Success: 1"
 
 
 @pytest.mark.asyncio
-async def test_fallback_chain_fallback():
+async def test_fallback_with_fallback():
     """Test that the fallback function is called if the first function fails."""
-    chain = FallbackChain(async_fail, async_fallback)
-    result = await chain(1)
-    assert result == "Fallback: 1"
+    fallback_decorator = get_fallback_decorator(arg_fallback="fallback_values")
+
+    @fallback_decorator
+    async def test_func(value, fallback_values=None):
+        if fallback_values is None:
+            fallback_values = ["fallback"]
+        if value != "fallback":
+            return await async_fail(value)
+        return await async_fallback(value)
+
+    result = await test_func(1)
+    assert result == "Fallback: fallback"
 
 
 @pytest.mark.asyncio
-async def test_fallback_chain_all_fail():
-    """Test that an AllFailedError is raised when all functions fail."""
-    chain = FallbackChain(async_fail, async_fail)
-    with pytest.raises(AllFailedError):
-        await chain(1)
+async def test_fallback_all_fail():
+    """Test that a FallbackError is raised when all functions fail."""
+    fallback_decorator = get_fallback_decorator(arg_fallback="fallback_values")
+
+    @fallback_decorator
+    async def test_func(value, fallback_values=None):
+        if fallback_values is None:
+            fallback_values = ["fallback1", "fallback2"]
+        return await async_fail(value)
+
+    with pytest.raises(FallbackError):
+        await test_func(1)
 
 
 @pytest.mark.asyncio
-async def test_fallback_chain_sync_function():
-    """Test that the fallback chain works with synchronous functions."""
-    chain = FallbackChain(sync_fail, sync_success)
-    result = await chain(1)
-    assert result == "Sync Success: 1"
+async def test_fallback_sync_function():
+    """Test that the fallback works with synchronous functions."""
+    fallback_decorator = get_fallback_decorator(arg_fallback="fallback_values")
+
+    @fallback_decorator
+    def test_func(value, fallback_values=None):
+        if fallback_values is None:
+            fallback_values = ["fallback"]
+        if value != "fallback":
+            return sync_fail(value)
+        return sync_success(value)
+
+    # The decorator should handle the sync/async conversion
+    result = test_func(1)
+    assert result == "Sync Success: fallback"
 
 
-# Tests for Orchestrator
+# Tests for retry functionality
 @pytest.mark.asyncio
-async def test_orchestrator_execute_success():
-    """Test that the Orchestrator.execute method works with a successful function."""
-    orchestrator = Orchestrator()
-    result = await orchestrator.execute(async_success, 1)
+async def test_retry_success():
+    """Test that a function succeeds on the first try."""
+    retry_decorator = get_retry_decorator(retries=2)
+
+    @retry_decorator
+    async def test_func(value):
+        return await async_success(value)
+
+    result = await test_func(1)
     assert result == "Success: 1"
 
 
 @pytest.mark.asyncio
-async def test_orchestrator_execute_fallback():
-    """Test that fallbacks are attempted if the primary function fails."""
-    config = OrchestratorConfig(fallbacks=[async_fallback])
-    orchestrator = Orchestrator(config=config)
-    result = await orchestrator.execute(async_fail, 1)
-    assert result == "Fallback: 1"
-
-
-@pytest.mark.asyncio
-async def test_orchestrator_process():
-    """Test that the Orchestrator.process method applies the function to each item in a list."""
-    config = OrchestratorConfig(fallbacks=[async_process_fallback])
-    orchestrator = Orchestrator(config=config)
-    results = await orchestrator.process([async_process_success], 1, 2, 3)
-    assert results == ["Success: 1", "Success: 2", "Success: 3"]
-
-
-@pytest.mark.asyncio
-async def test_orchestrator_process_with_concurrency():
-    """Test that the Orchestrator.process method works with concurrency limits."""
-    config = OrchestratorConfig(
-        fallbacks=[async_process_fallback],
-        concurrency_config=ConcurrencyConfig(limit=2),
-    )
-    orchestrator = Orchestrator(config=config)
-    results = await orchestrator.process([async_process_success], 1, 2, 3)
-    assert results == ["Success: 1", "Success: 2", "Success: 3"]
-
-
-@pytest.mark.asyncio
-async def test_orchestrator_with_retry():
-    """Test that the Orchestrator retries failed functions correctly."""
+async def test_retry_with_retry():
+    """Test that retries are attempted if the function fails."""
     mock_func = AsyncMock(side_effect=[ValueError("First attempt"), "Success"])
-    config = OrchestratorConfig(retry_config=RetryConfig(max_attempts=2))
-    orchestrator = Orchestrator(config=config)
-    result = await orchestrator.execute(mock_func, 1)
+    retry_decorator = get_retry_decorator(retries=2)
+
+    @retry_decorator
+    async def test_func(value):
+        return await mock_func(value)
+
+    result = await test_func(1)
     assert result == "Success"
     assert mock_func.call_count == 2
+
+
+@pytest.mark.asyncio
+async def test_retry_all_fail():
+    """Test that an exception is raised when all retries fail."""
+    retry_decorator = get_retry_decorator(retries=2)
+
+    @retry_decorator
+    async def test_func(value):
+        return await async_fail(value)
+
+    with pytest.raises(ValueError):
+        await test_func(1)
+
+
+@pytest.mark.asyncio
+async def test_retry_sync_function():
+    """Test that retry works with synchronous functions."""
+    retry_decorator = get_retry_decorator(retries=2)
+
+    @retry_decorator
+    def test_func(value):
+        return sync_success(value)
+
+    # The decorator should handle the sync/async conversion
+    result = test_func(1)
+    assert result == "Sync Success: 1"

@@ -8,24 +8,12 @@ in opero decorators.
 """
 
 import asyncio
-import functools
 import logging
-from typing import (
-    Any,
-    Callable,
-    Dict,
-    List,
-    Optional,
-    TypeVar,
-    Union,
-    cast,
-    Iterable,
-    Iterator,
-    Awaitable,
-)
+from collections.abc import Callable, Iterable
+from typing import Any, TypeVar
 
 # Import from twat-mp
-from twat_mp import pmap, tmap, amap, apmap
+from twat_mp import ThreadPool, amap, apmap, pmap
 
 T = TypeVar("T")  # Input type
 R = TypeVar("R")  # Return type
@@ -39,7 +27,7 @@ def get_parallel_executor(
     ordered: bool = True,
     progress: bool = True,
     **kwargs,
-) -> Callable[[Callable[[T], R], Iterable[T]], List[R]]:
+) -> Callable[[Callable[[T], R], Iterable[T]], list[R]]:
     """
     Get a parallel executor function based on the provided configuration.
 
@@ -55,7 +43,7 @@ def get_parallel_executor(
     """
     if mode == "process":
 
-        def process_executor(func: Callable[[T], R], items: Iterable[T]) -> List[R]:
+        def process_executor(func: Callable[[T], R], items: Iterable[T]) -> list[R]:
             """
             Process-based parallel executor.
 
@@ -76,7 +64,7 @@ def get_parallel_executor(
 
     elif mode == "thread":
 
-        def thread_executor(func: Callable[[T], R], items: Iterable[T]) -> List[R]:
+        def thread_executor(func: Callable[[T], R], items: Iterable[T]) -> list[R]:
             """
             Thread-based parallel executor.
 
@@ -87,17 +75,14 @@ def get_parallel_executor(
             Returns:
                 List of results
             """
-            return list(
-                tmap(func)(
-                    items, workers=workers, ordered=ordered, progress=progress, **kwargs
-                )
-            )
+            with ThreadPool(nodes=workers) as pool:
+                return list(pool.map(func, items))
 
         return thread_executor
 
     elif mode == "async":
 
-        def async_executor(func: Callable[[T], R], items: Iterable[T]) -> List[R]:
+        def async_executor(func: Callable[[T], R], items: Iterable[T]) -> list[R]:
             """
             Async-based parallel executor.
 
@@ -138,7 +123,7 @@ def get_parallel_executor(
 
         def async_process_executor(
             func: Callable[[T], R], items: Iterable[T]
-        ) -> List[R]:
+        ) -> list[R]:
             """
             Async process-based parallel executor.
 
@@ -176,7 +161,8 @@ def get_parallel_executor(
         return async_process_executor
 
     else:
-        raise ValueError(f"Unknown concurrency mode: {mode}")
+        msg = f"Unknown concurrency mode: {mode}"
+        raise ValueError(msg)
 
 
 def get_parallel_map_decorator(
@@ -185,7 +171,7 @@ def get_parallel_map_decorator(
     ordered: bool = True,
     progress: bool = True,
     **kwargs,
-) -> Callable[[Callable[[T], R]], Callable[[Iterable[T]], List[R]]]:
+) -> Callable[[Callable[[T], R]], Callable[[Iterable[T]], list[R]]]:
     """
     Get a parallel map decorator based on the provided configuration.
 
@@ -211,19 +197,59 @@ def get_parallel_map_decorator(
         )
 
     elif mode == "thread":
-        return lambda func: lambda items, **kw: list(
-            tmap(func)(
-                items,
-                workers=workers,
-                ordered=ordered,
-                progress=progress,
-                **{**kwargs, **kw},
-            )
-        )
+
+        def decorator(func: Callable[[T], R]) -> Callable[[Iterable[T]], list[R]]:
+            """
+            Thread-based parallel map decorator.
+
+            Args:
+                func: The function to decorate
+
+            Returns:
+                The decorated function
+            """
+
+            def wrapper(items: Iterable[T], **kw: Any) -> list[R]:
+                """
+                Wrapper function.
+
+                Args:
+                    items: Items to process
+                    **kw: Additional keyword arguments
+
+                Returns:
+                    List of results
+                """
+                with ThreadPool(nodes=workers) as pool:
+                    # Check if the function is async
+                    if asyncio.iscoroutinefunction(func):
+                        # For async functions, we need to run them in an event loop
+                        async def run_async(item: T) -> R:
+                            return await func(item)
+
+                        # Create a wrapper that runs the async function in an event loop
+                        def async_wrapper(item: T) -> R:
+                            try:
+                                loop = asyncio.get_running_loop()
+                            except RuntimeError:
+                                # No event loop running, create one
+                                return asyncio.run(run_async(item))
+                            else:
+                                # Event loop already running, use it
+                                return loop.run_until_complete(run_async(item))
+
+                        return list(pool.map(async_wrapper, items))
+                    else:
+                        # For sync functions, just use the pool directly
+                        return list(pool.map(func, items))
+
+            return wrapper
+
+        return decorator
 
     elif mode == "async":
 
-        def decorator(func: Callable[[T], R]) -> Callable[[Iterable[T]], List[R]]:
+        def decorator(func: Callable[[T], R]) -> Callable[[Iterable[T]], list[R]]:
             """
             Decorator function.
 
@@ -235,7 +261,7 @@ def get_parallel_map_decorator(
             """
             decorated = amap(func)
 
-            def wrapper(items: Iterable[T], **kw: Any) -> List[R]:
+            def wrapper(items: Iterable[T], **kw: Any) -> list[R]:
                 """
                 Wrapper function.
 
@@ -276,7 +302,7 @@ def get_parallel_map_decorator(
 
     elif mode == "async_process":
 
-        def decorator(func: Callable[[T], R]) -> Callable[[Iterable[T]], List[R]]:
+        def decorator(func: Callable[[T], R]) -> Callable[[Iterable[T]], list[R]]:
             """
             Decorator function.
 
@@ -288,7 +314,7 @@ def get_parallel_map_decorator(
             """
             decorated = apmap(func)
 
-            def wrapper(items: Iterable[T], **kw: Any) -> List[R]:
+            def wrapper(items: Iterable[T], **kw: Any) -> list[R]:
                 """
                 Wrapper function.
 
@@ -328,4 +354,5 @@ def get_parallel_map_decorator(
         return decorator
 
     else:
-        raise ValueError(f"Unknown concurrency mode: {mode}")
+        msg = f"Unknown concurrency mode: {mode}"
+        raise ValueError(msg)

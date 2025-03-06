@@ -4,7 +4,7 @@ this_file: CHANGELOG.md
 
 # Changelog
 
-All notable changes to the Opero project will be documented in this file.
+All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -12,45 +12,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Comprehensive logging throughout the codebase with configurable log levels
-- Context information to log messages for better debugging
-- Proper timezone handling in datetime operations
-- Structured logging example in README.md with context management
-- Best practices section in documentation for error handling and performance optimization
+- Initial project structure and core functionality
+  - `@opero` decorator for resilient function execution
+  - `@opmap` decorator for parallel processing with resilience
+  - Parameter-based fallback mechanism
+  - Basic retry mechanism with exponential backoff
+  - Rate limiting support
+  - Async/sync function support
+- Core utilities and helpers
+  - Logging configuration and utilities
+  - Async/sync conversion utilities
+  - Error handling utilities
+- Documentation and project files
+  - Basic usage examples
+  - API documentation
+  - Development guidelines
 
 ### Changed
-- Modified `process` method to apply function to each item individually
-- Improved error handling in async/sync conversions
-- Optimized retry logic and fallback mechanisms
-- Restructured code to reduce complexity in core functions
-- Updated project documentation to reflect recent changes
-- Enhanced docstrings for all public functions and classes
-- Improved type annotations throughout the codebase
+- Restructured project into modular directories
+  - Organized core functionality into separate modules
+  - Separated decorators into their own module
+  - Created utilities module
+- Improved error handling and logging
+  - Added comprehensive logging throughout
+  - Enhanced error messages and context
+  - Added proper exception hierarchy
+- Enhanced type safety and code quality
+  - Added comprehensive type hints
+  - Fixed linter errors
+  - Improved code organization
 
 ### Fixed
-- Fixed failing tests in `process` method
-- Resolved complexity issues in `core.py:execute` method
-- Fixed loop variable binding issues in `core.py`
-- Addressed too many arguments in `retry.py:with_retry` function
-- Fixed error handling in `retry_async` function
-- Fixed parameter order in `_execute_with_retry` function calls to `retry_async` and `retry_sync`
-- Added fallback mechanism for handling None `retry_config` in `_execute_with_retry`
-- Fixed type incompatibility issues in async/sync conversions
-- Fixed linter errors in cleanup.py including:
-  - Added timezone to datetime.datetime.now() calls
-  - Fixed Boolean-typed positional arguments
-  - Addressed subprocess call security issues
-- Updated pyproject.toml configuration for proper linting
-- Fixed cleanup.py script by removing problematic _print_tree function and simplifying tree generation
-- Fixed structured logging example in README.md to use correct imports and context features
+- Parameter-based fallback mechanism
+  - Corrected fallback value handling
+  - Fixed error propagation
+  - Improved logging of fallback attempts
+- Retry mechanism
+  - Fixed parameter order in retry function calls
+  - Added proper error handling for retries
+  - Improved retry logging
+- Async/sync conversion
+  - Fixed coroutine handling
+  - Improved async function detection
+  - Added proper async context management
 
-## [0.1.0] - Initial Release
+## [0.1.0] - TBD
 
 ### Added
-- Fallback chains for automatic alternative function execution
-- Automatic retries with configurable backoff strategies
-- Rate limiting to control operation frequency
-- Parallel processing with configurable limits
-- Async-first design with full support for sync functions
-- Unified interface with both class-based and decorator-based APIs
-- Comprehensive type hints for better IDE integration
+- Initial release of the `opero` package
+- Core functionality:
+  - `@opero` decorator
+  - `@opmap` decorator
+  - Parameter-based fallbacks
+  - Retry mechanism
+  - Rate limiting
+  - Async support
+- Basic documentation and examples

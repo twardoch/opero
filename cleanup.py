@@ -51,14 +51,14 @@ Required Files:
 - TODO.md: Pending tasks and future plans
 """
 
-import subprocess
-import os
-import sys
 import logging
+import os
+import subprocess
+import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import NoReturn
 from shutil import which
+from typing import NoReturn
 
 # Configure logging
 logging.basicConfig(
@@ -123,7 +123,7 @@ def run_command(cmd: list[str], *, check: bool = True) -> subprocess.CompletedPr
     try:
         # We're explicitly using shell=False and passing a list of arguments,
         # which is secure against command injection
-        result = subprocess.run(  # noqa: S603
+        result = subprocess.run(
             cmd,
             check=check,
             capture_output=True,

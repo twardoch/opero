@@ -6,14 +6,14 @@ Utility functions for the opero package.
 This module provides utility functions for the opero package.
 """
 
-from opero.utils.async_utils import is_async_function, ensure_async, run_async
+from opero.utils.async_utils import ensure_async, is_async_function, run_async
 from opero.utils.logging import configure_logging, get_logger, logger
 
 __all__ = [
-    "is_async_function",
-    "ensure_async",
-    "run_async",
     "configure_logging",
+    "ensure_async",
     "get_logger",
+    "is_async_function",
     "logger",
+    "run_async",
 ]

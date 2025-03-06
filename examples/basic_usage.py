@@ -1,191 +1,260 @@
 #!/usr/bin/env python3
 # this_file: examples/basic_usage.py
 """
-Basic usage examples for the opero package.
+Real-World Examples of Opero Usage
 
-This module demonstrates basic usage of the opero package.
+This module demonstrates practical applications of the opero package's resilience
+mechanisms in common scenarios. Each example shows how to use opero's features
+to handle real-world challenges in distributed systems.
+
+Features Demonstrated:
+- Resilient API calls with fallbacks and retries
+- Caching for expensive operations
+- Rate limiting for external service calls
+- Parallel processing for batch operations
+- Error handling and logging
+- Async/sync function support
 """
 
 import asyncio
 import logging
+import random
 import time
-from typing import List
+from dataclasses import dataclass
+from typing import Any, TypeVar
 
-from opero import (
-    opero,
-    operomap,
-    configure_logging,
+from opero import configure_logging, opero, opmap
+from opero.core import FallbackError
+
+T = TypeVar("T")
+
+#######################
+# Example Data Types #
+#######################
+
+
+@dataclass
+class APIResponse:
+    """Response from an external API."""
+
+    success: bool
+    data: Any
+    metadata: dict[str, Any]
+
+
+@dataclass
+class ProcessingResult:
+    """Result of a processing operation."""
+
+    item_id: int
+    result: Any
+    processing_time: float
+    attempts: int
+
+
+# Configure logging with a detailed format
+logger = configure_logging(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s",
 )
 
-# Configure logging
-logger = configure_logging(level=logging.INFO, verbose=True)
+########################
+# Example 1: API Calls #
+########################
 
 
-# Example 1: Basic usage of @opero with caching
-@opero(cache=True, cache_ttl=60)
-def calculate_fibonacci(n: int) -> int:
+@opero(
+    # Enable caching to avoid unnecessary API calls
+    cache=True,
+    cache_ttl=300,  # Cache for 5 minutes
+    cache_backend="memory",
+    # Configure retries for transient failures
+    retries=3,
+    backoff_factor=1.5,
+    min_delay=0.1,
+    max_delay=2.0,
+    retry_on=ConnectionError,
+    # Use fallbacks for API keys
+    arg_fallback="api_key",
+    # Rate limit to 2 requests per second
+    rate_limit=2.0,
+)
+async def call_external_api(
+    endpoint: str,
+    data: dict[str, Any],
+    api_key: list[str] = ["primary_key", "backup_key"],
+) -> APIResponse:
     """
-    Calculate the nth Fibonacci number.
+    Call an external API with full resilience mechanisms.
+
+    This example demonstrates:
+    - Caching to avoid unnecessary API calls
+    - Retries with exponential backoff for transient failures
+    - API key fallbacks if the primary key fails
+    - Rate limiting to respect API quotas
 
     Args:
-        n: The index of the Fibonacci number to calculate
-
-    Returns:
-        The nth Fibonacci number
-    """
-    logger.info(f"Calculating Fibonacci({n})")
-    if n <= 1:
-        return n
-    return calculate_fibonacci(n - 1) + calculate_fibonacci(n - 2)
-
-
-# Example 2: Using @opero with retries and fallbacks
-@opero(retries=3, backoff_factor=2.0, arg_fallback="api_key")
-def call_api(data: str, api_key: List[str] = ["primary_key", "backup_key"]) -> str:
-    """
-    Call an API with retries and fallbacks.
-
-    Args:
+        endpoint: API endpoint to call
         data: Data to send to the API
-        api_key: API key to use (with fallbacks)
+        api_key: List of API keys to try
 
     Returns:
-        API response
+        APIResponse with the result
+
+    Raises:
+        FallbackError: If all API keys fail
     """
-    logger.info(f"Calling API with key {api_key}")
+    current_key = api_key[0]
+    logger.info(f"Calling API endpoint {endpoint} with key {current_key}")
 
     # Simulate API call with potential failures
-    if api_key == "primary_key":
-        # Simulate primary key failure
-        raise ValueError("Primary API key failed")
+    await asyncio.sleep(0.1)  # Network latency
 
-    # Simulate successful API call with backup key
-    return f"API response for {data} using {api_key}"
+    if current_key == "primary_key" and random.random() < 0.7:
+        msg = f"API call failed with key {current_key}"
+        raise ConnectionError(msg)
+
+    return APIResponse(
+        success=True,
+        data=data,
+        metadata={
+            "endpoint": endpoint,
+            "used_key": current_key,
+            "timestamp": time.time(),
+        },
+    )
 
 
-# Example 3: Using @operomap for parallel processing
-@operomap(mode="process", workers=4, cache=True, cache_ttl=300, progress=True)
-def process_item(item: int) -> int:
+#################################
+# Example 2: Batch Processing #
+#################################
+
+
+@opmap(
+    mode="process",  # Use process-based parallelism
+    workers=4,  # Use 4 worker processes
+    ordered=True,  # Maintain result order
+)
+def process_batch_item(item: dict[str, Any]) -> ProcessingResult:
     """
-    Process an item in parallel.
+    Process a single item in a batch operation.
+
+    This example demonstrates:
+    - Process-based parallel execution
+    - Ordered result collection
+    - CPU-bound task handling
 
     Args:
         item: Item to process
 
     Returns:
-        Processed item
+        ProcessingResult with the outcome
     """
-    logger.info(f"Processing item {item}")
-    time.sleep(1)  # Simulate processing time
-    return item * item
+    start_time = time.time()
+    item_id = item["id"]
+
+    # Simulate CPU-intensive processing
+    result = 0
+    for _ in range(1000000):
+        result += item_id * random.random()
+
+    return ProcessingResult(
+        item_id=item_id,
+        result=result,
+        processing_time=time.time() - start_time,
+        attempts=1,
+    )
 
 
-# Example 4: Using @opero with async functions
+####################################
+# Example 3: Database Operations #
+####################################
+
+
 @opero(
     cache=True,
+    cache_ttl=60,
+    cache_backend="memory",
     retries=2,
-    rate_limit=5.0,  # 5 operations per second
+    backoff_factor=2.0,
+    arg_fallback="db_host",
 )
-async def fetch_data(url: str) -> str:
+async def query_database(
+    query: str,
+    params: dict[str, Any],
+    db_host: list[str] = ["primary.db", "replica.db"],
+) -> list[dict[str, Any]]:
     """
-    Fetch data from a URL with caching, retries, and rate limiting.
+    Execute a database query with fallback to replica.
+
+    This example demonstrates:
+    - Database query caching
+    - Automatic failover to replica
+    - Query retry on connection issues
 
     Args:
-        url: URL to fetch data from
+        query: SQL query to execute
+        params: Query parameters
+        db_host: List of database hosts to try
 
     Returns:
-        Fetched data
+        Query results
+
+    Raises:
+        FallbackError: If all database hosts fail
     """
-    logger.info(f"Fetching data from {url}")
+    current_host = db_host[0]
+    logger.info(f"Executing query on {current_host}")
 
-    # Simulate async API call
-    await asyncio.sleep(0.5)
+    # Simulate database query
+    await asyncio.sleep(0.2)
 
-    # Simulate occasional failures
-    if "error" in url:
-        raise ValueError(f"Error fetching data from {url}")
+    if current_host == "primary.db" and random.random() < 0.3:
+        msg = f"Database connection failed: {current_host}"
+        raise ConnectionError(msg)
 
-    return f"Data from {url}"
-
-
-# Example 5: Using @operomap with async functions
-@operomap(mode="async", workers=8, cache=True, retries=2)
-async def fetch_url(url: str) -> str:
-    """
-    Fetch data from a URL in parallel.
-
-    Args:
-        url: URL to fetch data from
-
-    Returns:
-        Fetched data
-    """
-    logger.info(f"Fetching URL {url}")
-
-    # Simulate async API call
-    await asyncio.sleep(0.5)
-
-    return f"Data from {url}"
+    # Simulate query results
+    return [
+        {"id": i, "result": f"Data from {current_host}"} for i in range(len(params))
+    ]
 
 
-def main():
-    """Run the examples."""
-    # Example 1: Basic usage of @opero with caching
-    print("\n=== Example 1: Basic usage of @opero with caching ===")
-    print(f"Fibonacci(10) = {calculate_fibonacci(10)}")
-    print("Calling again (should use cache):")
-    print(f"Fibonacci(10) = {calculate_fibonacci(10)}")
+async def main():
+    """Run examples demonstrating opero's features."""
 
-    # Example 2: Using @opero with retries and fallbacks
-    print("\n=== Example 2: Using @opero with retries and fallbacks ===")
+    print("\n=== Example 1: Resilient API Calls ===")
     try:
-        result = call_api("test data")
-        print(f"Result: {result}")
-    except Exception as e:
-        print(f"Error: {e}")
+        result = await call_external_api(
+            endpoint="https://api.example.com/data",
+            data={"query": "example"},
+        )
+        print(f"API call succeeded: {result}")
+    except FallbackError as e:
+        print(f"All API calls failed: {e}")
 
-    # Example 3: Using @operomap for parallel processing
-    print("\n=== Example 3: Using @operomap for parallel processing ===")
-    results = process_item(range(10))
-    print(f"Results: {results}")
+    print("\n=== Example 2: Parallel Batch Processing ===")
+    # Process a batch of items
+    items = [{"id": i} for i in range(10)]
+    results = process_batch_item(items)
+    print(f"Processed {len(results)} items:")
+    for result in results[:3]:  # Show first 3 results
+        print(
+            f"Item {result.item_id}: {result.result:.2f} "
+            f"(took {result.processing_time:.3f}s)"
+        )
 
-    # Example 4: Using @opero with async functions
-    print("\n=== Example 4: Using @opero with async functions ===")
-
-    async def run_async_example():
-        urls = [
-            "https://example.com/1",
-            "https://example.com/2",
-            "https://example.com/error",
-            "https://example.com/3",
-        ]
-
-        for url in urls:
-            try:
-                result = await fetch_data(url)
-                print(f"Result: {result}")
-            except Exception as e:
-                print(f"Error fetching {url}: {e}")
-
-    asyncio.run(run_async_example())
-
-    # Example 5: Using @operomap with async functions
-    print("\n=== Example 5: Using @operomap with async functions ===")
-
-    async def run_async_map_example():
-        urls = [
-            "https://example.com/1",
-            "https://example.com/2",
-            "https://example.com/3",
-            "https://example.com/4",
-            "https://example.com/5",
-        ]
-
-        results = await fetch_url(urls)
-        print(f"Results: {results}")
-
-    asyncio.run(run_async_map_example())
+    print("\n=== Example 3: Database Operations ===")
+    try:
+        results = await query_database(
+            query="SELECT * FROM data WHERE id = :id",
+            params={"id": 123},
+        )
+        print(f"Query returned {len(results)} results")
+        for row in results[:3]:  # Show first 3 rows
+            print(f"Row: {row}")
+    except FallbackError as e:
+        print(f"Database query failed: {e}")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

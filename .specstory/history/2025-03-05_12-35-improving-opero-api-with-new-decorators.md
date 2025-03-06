@@ -11,7 +11,7 @@ I do understand the API of twat-mp (see below).
 I want opero to expose two different portions: 
 
 - an "opero" decorator that supports retrying and fallbacks
-- an "operomap" decorator that is a twat-mp "map" which also supports retrying and fallbacks, and supports rate limiting and different variants of concurrency. 
+- an "opmap" decorator that is a twat-mp "map" which also supports retrying and fallbacks, and supports rate limiting and different variants of concurrency. 
 
 In @TODO.md make a plan on how to rewrite opero
 
@@ -490,7 +490,7 @@ From the README, I can see that `opero` currently:
 
 The user wants to simplify this into two main decorators:
 1. `@opero` - a decorator that supports retrying and fallbacks
-2. `@operomap` - a decorator similar to `twat-mp`'s `map` functions, but with added support for retrying, fallbacks, rate limiting, and concurrency variants
+2. `@opmap` - a decorator similar to `twat-mp`'s `map` functions, but with added support for retrying, fallbacks, rate limiting, and concurrency variants
 
 Let me plan how to rewrite `opero` to match this desired API.</think>I'll analyze both APIs and create a plan to rewrite `opero` according to your preferences.
 
@@ -535,7 +535,7 @@ _****_
 + - Allow simple configuration of retry attempts, backoff, and fallbacks
 + - Support both sync and async functions
 + 
-+ #### `@operomap` Decorator
++ #### `@opmap` Decorator
 + - Inspired by `twat-mp`'s map functions (`pmap`, `imap`, `amap`, `apmap`)
 + - Support parallel execution of functions over multiple inputs
 + - Include retry and fallback mechanisms
@@ -558,7 +558,7 @@ _****_
 + 
 + 2. **New Decorator API**
 +    - Implement the `@opero` decorator for single function resilience
-+    - Implement the `@operomap` decorator for parallel operations
++    - Implement the `@opmap` decorator for parallel operations
 +    - Ensure backward compatibility with the existing API
 + 
 + 3. **Concurrency Options**
@@ -581,8 +581,8 @@ _****_
 +        # Function implementation
 +        pass
 + 
-+    # @operomap decorator
-+    @operomap(
++    # @opmap decorator
++    @opmap(
 +        mode="process",                 # "process", "thread", or "async"
 +        workers=4,                      # Number of workers
 +        retries=3,                      # Number of retry attempts
@@ -636,7 +636,7 @@ _****_
 + ### Example Usage After Refactoring
 + 
 + ```python
-+ from opero import opero, operomap
++ from opero import opero, opmap
 + 
 + # Simple retry and fallback for a single function
 + @opero(retries=3, fallbacks=[fallback_func])
@@ -645,7 +645,7 @@ _****_
 +     ...
 + 
 + # Parallel processing with resilience
-+ @operomap(mode="process", workers=4, retries=2, rate_limit=10)
++ @opmap(mode="process", workers=4, retries=2, rate_limit=10)
 + def process_item(item):
 +     # Process a single item
 +     return result
@@ -778,7 +778,7 @@ _****_
   - Support both sync and async functions
 + - Support parameter-based fallbacks with `arg_fallback`
   
-  #### 1.1.2. `@operomap` Decorator
+  #### 1.1.2. `@opmap` Decorator
   - Provide rate limiting capabilities
   - Support various concurrency modes (process, thread, async)
 + - Support parameter-based fallbacks with `arg_fallback`
@@ -798,7 +798,7 @@ _****_
   
   2. **New Decorator API**
      - Implement the `@opero` decorator for single function resilience
-     - Implement the `@operomap` decorator for parallel operations
+     - Implement the `@opmap` decorator for parallel operations
      - Ensure backward compatibility with the existing API
 +    - Support both fallback mechanisms
   
@@ -824,8 +824,8 @@ _****_
 +        # Will try with model="gpt-4" first, then model="gpt-3.5" if it fails
 +        pass
 + 
-     # @operomap decorator
-     @operomap(
+     # @opmap decorator
+     @opmap(
          max_delay=30,                   # Maximum delay between retries (seconds)
          fallbacks=[fallback_func],      # Fallback functions to try on failure
 +        arg_fallback="model",           # Parameter name containing fallback values
@@ -851,7 +851,7 @@ _****_
 + 5. Include examples of both fallback approaches
   
   ### 1.6. Code Cleanup
-  from opero import opero, operomap
+  from opero import opero, opmap
   
 + # Using parameter-based fallbacks
 + @opero(arg_fallback="model")
@@ -867,7 +867,7 @@ _****_
 - # Simple usage
 - data = await fetch_data("item123")
 + # Parameter-based fallbacks with parallel processing
-+ @operomap(mode="thread", workers=4, arg_fallback="api_key")
++ @opmap(mode="thread", workers=4, arg_fallback="api_key")
 + def call_api(item, api_key: list[str] = ["primary_key", "backup_key", "emergency_key"]):
 +     # Will try each API key in order if previous ones fail
 +     return make_request(item, api_key=api_key)
@@ -930,7 +930,7 @@ def call_llm(prompt: str, model: list[str] = ["gpt-4", "gpt-3.5"]):
     return response
 ```
 
-Both decorators (`@opero` and `@operomap`) would support this mechanism, making it easy to:
+Both decorators (`@opero` and `@opmap`) would support this mechanism, making it easy to:
 
 1. Try different LLM models in sequence
 2. Attempt with different API keys if the primary one fails
@@ -991,7 +991,7 @@ _****_
   - Support parameter-based fallbacks with `arg_fallback`
   
 - #### 1.1.2. `@opmap` Decorator
-+ #### 1.1.2. `@operomap` Decorator
++ #### 1.1.2. `@opmap` Decorator
   - Inspired by `twat-mp`'s map functions (`pmap`, `imap`, `amap`, `apmap`)
   - Support parallel execution of functions over multiple inputs
   - Use simple function parameters with sensible defaults
@@ -1005,7 +1005,7 @@ _****_
   2. **New Decorator API**
      - Implement the `@opero` decorator for single function resilience
 -    - Implement the `@opmap` decorator for parallel operations
-+    - Implement the `@operomap` decorator for parallel operations
++    - Implement the `@opmap` decorator for parallel operations
      - Ensure backward compatibility with the existing API
 -    - Support both fallback mechanisms
 +    - Support parameter-based fallbacks exclusively
@@ -1032,8 +1032,8 @@ _****_
   
 -    # @opmap decorator
 -    @opmap(
-+    # @operomap decorator
-+    @operomap(
++    # @opmap decorator
++    @opmap(
          mode="process",                 # "process", "thread", or "async"
          workers=4,                      # Number of workers
          min_delay=0.1,                  # Minimum delay between retries (seconds)
@@ -1056,7 +1056,7 @@ _****_
   
   ```python
 - from opero import opero, opmap
-+ from opero import opero, operomap
++ from opero import opero, opmap
   
   # Using parameter-based fallbacks
       return response
@@ -1071,14 +1071,14 @@ _****_
   
   # Parallel processing with resilience
 - @opmap(mode="process", workers=4, retries=2, rate_limit=10)
-+ @operomap(mode="process", workers=4, retries=2, rate_limit=10)
++ @opmap(mode="process", workers=4, retries=2, rate_limit=10)
   def process_item(item):
       # Process a single item
       return result
   
   # Parameter-based fallbacks with parallel processing
 - @opmap(mode="thread", workers=4, arg_fallback="api_key")
-+ @operomap(mode="thread", workers=4, arg_fallback="api_key")
++ @opmap(mode="thread", workers=4, arg_fallback="api_key")
   def call_api(item, api_key: list[str] = ["primary_key", "backup_key", "emergency_key"]):
       # Will try each API key in order if previous ones fail
 ```
@@ -1096,7 +1096,7 @@ I've revised the plan according to your direction to completely remove function-
 1. **Removed function-based fallbacks completely** - No more `fallbacks` parameter
 2. **Focused exclusively on parameter-based fallbacks** - Only `arg_fallback` is supported
 3. **Simplified examples** - All examples now use only parameter-based fallbacks
-4. **Renamed everything consistently** - Ensured we're using `operomap` (not `opmap`) throughout
+4. **Renamed everything consistently** - Ensured we're using `opmap` (not `opmap`) throughout
 
 ### Benefits of This Approach:
 
@@ -1118,7 +1118,7 @@ async def call_llm(prompt: str, model: list[str] = ["gpt-4", "gpt-3.5"]):
     return response
 
 # Parallel API calls with key fallbacks
-@operomap(mode="thread", workers=4, arg_fallback="api_key")
+@opmap(mode="thread", workers=4, arg_fallback="api_key")
 def call_api(item, api_key: list[str] = ["primary_key", "backup_key"]):
     return make_request(item, api_key=api_key)
 
@@ -1254,40 +1254,40 @@ _****_
   - Support parameter-based fallbacks with `arg_fallback`
   
 - #### 1.1.2. `@opmap` Decorator
-+ #### 1.1.2. `@operomap` Decorator
++ #### 1.1.2. `@opmap` Decorator
   - Inspired by `twat-mp`'s map functions (`pmap`, `imap`, `amap`, `apmap`)
   - Support parallel execution of functions over multiple inputs
   2. **New Decorator API**
      - Implement the `@opero` decorator for single function resilience
 -    - Implement the `@opmap` decorator for parallel operations
-+    - Implement the `@operomap` decorator for parallel operations
++    - Implement the `@opmap` decorator for parallel operations
      - DROP backward compatibility with the existing API, it's not important
      - Support parameter-based fallbacks exclusively
          pass
   
 -    # @opmap decorator
 -    @opmap(
-+    # @operomap decorator
-+    @operomap(
++    # @opmap decorator
++    @opmap(
          mode="process",                 # "process", "thread", or "async"
          workers=4,                      # Number of workers
   
   ```python
 - from opero import opero, opmap
-+ from opero import opero, operomap
++ from opero import opero, opmap
   
   # Using parameter-based fallbacks
   
   # Parallel processing with resilience
 - @opmap(mode="process", workers=4, retries=2, rate_limit=10)
-+ @operomap(mode="process", workers=4, retries=2, rate_limit=10)
++ @opmap(mode="process", workers=4, retries=2, rate_limit=10)
   def process_item(item):
       # Process a single item
       return result
   
   # Parameter-based fallbacks with parallel processing
 - @opmap(mode="thread", workers=4, arg_fallback="api_key")
-+ @operomap(mode="thread", workers=4, arg_fallback="api_key")
++ @opmap(mode="thread", workers=4, arg_fallback="api_key")
   def call_api(item, api_key: list[str] = ["primary_key", "backup_key", "emergency_key"]):
       # Will try each API key in order if previous ones fail
   - Graceful failure if the parameter isn't a sequence
@@ -1305,7 +1305,7 @@ _****_
 +    ├── decorators/            # New directory for decorators
 +    │   ├── __init__.py        # Re-exports decorators
 +    │   ├── opero.py           # @opero decorator implementation
-+    │   └── operomap.py        # @operomap decorator implementation
++    │   └── opmap.py        # @opmap decorator implementation
 +    ├── core/                  # Core functionality
 +    │   ├── __init__.py
 +    │   ├── retry.py           # Retry mechanisms
@@ -1481,7 +1481,7 @@ _****_
 +        return decorator
 +    ```
 + 
-+ 2. Create `decorators/operomap.py`:
++ 2. Create `decorators/opmap.py`:
 +    ```python
 +    from typing import Any, Callable, TypeVar, ParamSpec, Optional, Union, Type, Tuple, List, Iterable
 +    import functools
@@ -1497,7 +1497,7 @@ _****_
 +    R = TypeVar('R')
 +    T = TypeVar('T')  # Input item type
 +    
-+    def operomap(
++    def opmap(
 +        mode: str = "process",
 +        workers: int = None,
 +        retries: int = 3,
@@ -1619,7 +1619,7 @@ _****_
 +    tests/
 +    ├── decorators/
 +    │   ├── test_opero.py
-+    │   └── test_operomap.py
++    │   └── test_opmap.py
 +    ├── core/
 +    │   ├── test_fallback.py
 +    │   └── test_retry.py
@@ -1654,7 +1654,7 @@ _****_
 + 1. Update README.md with new sections:
 +    - Introduction to the new API design
 +    - Examples of `@opero` usage with parameter-based fallbacks
-+    - Examples of `@operomap` usage for parallel processing
++    - Examples of `@opmap` usage for parallel processing
 +    - Comparison with the old API (for existing users)
 +    - FAQ section addressing common questions
 + 
@@ -1732,7 +1732,7 @@ Based on my comprehensive analysis of the current codebase, I've created a detai
    - Integration with retry and fallback mechanisms
 
 4. **Streamlined API Design**
-   - Two focused decorators (`@opero` and `@operomap`)
+   - Two focused decorators (`@opero` and `@opmap`)
    - Simple, flat parameter structure
    - Intuitive defaults for common use cases
    - No function-based fallbacks as requested

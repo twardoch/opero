@@ -7,15 +7,15 @@ This module provides the @opero decorator for adding resilience mechanisms
 to functions.
 """
 
-import functools
 import logging
-from typing import Any, Callable, Optional, TypeVar, Union, cast
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 from opero.core import (
     get_cache_decorator,
-    get_retry_decorator,
     get_fallback_decorator,
     get_rate_limit_decorator,
+    get_retry_decorator,
 )
 
 R = TypeVar("R")
@@ -26,9 +26,9 @@ logger = logging.getLogger(__name__)
 def opero(
     # Caching options
     cache: bool = True,
-    cache_ttl: Optional[int] = None,
+    cache_ttl: int | None = None,
     cache_backend: str = "memory",
-    cache_key: Optional[Callable] = None,
+    cache_key: Callable | None = None,
     cache_namespace: str = "opero",
     # Retry options
     retries: int = 3,
@@ -37,9 +37,9 @@ def opero(
     max_delay: float = 30.0,
     retry_on: Any = Exception,
     # Fallback options
-    arg_fallback: Optional[str] = None,
+    arg_fallback: str | None = None,
     # Rate limiting options
-    rate_limit: Optional[float] = None,
+    rate_limit: float | None = None,
     # Additional options
     **kwargs,
 ):

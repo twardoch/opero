@@ -10,7 +10,8 @@ import asyncio
 import functools
 import logging
 import time
-from typing import Any, Callable, Optional, TypeVar, Union, cast
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 import asynciolimiter
 
@@ -59,7 +60,7 @@ class RateLimiter:
 
 
 def get_rate_limit_decorator(
-    rate_limit: Optional[float] = None,
+    rate_limit: float | None = None,
 ) -> Callable[[Callable[..., R]], Callable[..., R]]:
     """
     Get a rate limit decorator based on the provided configuration.

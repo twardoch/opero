@@ -9,17 +9,16 @@ This module provides retry mechanisms for function calls in opero decorators.
 import asyncio
 import functools
 import logging
-import random
-import time
-from typing import Any, Callable, Optional, Tuple, Type, TypeVar, Union, cast, List
+from collections.abc import Callable
+from typing import Any, TypeVar
 
 import tenacity
 from tenacity import (
+    AsyncRetrying,
     RetryError,
     Retrying,
-    AsyncRetrying,
-    wait_exponential,
     stop_after_attempt,
+    wait_exponential,
 )
 
 P = TypeVar("P")
@@ -33,7 +32,7 @@ def get_retry_decorator(
     backoff_factor: float = 1.5,
     min_delay: float = 0.1,
     max_delay: float = 30.0,
-    retry_on: Union[Type[Exception], Tuple[Type[Exception], ...]] = (Exception,),
+    retry_on: type[Exception] | tuple[type[Exception], ...] = (Exception,),
     jitter: bool = True,
     **kwargs,
 ) -> Callable[[Callable[..., R]], Callable[..., R]]:

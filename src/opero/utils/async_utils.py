@@ -9,7 +9,8 @@ This module provides utility functions for async operations in the opero package
 import asyncio
 import functools
 import inspect
-from typing import Any, Callable, TypeVar, cast, Coroutine
+from collections.abc import Callable, Coroutine
+from typing import Any, TypeVar
 
 T = TypeVar("T")
 R = TypeVar("R")

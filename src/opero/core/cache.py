@@ -7,13 +7,12 @@ This module provides integration with the twat-cache library for caching
 function results in opero decorators.
 """
 
-from typing import Any, Callable, TypeVar, ParamSpec, Optional, Union, Dict
-import functools
-import inspect
 import logging
+from collections.abc import Callable
+from typing import ParamSpec, TypeVar
 
 # Import from twat-cache
-from twat_cache import ucache, CacheContext
+from twat_cache import CacheContext, ucache
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -23,9 +22,9 @@ logger = logging.getLogger(__name__)
 
 def get_cache_decorator(
     cache: bool = True,
-    cache_ttl: Optional[int] = None,
+    cache_ttl: int | None = None,
     cache_backend: str = "memory",
-    cache_key: Optional[Callable] = None,
+    cache_key: Callable | None = None,
     cache_namespace: str = "opero",
     **kwargs,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
@@ -84,7 +83,7 @@ def get_cache_context(
 
 
 def clear_cache(
-    namespace: str = "opero", cache_backend: Optional[str] = None, **kwargs
+    namespace: str = "opero", cache_backend: str | None = None, **kwargs
 ) -> None:
     """
     Clear the cache for a specific namespace.
