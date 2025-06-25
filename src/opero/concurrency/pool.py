@@ -75,6 +75,9 @@ def get_parallel_executor(
             Returns:
                 List of results
             """
+            # **kwargs are not directly applicable to ThreadPool constructor or its map method in the same way
+            # they are for pmap/amap/apmap. For MVP, we only use 'workers'.
+            # If other ThreadPool args are needed, direct use of twat_mp.ThreadPool is an option.
             with ThreadPool(nodes=workers) as pool:
                 return list(pool.map(func, items))
 
@@ -209,17 +212,18 @@ def get_parallel_map_decorator(
                 The decorated function
             """
 
-            def wrapper(items: Iterable[T], **kw: Any) -> list[R]:
+            def wrapper(items: Iterable[T]) -> list[R]: # Removed **kw as it's not used
                 """
                 Wrapper function.
 
                 Args:
                     items: Items to process
-                    **kw: Additional keyword arguments
 
                 Returns:
                     List of results
                 """
+                # **kwargs from get_parallel_map_decorator are not used for ThreadPool constructor here.
+                # Call-time **kw were removed from wrapper signature.
                 with ThreadPool(nodes=workers) as pool:
                     # Check if the function is async
                     if asyncio.iscoroutinefunction(func):

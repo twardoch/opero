@@ -59,6 +59,7 @@ test = [
     "pytest-benchmark[histogram]>=4.0.0",
     "pytest-xdist>=3.5.0",
     "pytest-asyncio>=0.21.0",
+    "klepto>=0.2.4", # Added for twat-cache optional backend during tests
 ]
 dev = [
     "black>=23.1.0",
@@ -179,3 +180,4 @@ compare = [
 
 [tool.hatch.version]
 source = "vcs"
+path = "src/opero/__version__.py"

@@ -15,8 +15,7 @@ Key components:
 from opero.__version__ import __version__
 from opero.concurrency import get_parallel_executor, get_parallel_map_decorator
 from opero.core import (
-    FallbackError,
-    RateLimiter,
+    RateLimiter, # FallbackError removed from core exports
     clear_cache,
     get_cache_context,
     get_cache_decorator,
@@ -25,6 +24,8 @@ from opero.core import (
     get_retry_decorator,
 )
 from opero.decorators import opero, opmap
+# Import AllFailedError from exceptions
+from opero.exceptions import OperoError, AllFailedError
 from opero.utils import (
     configure_logging,
     ensure_async,
@@ -35,7 +36,8 @@ from opero.utils import (
 )
 
 __all__ = [
-    "FallbackError",
+    "OperoError",
+    "AllFailedError", # Added AllFailedError
     "RateLimiter",
     # Version
     "__version__",
