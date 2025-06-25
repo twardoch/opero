@@ -18,20 +18,8 @@ R = TypeVar("R")
 
 logger = logging.getLogger(__name__)
 
-
-class FallbackError(Exception):
-    """Exception raised when all fallback attempts fail."""
-
-    def __init__(self, message: str, errors: list[Exception]) -> None:
-        """
-        Initialize the exception.
-
-        Args:
-            message: Error message
-            errors: List of exceptions from fallback attempts
-        """
-        self.errors = errors
-        super().__init__(f"{message}: {errors}")
+# Import AllFailedError from the central exceptions module
+from opero.exceptions import AllFailedError
 
 
 def get_fallback_decorator(
@@ -40,12 +28,33 @@ def get_fallback_decorator(
     """
     Get a parameter-based fallback decorator.
 
+    This decorator modifies a function to try different values for a specified
+    argument if the initial call fails. The specified argument in the decorated
+    function's signature is expected to receive a list or tuple of potential values.
+    The decorator will then iterate through these values, calling the decorated
+    function with each one until a call succeeds or all values are exhausted.
+
     Args:
-        arg_fallback: Name of the parameter containing fallback values
+        arg_fallback: The name of the parameter in the decorated function
+                      that will contain the list of fallback values.
 
     Returns:
-        A fallback decorator function that returns either the result directly (for sync functions)
-        or a coroutine that will return the result (for async functions)
+        A decorator function that, when applied, enables parameter-based fallbacks.
+        It returns the result of the first successful call, or raises an
+        AllFailedError if all attempts fail.
+        The returned callable will be async if the original function was async.
+
+    Example:
+        @get_fallback_decorator(arg_fallback="api_key")
+        def call_api(data: dict, api_key: str): # api_key will be one value from the list at runtime
+            # ... call API with api_key ...
+            if api_key == "bad_key":
+                raise ValueError("Invalid API Key")
+            return f"Success with {api_key}"
+
+        # Usage:
+        # await call_api({"data": "info"}, api_key=["bad_key", "good_key"])
+        # This would first try with "bad_key", fail, then try with "good_key" and succeed.
     """
     if not arg_fallback:
         # Return a no-op decorator if fallbacks are disabled
@@ -90,38 +99,49 @@ def get_fallback_decorator(
                 Returns:
                     The result of the function call
                 """
-                # Get fallback values from kwargs or initialize with default
-                fallback_values = kwargs.get(arg_fallback, ["fallback"])
-                if not isinstance(fallback_values, list | tuple):
-                    fallback_values = [fallback_values]
+                # Extract the list of fallback values for the designated argument
+                # The decorated function is expected to receive this list.
+                # We use .pop() to get the original list and remove it from kwargs for the actual func call,
+                # to avoid func receiving a list when it expects a single value.
+                # If it's a positional arg, it's more complex, for now, assume it's a kwarg.
 
-                # Try the original call first
-                try:
-                    # Pass the fallback values to the function
-                    kwargs[arg_fallback] = fallback_values
-                    return await func(*args, **kwargs)
-                except Exception as e:
-                    logger.warning(f"Original call failed for {func.__name__}: {e!s}")
+                original_fallback_values_list = kwargs.pop(arg_fallback, None)
 
-                    # Try each fallback value
-                    errors = [e]
-                    for fallback_value in fallback_values:
-                        try:
-                            # Replace the first argument with the fallback value
-                            new_args = (fallback_value,) + args[1:]
-                            return await func(*new_args, **kwargs)
-                        except Exception as e:
-                            errors.append(e)
-                            logger.warning(
-                                f"Fallback call failed for {func.__name__} with value {fallback_value}: {e!s}"
-                            )
-
-                    # If all fallbacks fail, raise a FallbackError with all errors
-                    msg = f"All fallback attempts failed for {func.__name__}"
-                    raise FallbackError(
-                        msg,
-                        errors=errors,
+                if not isinstance(original_fallback_values_list, (list, tuple)):
+                    logger.warning(
+                        f"Fallback argument '{arg_fallback}' in {func.__name__} is not a list or tuple. Fallback disabled."
                     )
+                    # Restore if popped, then call original function once
+                    if original_fallback_values_list is not None: # only restore if it was popped
+                        kwargs[arg_fallback] = original_fallback_values_list
+                    return await func(*args, **kwargs)
+
+                if not original_fallback_values_list:
+                    logger.warning(
+                        f"Fallback argument '{arg_fallback}' in {func.__name__} is empty. Fallback disabled."
+                    )
+                    # Call original function once (arg_fallback might be an empty list passed intentionally)
+                    kwargs[arg_fallback] = original_fallback_values_list # ensure it's passed as empty list
+                    return await func(*args, **kwargs)
+
+                errors = []
+                # Try with each value from the fallback list
+                for fallback_value_attempt in original_fallback_values_list:
+                    try:
+                        # Create a mutable copy of kwargs for this attempt
+                        current_kwargs = kwargs.copy()
+                        current_kwargs[arg_fallback] = fallback_value_attempt
+                        logger.debug(f"Attempting call for {func.__name__} with {arg_fallback}={fallback_value_attempt}")
+                        return await func(*args, **current_kwargs)
+                    except Exception as e:
+                        errors.append(e)
+                        logger.warning(
+                            f"Call failed for {func.__name__} with {arg_fallback}={fallback_value_attempt}: {e!s}"
+                        )
+
+                # If all fallback attempts fail
+                msg = f"All fallback attempts for {arg_fallback} failed for {func.__name__}"
+                raise AllFailedError(msg, errors=errors)
 
             return async_wrapper
         else:

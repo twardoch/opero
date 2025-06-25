@@ -7,7 +7,7 @@ This module provides the decorator interfaces for the opero package,
 including the @opero and @opmap decorators.
 """
 
-from opero.decorators.opero import opero
-from opero.decorators.opmap import opmap
+from .opero import opero
+from .opmap import opmap # Added . for relative import
 
 __all__ = ["opero", "opmap"]
