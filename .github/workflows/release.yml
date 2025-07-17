@@ -9,97 +9,8 @@ permissions:
   id-token: write
 
 jobs:
-  test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        python-version: ["3.10", "3.11", "3.12"]
-        
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v5
-      with:
-        python-version: ${{ matrix.python-version }}
-    
-    - name: Install Hatch
-      run: pip install hatch
-    
-    - name: Run linting and formatting
-      run: hatch run lint:all
-    
-    - name: Run tests with coverage
-      run: hatch run test:test-cov
-
-  build-binaries:
-    needs: test
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: ubuntu-latest
-            artifact_name: opero-linux-x86_64
-            binary_path: dist/opero
-          - os: windows-latest
-            artifact_name: opero-windows-x86_64.exe
-            binary_path: dist/opero.exe
-          - os: macos-latest
-            artifact_name: opero-macos-x86_64
-            binary_path: dist/opero
-    
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-    
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
-    
-    - name: Install dependencies
-      run: |
-        pip install hatch
-        pip install pyinstaller
-    
-    - name: Create standalone binary
-      run: |
-        # Create a CLI entry point
-        mkdir -p dist
-        cat > opero_cli.py << 'EOF'
-        #!/usr/bin/env python3
-        """CLI entry point for opero."""
-        import sys
-        try:
-            from opero import __version__
-            def main():
-                print(f"Opero v{__version__}")
-                print("Opero is a Python library for resilient, parallel task orchestration.")
-                print("Usage: import opero in your Python code")
-                print("Documentation: https://github.com/twardoch/opero")
-        except ImportError:
-            def main():
-                print("Opero CLI - Python library for resilient, parallel task orchestration")
-                print("Documentation: https://github.com/twardoch/opero")
-        
-        if __name__ == "__main__":
-            main()
-        EOF
-        
-        # Build binary
-        pyinstaller --onefile --name opero opero_cli.py
-    
-    - name: Upload binary artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{ matrix.artifact_name }}
-        path: ${{ matrix.binary_path }}
-
   release:
     name: Release to PyPI
-    needs: [test, build-binaries]
     runs-on: ubuntu-latest
     environment:
       name: pypi
@@ -139,44 +50,10 @@ jobs:
         with:
           password: ${{ secrets.PYPI_TOKEN }}
 
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts/
-
-      - name: Get version
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            dist/*
-            artifacts/opero-linux-x86_64/*
-            artifacts/opero-windows-x86_64.exe/*
-            artifacts/opero-macos-x86_64/*
+          files: dist/*
           generate_release_notes: true
-          name: Release ${{ steps.get_version.outputs.VERSION }}
-          body: |
-            ## Changes
-            
-            See [CHANGELOG.md](https://github.com/twardoch/opero/blob/main/CHANGELOG.md) for details.
-            
-            ## Installation
-            
-            ```bash
-            pip install opero
-            ```
-            
-            ## Binary Downloads
-            
-            - **Linux**: `opero-linux-x86_64`
-            - **Windows**: `opero-windows-x86_64.exe`
-            - **macOS**: `opero-macos-x86_64`
-            
-            ## What's New
-            
-            This release includes improvements to the Opero library for resilient, parallel task orchestration in Python.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
