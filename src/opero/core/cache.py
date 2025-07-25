@@ -9,7 +9,7 @@ function results in opero decorators.
 
 import logging
 from collections.abc import Callable
-from typing import ParamSpec, TypeVar
+from typing import Any, ParamSpec, TypeVar
 
 # Import from twat-cache
 from twat_cache import CacheContext, ucache
@@ -24,9 +24,9 @@ def get_cache_decorator(
     cache: bool = True,
     cache_ttl: int | None = None,
     cache_backend: str = "memory",
-    cache_key: Callable | None = None,
+    cache_key: Callable[..., str] | None = None,
     cache_namespace: str = "opero",
-    **kwargs,
+    **kwargs: Any,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Get a cache decorator from twat-cache based on the provided configuration.
@@ -47,7 +47,7 @@ def get_cache_decorator(
         return lambda func: func
 
     # Configure the cache decorator
-    cache_config = {
+    cache_config: dict[str, Any] = {
         "ttl": cache_ttl,
         "preferred_engine": cache_backend,
         "namespace": cache_namespace,
@@ -60,12 +60,15 @@ def get_cache_decorator(
     cache_config.update(kwargs)
 
     # Return the configured cache decorator
-    return lambda func: ucache(**cache_config)(func)
+    def apply_cache(func: Callable[P, R]) -> Callable[P, R]:
+        return ucache(**cache_config)(func)  # type: ignore[return-value,arg-type]
+    
+    return apply_cache
 
 
 def get_cache_context(
-    cache_backend: str = "memory", cache_namespace: str = "opero", **kwargs
-) -> CacheContext:
+    cache_backend: str = "memory", cache_namespace: str = "opero", **kwargs: Any
+) -> Any:
     """
     Get a cache context for manual cache operations.
 
@@ -83,7 +86,7 @@ def get_cache_context(
 
 
 def clear_cache(
-    namespace: str = "opero", cache_backend: str | None = None, **kwargs
+    namespace: str = "opero", cache_backend: str | None = None, **kwargs: Any
 ) -> None:
     """
     Clear the cache for a specific namespace.

@@ -13,6 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Initial project structure and core functionality (from original base)
+- Comprehensive documentation structure using mkdocs with mkdocs-material theme:
+  - Getting Started guides (installation, quickstart, configuration)
+  - User Guide with basic usage, advanced features, and best practices
+  - API Reference documentation for core decorators and utilities
+  - Development documentation (contributing guide, testing guide, changelog)
+- Type annotations throughout the codebase for better IDE support and type safety
+- `__version__.py` file for proper version tracking with hatch-vcs
+- Comprehensive docstrings for all public APIs following Google style guide:
+  - Enhanced class and function documentation with examples
+  - Detailed parameter and return value descriptions
+  - Usage examples in docstrings
+- Enhanced error context preservation system (exceptions_v2.py):
+  - ErrorContext dataclass for tracking detailed failure information
+  - Enhanced AllFailedError with context tracking
+  - Support for correlation IDs in errors
+  - Summary and grouping methods for error analysis
+- Correlation ID utilities for distributed tracing (utils/correlation.py):
+  - Context-aware correlation ID management
+  - CorrelationContext context manager
+  - Integration helpers for logging
 
 ### Changed
 - **Refactored `src/opero/core/fallback.py`**:
@@ -56,6 +76,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Set up the flow to apply resilience to a single-item processing function, then use `get_parallel_map_decorator` for parallel execution.
   - Updated `src/opero/decorators/__init__.py` to export `@opmap`.
 - Deferred linting fixes for `cleanup.py` script as lower priority for library MVP.
+- **Improved Type Annotations**:
+  - Fixed all mypy type checking errors (0 errors remaining)
+  - Added proper type annotations to function signatures in all modules
+  - Added `type: ignore` comments where necessary for third-party library compatibility
+  - Fixed return type issues in async/sync wrappers
+  - Properly typed kwargs parameters throughout the codebase
 
 ### Fixed
 - Corrected the logic for parameter-based fallbacks to use the named argument as the source of multiple values to try, rather than always targeting the first positional argument.

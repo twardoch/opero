@@ -34,7 +34,7 @@ def get_retry_decorator(
     max_delay: float = 30.0,
     retry_on: type[Exception] | tuple[type[Exception], ...] = (Exception,),
     jitter: bool = True,
-    **kwargs,
+    **kwargs: Any,
 ) -> Callable[[Callable[..., R]], Callable[..., R]]:
     """
     Get a retry decorator based on the provided configuration.
@@ -56,7 +56,7 @@ def get_retry_decorator(
         return lambda func: func
 
     # Configure the retry decorator
-    retry_config = {
+    retry_config: dict[str, Any] = {
         "stop": stop_after_attempt(
             retries + 1
         ),  # +1 because the first attempt is not a retry
@@ -106,7 +106,7 @@ def get_retry_decorator(
                     logger.error(f"All retry attempts failed for {func.__name__}: {e}")
                     raise
 
-            return async_wrapper
+            return async_wrapper  # type: ignore[return-value]
         else:
 
             @functools.wraps(func)
