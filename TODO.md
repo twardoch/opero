@@ -1,6 +1,8 @@
-# Opero MVP Streamlining TODO
+# Opero Development TODO
 
-## I. Core Decorator Refactoring (`src/opero/decorators/`)
+## Phase 0: Current MVP Tasks (In Progress)
+
+### Core Decorator Refactoring (`src/opero/decorators/`)
 
 -   [ ] **`@opero` Decorator (`opero.py`)**:
     -   [ ] Review and simplify parameter list for MVP.

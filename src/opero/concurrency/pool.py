@@ -13,7 +13,7 @@ from collections.abc import Callable, Iterable
 from typing import Any, TypeVar
 
 # Import from twat-mp
-from twat_mp import ThreadPool, amap, apmap, pmap
+from twat_mp import ThreadPool, amap, apmap, pmap  # type: ignore[import-untyped]
 
 T = TypeVar("T")  # Input type
 R = TypeVar("R")  # Return type
@@ -26,7 +26,7 @@ def get_parallel_executor(
     workers: int = 4,
     ordered: bool = True,
     progress: bool = True,
-    **kwargs,
+    **kwargs: Any,
 ) -> Callable[[Callable[[T], R], Iterable[T]], list[R]]:
     """
     Get a parallel executor function based on the provided configuration.
@@ -173,7 +173,7 @@ def get_parallel_map_decorator(
     workers: int = 4,
     ordered: bool = True,
     progress: bool = True,
-    **kwargs,
+    **kwargs: Any,
 ) -> Callable[[Callable[[T], R]], Callable[[Iterable[T]], list[R]]]:
     """
     Get a parallel map decorator based on the provided configuration.
@@ -229,7 +229,8 @@ def get_parallel_map_decorator(
                     if asyncio.iscoroutinefunction(func):
                         # For async functions, we need to run them in an event loop
                         async def run_async(item: T) -> R:
-                            return await func(item)
+                            result = await func(item)
+                            return result  # type: ignore[no-any-return]
 
                         # Create a wrapper that runs the async function in an event loop
                         def async_wrapper(item: T) -> R:

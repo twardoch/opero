@@ -114,7 +114,8 @@ def get_fallback_decorator(
                     # Restore if popped, then call original function once
                     if original_fallback_values_list is not None: # only restore if it was popped
                         kwargs[arg_fallback] = original_fallback_values_list
-                    return await func(*args, **kwargs)
+                    result = await func(*args, **kwargs)
+                    return result  # type: ignore[no-any-return]
 
                 if not original_fallback_values_list:
                     logger.warning(
@@ -122,7 +123,8 @@ def get_fallback_decorator(
                     )
                     # Call original function once (arg_fallback might be an empty list passed intentionally)
                     kwargs[arg_fallback] = original_fallback_values_list # ensure it's passed as empty list
-                    return await func(*args, **kwargs)
+                    result = await func(*args, **kwargs)
+                    return result  # type: ignore[no-any-return]
 
                 errors = []
                 # Try with each value from the fallback list
@@ -132,7 +134,8 @@ def get_fallback_decorator(
                         current_kwargs = kwargs.copy()
                         current_kwargs[arg_fallback] = fallback_value_attempt
                         logger.debug(f"Attempting call for {func.__name__} with {arg_fallback}={fallback_value_attempt}")
-                        return await func(*args, **current_kwargs)
+                        result = await func(*args, **current_kwargs)
+                        return result  # type: ignore[no-any-return]
                     except Exception as e:
                         errors.append(e)
                         logger.warning(
@@ -184,9 +187,9 @@ def get_fallback_decorator(
                                 f"Fallback call failed for {func.__name__} with value {fallback_value}: {e!s}"
                             )
 
-                    # If all fallbacks fail, raise a FallbackError with all errors
+                    # If all fallbacks fail, raise an AllFailedError with all errors
                     msg = f"All fallback attempts failed for {func.__name__}"
-                    raise FallbackError(
+                    raise AllFailedError(
                         msg,
                         errors=errors,
                     )

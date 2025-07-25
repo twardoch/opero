@@ -1,15 +1,38 @@
 #!/usr/bin/env python3
 # this_file: src/opero/__init__.py
-"""
-Opero: Resilient, parallel task orchestration for Python.
+"""Opero: Resilient, parallel task orchestration for Python.
 
 This package provides a clean, Pythonic interface for orchestrating resilient,
 parallelized operations with parameter-based fallbacks, retry logic, rate limiting,
 and multiprocessing support.
 
-Key components:
-- @opero: Decorator for adding resilience mechanisms to functions
-- @opmap: Decorator for adding resilience mechanisms and parallel execution to functions
+Key Features:
+    - **Automatic Retries**: Handle transient failures with exponential backoff
+    - **Parameter Fallbacks**: Try alternative values (e.g., backup API keys)
+    - **Rate Limiting**: Respect API limits and prevent overload
+    - **Caching**: Reduce redundant operations with flexible caching
+    - **Parallel Processing**: Execute operations concurrently across workers
+    - **Async Support**: Full support for both sync and async functions
+
+Main Components:
+    - @opero: Decorator for adding resilience mechanisms to functions
+    - @opmap: Decorator for adding resilience and parallel execution
+
+Quick Example:
+    from opero import opero, opmap
+
+    # Add resilience to a single function
+    @opero(retries=3, cache=True, rate_limit=10.0)
+    def fetch_data(url):
+        return requests.get(url).json()
+
+    # Add resilience and parallel processing
+    @opmap(mode="thread", workers=10, retries=2)
+    def process_item(item):
+        return expensive_operation(item)
+    
+    # Process many items in parallel
+    results = process_item(list_of_items)
 """
 
 from opero.__version__ import __version__

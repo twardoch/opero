@@ -28,21 +28,21 @@ def opero(
     cache: bool = True,
     cache_ttl: int | None = None,
     cache_backend: str = "memory",
-    cache_key: Callable | None = None,
+    cache_key: Callable[..., str] | None = None,
     cache_namespace: str = "opero",
     # Retry options
     retries: int = 3,
     backoff_factor: float = 1.5,
     min_delay: float = 0.1,
     max_delay: float = 30.0,
-    retry_on: Any = Exception,
+    retry_on: type[Exception] | tuple[type[Exception], ...] = Exception,
     # Fallback options
     arg_fallback: str | None = None,
     # Rate limiting options
     rate_limit: float | None = None,
     # Additional options
-    **kwargs,
-):
+    **kwargs: Any,
+) -> Callable[[Callable[..., R]], Callable[..., R]]:
     """
     Decorator to add resilience mechanisms to a function.
 
@@ -124,7 +124,7 @@ def opero(
 
         # 4. Apply parameter-based fallbacks
         fallback_decorator = get_fallback_decorator(arg_fallback=arg_fallback, **kwargs)
-        decorated_func = fallback_decorator(decorated_func)
+        decorated_func = fallback_decorator(decorated_func)  # type: ignore[assignment]
 
         return decorated_func
 

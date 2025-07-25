@@ -22,14 +22,39 @@ logger = logging.getLogger(__name__)
 
 
 class RateLimiter:
-    """Rate limiter for function calls."""
+    """Rate limiter for controlling function call frequency.
+    
+    This class provides both synchronous and asynchronous rate limiting
+    capabilities. It ensures that operations don't exceed a specified
+    rate limit (calls per second).
+    
+    Attributes:
+        rate_limit: Maximum number of operations per second.
+        min_interval: Minimum time interval between operations.
+        last_call_time: Timestamp of the last operation (for sync mode).
+        async_limiter: Async rate limiter instance.
+    
+    Example:
+        # Create a rate limiter for 5 calls per second
+        limiter = RateLimiter(5.0)
+        
+        # Synchronous usage
+        for i in range(10):
+            limiter.wait()
+            print(f"Operation {i}")
+            
+        # Asynchronous usage
+        async def rate_limited_operation():
+            await limiter.wait_async()
+            return await some_async_operation()
+    """
 
     def __init__(self, rate_limit: float) -> None:
-        """
-        Initialize the rate limiter.
+        """Initialize the rate limiter with a specified rate.
 
         Args:
-            rate_limit: Maximum number of operations per second
+            rate_limit: Maximum number of operations per second.
+                If <= 0, no rate limiting is applied.
         """
         self.rate_limit = rate_limit
         self.min_interval = 1.0 / rate_limit if rate_limit > 0 else 0
@@ -37,7 +62,14 @@ class RateLimiter:
         self.async_limiter = asynciolimiter.Limiter(rate_limit)
 
     def wait(self) -> None:
-        """Wait until the rate limit allows another operation."""
+        """Wait synchronously until the rate limit allows another operation.
+        
+        This method blocks the current thread if necessary to maintain
+        the configured rate limit. It uses time.sleep() for delays.
+        
+        Note:
+            For async code, use wait_async() instead.
+        """
         if self.rate_limit <= 0:
             return
 
@@ -51,12 +83,18 @@ class RateLimiter:
         self.last_call_time = time.time()
 
     async def wait_async(self) -> None:
-        """Wait asynchronously until the rate limit allows another operation."""
+        """Wait asynchronously until the rate limit allows another operation.
+        
+        This method uses asyncio-compatible rate limiting, allowing other
+        coroutines to run while waiting for the rate limit.
+        
+        Note:
+            For synchronous code, use wait() instead.
+        """
         if self.rate_limit <= 0:
             return
 
-        async with self.async_limiter:
-            pass
+        await self.async_limiter.acquire()  # type: ignore[attr-defined]
 
 
 def get_rate_limit_decorator(
@@ -103,9 +141,10 @@ def get_rate_limit_decorator(
                     The result of the function call
                 """
                 await limiter.wait_async()
-                return await func(*args, **kwargs)
+                result = await func(*args, **kwargs)
+                return result  # type: ignore[no-any-return]
 
-            return async_wrapper
+            return async_wrapper  # type: ignore[return-value]
         else:
 
             @functools.wraps(func)

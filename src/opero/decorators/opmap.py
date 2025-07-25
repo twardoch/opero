@@ -33,14 +33,14 @@ def opmap(
     cache: bool = True,
     cache_ttl: int | None = None,
     cache_backend: str = "memory",
-    cache_key: Callable | None = None,
+    cache_key: Callable[..., str] | None = None,
     cache_namespace: str = "opero_opmap_item", # Default namespace for item processing
     # Retry options (applied to the single-item processing function)
     retries: int = 3,
     backoff_factor: float = 1.5,
     min_delay: float = 0.1,
     max_delay: float = 30.0,
-    retry_on: Any = Exception,
+    retry_on: type[Exception] | tuple[type[Exception], ...] = Exception,
     # Fallback options (applied to the single-item processing function)
     arg_fallback: str | None = None,
     # Rate limiting options (applied to the single-item processing function)
@@ -54,8 +54,8 @@ def opmap(
     ordered: bool = True,
     progress: bool = True,
     # Additional options for underlying decorators or twat-mp
-    **kwargs,
-):
+    **kwargs: Any,
+) -> Callable[[Callable[[T], R]], Callable[[Iterable[T]], list[R | Exception]]]:
     """
     Decorator to add resilience and parallel map capabilities to a function.
 
@@ -162,7 +162,7 @@ def opmap(
             arg_fallback=arg_fallback,
             **_kwargs_fallback
         )
-        resilient_func = fallback_decorator(resilient_func)
+        resilient_func = fallback_decorator(resilient_func)  # type: ignore[assignment]
 
         # 2. Get the parallel map decorator from twat-mp, configured with concurrency options
         # This decorator will take our now-resilient single-item function
@@ -183,15 +183,16 @@ def opmap(
         parallel_processing_func = parallel_map_decorator_factory(resilient_func)
 
         @functools.wraps(func) # Wraps the original user function for metadata
-        def map_wrapper(items: Iterable[T], **call_time_kwargs) -> list[R]:
+        def map_wrapper(items: Iterable[T], **call_time_kwargs: Any) -> list[R | Exception]:
             """
             This is the function that users will call with an iterable of items.
             It uses the pre-configured parallel_processing_func.
             """
             # Pass call-time kwargs to the parallel processing function,
             # which in turn might pass them to pmap/amap/apmap if they support it.
-            return parallel_processing_func(items, **call_time_kwargs)
+            result = parallel_processing_func(items, **call_time_kwargs)
+            return result  # type: ignore[return-value]
 
-        return map_wrapper
+        return map_wrapper  # type: ignore[return-value]
 
     return decorator
