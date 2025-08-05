@@ -1,0 +1,159 @@
+name: Build and Deploy Documentation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src_docs/**'
+      - 'src_docs/md/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src_docs/**'
+      - 'src_docs/md/**'
+      - 'mkdocs.yml'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        if: github.ref == 'refs/heads/main'
+
+      - name: Install MkDocs and dependencies
+        run: |
+          pip install --upgrade pip
+          pip install mkdocs-material
+          pip install mkdocs-git-revision-date-localized-plugin
+          pip install mkdocs-git-committers-plugin-2
+          pip install mkdocs-minify-plugin
+          pip install mkdocs-awesome-pages-plugin
+
+      - name: Verify MkDocs configuration
+        run: |
+          cd src_docs
+          mkdocs --version
+          mkdocs config
+
+      - name: Build documentation
+        run: |
+          cd src_docs
+          mkdocs build --verbose --strict
+
+      - name: Verify build output
+        run: |
+          ls -la docs/
+          test -f docs/index.html || (echo "index.html not found in docs/" && exit 1)
+          test -d docs/getting-started/ || (echo "getting-started directory not found" && exit 1)
+          test -d docs/guide/ || (echo "guide directory not found" && exit 1)
+          test -d docs/api/ || (echo "api directory not found" && exit 1)
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          path: docs/
+
+      - name: Upload documentation build artifacts
+        uses: actions/upload-artifact@v4
+        if: github.event_name == 'pull_request'
+        with:
+          name: documentation-build
+          path: docs/
+          retention-days: 5
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.ref == 'refs/heads/main'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  preview:
+    name: Documentation Preview
+    if: github.event_name == 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download documentation artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: documentation-build
+          path: docs/
+
+      - name: Comment PR with preview info
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('📖 Documentation Preview')
+            );
+
+            const commentBody = `📖 **Documentation Preview**
+
+            The documentation has been built successfully for this PR.
+            
+            **Changes detected in:**
+            - MkDocs configuration
+            - Documentation content in \`src_docs/md/\`
+            
+            **Build status:** ✅ Success
+            **Build artifacts:** Available for download from the Actions tab
+            
+            Once this PR is merged to \`main\`, the documentation will be automatically deployed to GitHub Pages.`;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: commentBody
+              });
+            }

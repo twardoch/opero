@@ -1,0 +1,198 @@
+site_name: Opero Documentation
+site_description: Resilient, Parallel Task Orchestration for Python
+site_author: Adam Twardoch
+site_url: https://twardoch.github.io/opero/
+repo_url: https://github.com/twardoch/opero
+repo_name: twardoch/opero
+edit_uri: edit/main/src_docs/
+
+# Build settings
+docs_dir: md
+site_dir: ../docs
+
+# Theme configuration
+theme:
+  name: material
+  language: en
+  palette:
+    # Light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  
+  font:
+    text: Roboto
+    code: Roboto Mono
+  
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.tabs.link
+    - content.code.annotate
+    - content.code.copy
+    - content.action.edit
+    - content.action.view
+    - toc.follow
+    - toc.integrate
+  
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/pencil
+    view: material/eye
+    admonition:
+      note: octicons/tag-16
+      abstract: octicons/checklist-16
+      info: octicons/info-16
+      tip: octicons/squirrel-16
+      success: octicons/check-16
+      question: octicons/question-16
+      warning: octicons/alert-16
+      failure: octicons/x-circle-16
+      danger: octicons/zap-16
+      bug: octicons/bug-16
+      example: octicons/beaker-16
+      quote: octicons/quote-16
+
+# Extensions
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      title: Page contents
+  
+  # Python Markdown Extensions
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: twardoch
+      repo: opero
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      check_paths: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+# Plugins
+plugins:
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+      minify_js: true
+      minify_css: true
+      htmlmin_opts:
+        remove_comments: true
+  - git-revision-date-localized:
+      enable_creation_date: true
+      type: timeago
+  - git-committers:
+      repository: twardoch/opero
+      branch: main
+
+# Navigation structure
+nav:
+  - Home: index.md
+  - Getting Started:
+    - Installation: getting-started/installation.md
+    - Quick Start: getting-started/quickstart.md
+    - Configuration: getting-started/configuration.md
+  - User Guide:
+    - Basic Usage: guide/basic-usage.md
+    - Advanced Features: guide/advanced-features.md
+    - Best Practices: guide/best-practices.md
+  - API Reference:
+    - Overview: api/overview.md
+    - Core Components: api/core.md
+    - Utilities: api/utils.md
+  - Development:
+    - Contributing: development/contributing.md
+    - Testing: development/testing.md
+    - Changelog: development/changelog.md
+
+# Extra configuration
+extra:
+  version:
+    provider: mike
+    default: latest
+  
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/twardoch/opero
+      name: GitHub Repository
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/opero/
+      name: PyPI Package
+  
+  analytics:
+    feedback:
+      title: Was this page helpful?
+      ratings:
+        - icon: material/emoticon-happy-outline
+          name: This page was helpful
+          data: 1
+          note: >-
+            Thanks for your feedback!
+        - icon: material/emoticon-sad-outline
+          name: This page could be improved
+          data: 0
+          note: >-
+            Thanks for your feedback! Help us improve this page by
+            <a href="https://github.com/twardoch/opero/issues/new/?title=[Docs Feedback] {title} - {url}" target="_blank" rel="noopener">creating an issue</a>.
+
+# Copyright
+copyright: Copyright &copy; 2024 Adam Twardoch
