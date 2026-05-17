@@ -11,29 +11,29 @@
 
 ## What is Opero?
 
-Opero (Latin for "to work" or "to operate") is a Python library that makes your functions more robust and efficient through simple decorators. It provides automatic retries, fallbacks, rate limiting, caching, and parallel processing - all with minimal code changes.
+Opero (Latin for "to work" or "to operate") is a Python library that adds resilience and parallelism to your functions with decorators. It handles retries, fallbacks, rate limiting, caching, and concurrent execution automatically.
 
 ## Key Features
 
 <div class="grid cards" markdown>
 
 -   :material-refresh: **Automatic Retries**  
-    Handle transient failures gracefully with configurable retry strategies and exponential backoff.
+    Configurable retry strategies with exponential backoff.
 
 -   :material-swap-horizontal: **Smart Fallbacks**  
-    Define alternative parameters (like backup API keys) that activate automatically on failure.
+    Automatically switch to backup parameters on failure.
 
 -   :material-memory: **Intelligent Caching**  
-    Speed up repeated operations with flexible caching backends and TTL support.
+    Cache results with TTL support and multiple backend options.
 
 -   :material-speedometer: **Rate Limiting**  
-    Protect external services from overload with built-in rate limiting.
+    Enforce call frequency limits to protect external services.
 
 -   :material-call-split: **Parallel Processing**  
-    Process data in parallel across threads, processes, or async tasks with a single decorator.
+    Run tasks across threads, processes, or async workers with one decorator.
 
 -   :material-language-python: **Type-Safe & Async-First**  
-    Full type hints and native support for both sync and async functions.
+    Full type hints. Works with both sync and async functions.
 
 </div>
 
@@ -43,15 +43,15 @@ Opero (Latin for "to work" or "to operate") is a Python library that makes your 
 from opero import opero
 
 @opero(
-    retries=3,                    # Retry up to 3 times
-    backoff_factor=1.5,           # Exponential backoff
-    cache=True,                   # Cache results
-    rate_limit=10.0,              # Max 10 calls per second
-    arg_fallback="api_key"        # Try backup keys on failure
+    retries=3,
+    backoff_factor=1.5,
+    cache=True,
+    rate_limit=10.0,
+    arg_fallback="api_key"
 )
 async def fetch_data(item_id: str, api_key: list[str] = ["key1", "key2"]):
     # Your function implementation
-    # Opero will automatically handle retries, caching, and fallbacks
+    # Opero handles retries, caching, and fallbacks automatically
     pass
 ```
 
@@ -61,7 +61,7 @@ async def fetch_data(item_id: str, api_key: list[str] = ["key1", "key2"]):
 pip install opero
 ```
 
-For enhanced features:
+Optional dependencies:
 
 ```bash
 # For advanced multiprocessing (supports more object types)
@@ -78,7 +78,7 @@ pip install opero[all]
 
 ### Simple Yet Powerful
 
-Add enterprise-grade resilience with just a decorator:
+Upgrade fragile code to enterprise-grade resilience with a single decorator:
 
 ```python
 # Before: Fragile code
@@ -102,19 +102,18 @@ def process_data(item):
 
 ### Performance at Scale
 
-Process thousands of items efficiently:
+Process large datasets efficiently:
 
 ```python
 from opero import opmap
 
 @opmap(
-    mode="thread",      # Use threads for I/O-bound tasks
-    workers=10,         # 10 parallel workers
-    retries=2,          # Retry failed items
-    cache=True          # Cache results
+    mode="thread",
+    workers=10,
+    retries=2,
+    cache=True
 )
 def process_item(item):
-    # Process individual item
     return expensive_operation(item)
 
 # Process all items in parallel with automatic resilience
@@ -129,13 +128,13 @@ results = process_item(list_of_1000_items)
     Install Opero and run your first resilient function
 
 -   :material-book-open-variant: **[User Guide](guide/basic-usage.md)**  
-    Learn core concepts and best practices
+    Core concepts and best practices
 
 -   :material-api: **[API Reference](api/overview.md)**  
-    Detailed documentation of all features
+    Complete feature documentation
 
 -   :material-github: **[GitHub Repository](https://github.com/twardoch/opero)**  
-    View source code and contribute
+    Source code and contributions
 
 </div>
 
@@ -146,9 +145,9 @@ results = process_item(list_of_1000_items)
 | Feature | Description |
 |---------|------------|
 | **Retries** | Automatic retries with exponential backoff |
-| **Fallbacks** | Try alternative parameters on failure |
-| **Rate Limiting** | Prevent API overload and respect limits |
-| **Caching** | Reduce redundant operations |
+| **Fallbacks** | Switch to alternative parameters on failure |
+| **Rate Limiting** | Prevent API overload |
+| **Caching** | Avoid redundant operations |
 | **Circuit Breaker** | Stop cascading failures (coming soon) |
 
 ### Parallel Processing Modes

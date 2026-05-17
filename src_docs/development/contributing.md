@@ -1,42 +1,40 @@
 # Contributing to Opero
 
-Thank you for your interest in contributing to Opero! This guide will help you get started with contributing to the project.
+Thanks for considering a contribution to Opero. Here's how to get started.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.10 or higher
+- Python 3.10+
 - Git
 - GitHub account
-- Basic knowledge of Python async/await and decorators
+- Familiarity with Python async/await and decorators
 
 ### Development Setup
 
 1. **Fork and Clone**
 
    ```bash
-   # Fork the repository on GitHub, then:
    git clone https://github.com/YOUR_USERNAME/opero.git
    cd opero
    ```
 
 2. **Install Hatch**
 
-   We use [Hatch](https://hatch.pypa.io/) for project management:
+   [Hatch](https://hatch.pypa.io/) manages the project:
 
    ```bash
    pip install hatch
    ```
 
-3. **Set Up Development Environment**
+3. **Set Up Environment**
 
    ```bash
-   # Create and activate development environment
    hatch shell
-   
-   # This installs Opero in editable mode with all dependencies
    ```
+
+   This creates and activates a virtual environment with Opero installed in editable mode.
 
 4. **Install Pre-commit Hooks**
 
@@ -56,35 +54,34 @@ git checkout -b fix/your-bug-fix
 
 ### 2. Make Your Changes
 
-Follow the coding standards and ensure your changes include:
-- Implementation code
-- Tests for new functionality
-- Documentation updates
-- Type hints
+- Write implementation code
+- Add tests
+- Update documentation
+- Include type hints
 
 ### 3. Run Tests
 
 ```bash
-# Run all tests
+# All tests
 hatch run test
 
-# Run tests with coverage
+# With coverage
 hatch run test-cov
 
-# Run specific test file
+# Specific file
 hatch run pytest tests/test_decorators.py
 
-# Run tests in parallel
+# Parallel execution
 hatch run pytest -n auto
 ```
 
 ### 4. Check Code Quality
 
 ```bash
-# Run all linting and formatting
+# Everything
 hatch run lint:all
 
-# Format code
+# Formatting
 hatch run lint:fmt
 
 # Type checking
@@ -93,30 +90,27 @@ hatch run lint:typing
 
 ### 5. Update Documentation
 
-If your changes affect the public API:
+If you changed the public API:
 1. Update docstrings
-2. Update relevant documentation in `src_docs/`
-3. Build docs locally to verify:
+2. Edit relevant files in `src_docs/`
+3. Build docs locally:
    ```bash
    mkdocs serve
-   # View at http://localhost:8000
+   # Check http://localhost:8000
    ```
 
 ### 6. Commit Your Changes
 
 ```bash
-# Stage your changes
 git add .
-
-# Commit with descriptive message
 git commit -m "feat: add support for custom retry predicates"
 ```
 
-Follow conventional commit format:
+Use conventional commits:
 - `feat:` New feature
 - `fix:` Bug fix
 - `docs:` Documentation changes
-- `test:` Test additions or changes
+- `test:` Test additions
 - `refactor:` Code refactoring
 - `perf:` Performance improvements
 - `chore:` Maintenance tasks
@@ -127,16 +121,15 @@ Follow conventional commit format:
 git push origin feature/your-feature-name
 ```
 
-Then create a pull request on GitHub.
+Then submit a PR on GitHub.
 
 ## Coding Standards
 
 ### Code Style
 
-We use Ruff for linting and formatting:
+Ruff handles linting and formatting:
 
 ```python
-# Good: Clear, typed, documented
 from typing import Optional
 
 def process_data(
@@ -164,7 +157,7 @@ def process_data(
 
 ### Type Hints
 
-Always use type hints:
+Always include type hints:
 
 ```python
 from typing import TypeVar, Callable, Any, Optional
@@ -182,7 +175,7 @@ def retry_operation(
 
 ### Async Support
 
-Ensure compatibility with both sync and async:
+Support both sync and async:
 
 ```python
 import asyncio
@@ -199,7 +192,7 @@ def ensure_awaitable(
 
 ### Error Handling
 
-Use custom exceptions for clarity:
+Use custom exceptions:
 
 ```python
 class OperoConfigError(OperoError):
@@ -251,7 +244,6 @@ class TestOperoDecorator:
 
 ### Test Coverage
 
-Aim for high test coverage:
 - Unit tests for all public functions
 - Integration tests for decorator combinations
 - Edge cases and error conditions
@@ -259,7 +251,7 @@ Aim for high test coverage:
 
 ### Fixtures
 
-Use fixtures for common test data:
+Use fixtures for repeated setup:
 
 ```python
 @pytest.fixture
@@ -383,10 +375,10 @@ Brief description of changes
 
 ### Review Process
 
-1. Automated checks must pass
-2. At least one maintainer review required
-3. All feedback addressed
-4. Final approval from maintainer
+1. Automated checks pass
+2. Maintainer review required
+3. Feedback addressed
+4. Final approval
 5. Squash and merge
 
 ## Release Process
@@ -401,20 +393,20 @@ Releases are automated via GitHub Actions:
 
 ## Getting Help
 
-- **Discord**: Join our Discord server (link in README)
-- **GitHub Issues**: For bugs and feature requests
-- **GitHub Discussions**: For questions and ideas
+- **Discord**: Join our server (link in README)
+- **GitHub Issues**: Report bugs and request features
+- **GitHub Discussions**: Ask questions and share ideas
 - **Email**: adam+github@twardoch.com
 
 ## Code of Conduct
 
-Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
+This project follows a Contributor Code of Conduct. By participating, you agree to its terms.
 
 ## Recognition
 
-Contributors are recognized in:
-- CHANGELOG.md for specific contributions
+Contributors appear in:
+- CHANGELOG.md
 - GitHub contributors page
-- Special thanks in release notes
+- Release notes
 
-Thank you for contributing to Opero! 🎉
+Thanks for contributing to Opero.

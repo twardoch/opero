@@ -4,7 +4,7 @@
 
 ### @opero Decorator
 
-The main decorator that adds resilience mechanisms to functions.
+Main decorator adding resilience mechanisms to functions.
 
 ```python
 def opero(
@@ -62,7 +62,7 @@ def opero(
 
 ### @opmap Decorator
 
-Decorator that combines resilience mechanisms with parallel processing.
+Decorator combining resilience mechanisms with parallel processing.
 
 ```python
 def opmap(

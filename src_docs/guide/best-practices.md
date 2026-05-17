@@ -1,6 +1,6 @@
 # Best Practices
 
-This guide provides recommendations for using Opero effectively in production environments.
+This guide explains how to use Opero effectively in production environments.
 
 ## Design Principles
 

@@ -1,10 +1,10 @@
 # API Overview
 
-Complete reference for Opero's API, including all decorators, functions, exceptions, and utilities.
+Complete reference for Opero's API, including decorators, functions, exceptions, and utilities.
 
 ## Architecture Overview
 
-Opero is built on a modular architecture that provides resilience through composable decorators:
+Opero uses a modular architecture with composable decorators:
 
 ```mermaid
 graph TB
@@ -33,7 +33,7 @@ graph TB
 
 ### `@opero` - Single Function Resilience
 
-The primary decorator for adding resilience to individual functions.
+Adds resilience to individual functions.
 
 ```python
 from opero import opero
@@ -75,7 +75,7 @@ def your_function():
 
 ### `@opmap` - Parallel Processing with Resilience
 
-Decorator for parallel processing of multiple items with per-item resilience.
+Processes multiple items in parallel with per-item resilience.
 
 ```python
 from opero import opmap
@@ -87,7 +87,7 @@ from opero import opmap
     progress: bool = True,
     timeout: Optional[float] = None,
     chunk_size: Optional[int] = None,
-    # All @opero parameters are also available
+    # All @opero parameters also apply
     retries: int = 3,
     cache: bool = False,
     rate_limit: Optional[float] = None,
@@ -100,7 +100,7 @@ def process_single_item(item):
 results = process_single_item([item1, item2, item3, ...])
 ```
 
-**Additional Parameters (beyond @opero):**
+**Additional Parameters:**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -115,7 +115,7 @@ results = process_single_item([item1, item2, item3, ...])
 
 ### `OperoError`
 
-Base exception class for all Opero-related errors.
+Base exception for Opero errors.
 
 ```python
 from opero.exceptions import OperoError
@@ -127,7 +127,7 @@ class OperoError(RuntimeError):
 
 ### `AllFailedError`
 
-Raised when all retry attempts and fallbacks have been exhausted.
+Raised when all retry attempts and fallbacks are exhausted.
 
 ```python
 from opero.exceptions import AllFailedError
@@ -161,7 +161,7 @@ except AllFailedError as e:
 
 ### Built-in Cache Backends
 
-Opero supports multiple cache backends through the `twat-cache` library:
+Supported through the `twat-cache` library:
 
 | Backend | Description | Use Case |
 |---------|-------------|----------|
@@ -226,7 +226,7 @@ def function_with_custom_key(arg1, arg2, important_param=None, ignore_this=None)
 
 ### Thread Mode (`mode="thread"`)
 
-Best for I/O-bound tasks like API calls, file operations, database queries.
+For I/O-bound tasks like API calls, file operations, database queries.
 
 ```python
 @opmap(mode="thread", workers=20)
@@ -245,7 +245,7 @@ def io_bound_task(item):
 
 ### Process Mode (`mode="process"`)
 
-Best for CPU-bound tasks like calculations, data processing, image manipulation.
+For CPU-bound tasks like calculations, data processing, image manipulation.
 
 ```python
 @opmap(mode="process", workers=8)  # Usually = CPU cores
@@ -263,7 +263,7 @@ def cpu_bound_task(item):
 
 ### Async Mode (`mode="async"`)
 
-Best for async I/O operations with high concurrency needs.
+For async I/O operations with high concurrency needs.
 
 ```python
 @opmap(mode="async", workers=100)
@@ -303,7 +303,7 @@ async def async_cpu_task(item):
 
 ### Retry Strategies
 
-Opero uses exponential backoff with jitter for retry delays:
+Opero uses exponential backoff with jitter:
 
 ```python
 delay = min(max_delay, min_delay * (backoff_factor ** attempt_number))
@@ -448,7 +448,7 @@ result = run_async(async_function(args))
 
 ## Type Hints and Generics
 
-Opero includes comprehensive type hints for better IDE support:
+Opero includes comprehensive type hints:
 
 ```python
 from typing import TypeVar, Awaitable, Union, List, Callable
@@ -479,7 +479,7 @@ results: List[str] = parallel_typed_function(items)
 
 ## Configuration Validation
 
-Opero validates configuration parameters and provides helpful error messages:
+Opero validates configuration parameters:
 
 ```python
 # Invalid configuration examples that will raise errors:
@@ -505,15 +505,15 @@ def invalid_mode():
 
 ### Memory Usage
 
-- **Memory cache**: Stores results in memory, fast but limited by RAM
-- **Process mode**: Each worker process has separate memory space
-- **Thread mode**: Shared memory space, more memory efficient
+- **Memory cache**: Fast but limited by RAM
+- **Process mode**: Each worker has separate memory space
+- **Thread mode**: Shared memory space, more efficient
 - **Async mode**: Single process, lowest memory usage
 
 ### CPU Usage
 
-- **Process mode**: Can utilize multiple CPU cores effectively
-- **Thread mode**: Limited by Python's GIL for CPU-bound tasks
+- **Process mode**: Utilizes multiple CPU cores
+- **Thread mode**: Limited by Python's GIL
 - **Async mode**: Single-threaded, good for I/O-bound tasks
 
 ### Network/I/O
@@ -526,7 +526,7 @@ def invalid_mode():
 
 ### Framework Integration
 
-Opero works seamlessly with popular Python frameworks:
+Opero works with popular Python frameworks:
 
 ```python
 # FastAPI integration

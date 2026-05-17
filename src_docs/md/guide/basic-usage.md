@@ -1,10 +1,10 @@
 # Basic Usage
 
-Master Opero's core concepts and patterns through practical examples. This guide covers everything you need to know to use Opero effectively in your applications.
+Master Opero's core concepts through practical examples. This guide covers everything you need to know to use Opero effectively.
 
 ## Understanding Opero's Architecture
 
-Opero works by wrapping your functions with layers of resilience mechanisms. Here's how it works:
+Opero wraps your functions with optional resilience layers. Here's how it works:
 
 ```mermaid
 graph LR
@@ -19,11 +19,11 @@ graph LR
     I --> J[Return Result]
 ```
 
-Each layer is optional and configurable, giving you precise control over your function's behavior.
+Each layer is optional and configurable.
 
 ## The `@opero` Decorator
 
-The `@opero` decorator is your primary tool for adding resilience to individual functions.
+The `@opero` decorator adds resilience to individual functions.
 
 ### Basic Syntax
 
@@ -53,15 +53,15 @@ import aiohttp
 from opero import opero, AllFailedError
 
 @opero(
-    retries=3,                    # Retry up to 3 times
-    backoff_factor=1.5,           # Exponential backoff
-    min_delay=0.1,                # Minimum delay between retries
-    max_delay=30.0,               # Maximum delay between retries
-    cache=True,                   # Enable caching
-    cache_ttl=300,                # Cache for 5 minutes
-    rate_limit=10.0,              # Max 10 calls per second
-    arg_fallback="api_key",       # Try different API keys
-    retry_on=(aiohttp.ClientError, asyncio.TimeoutError)  # Retry these errors
+    retries=3,
+    backoff_factor=1.5,
+    min_delay=0.1,
+    max_delay=30.0,
+    cache=True,
+    cache_ttl=300,
+    rate_limit=10.0,
+    arg_fallback="api_key",
+    retry_on=(aiohttp.ClientError, asyncio.TimeoutError)
 )
 async def fetch_user_profile(user_id: str, api_key: list[str]):
     """Fetch user profile with comprehensive resilience."""
@@ -98,7 +98,6 @@ The `@opmap` decorator applies resilience to functions that process single items
 ### Basic Concept
 
 ```python
-# Think of it this way:
 # 1. Take a function that processes ONE item
 # 2. Make it resilient with @opmap
 # 3. Pass it MANY items 
@@ -155,15 +154,15 @@ from opero import opmap, AllFailedError
 from typing import List, Dict, Any
 
 @opmap(
-    mode="async",                 # Async for I/O efficiency
-    workers=25,                   # 25 concurrent requests
-    retries=3,                    # Retry failed pages
-    cache=True,                   # Cache scraped content
-    cache_ttl=1800,              # Cache for 30 minutes
-    rate_limit=15.0,             # 15 requests per second
-    arg_fallback="user_agent",   # Try different user agents
-    ordered=True,                # Preserve URL order
-    progress=True                # Show progress bar
+    mode="async",
+    workers=25,
+    retries=3,
+    cache=True,
+    cache_ttl=1800,
+    rate_limit=15.0,
+    arg_fallback="user_agent",
+    ordered=True,
+    progress=True
 )
 async def scrape_url(url: str, user_agent: List[str] = None) -> Dict[str, Any]:
     """Scrape a single URL with fallback user agents."""
@@ -224,17 +223,17 @@ async def main():
     successful = [r for r in results if not isinstance(r, Exception)]
     failed = [r for r in results if isinstance(r, Exception)]
     
-    print(f"\n✅ Successfully scraped: {len(successful)} pages")
-    print(f"❌ Failed to scrape: {len(failed)} pages")
+    print(f"\nSuccessfully scraped: {len(successful)} pages")
+    print(f"Failed to scrape: {len(failed)} pages")
     
     # Show some successful results
     for result in successful[:3]:
-        print(f"  📄 {result['title']} - {result['url']}")
+        print(f"  {result['title']} - {result['url']}")
     
     # Show failures
     for error in failed[:3]:
         if isinstance(error, AllFailedError):
-            print(f"  ❌ All attempts failed: {error}")
+            print(f"  All attempts failed: {error}")
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -242,7 +241,7 @@ if __name__ == "__main__":
 
 ## Caching Patterns
 
-Opero's caching system is flexible and powerful. Here are common patterns:
+Opero's caching system is flexible. Here are common patterns:
 
 ### Basic Caching
 

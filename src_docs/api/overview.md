@@ -1,14 +1,12 @@
 # API Overview
 
-This section provides comprehensive documentation of Opero's API, including all decorators, functions, classes, and configuration options.
+Opero's API provides decorators and utilities for adding resilience and parallel processing to function calls.
 
 ## Core Decorators
 
-Opero provides two main decorators that form the foundation of the library:
-
 ### @opero
 
-The primary decorator that adds resilience mechanisms to individual function calls.
+Adds resilience mechanisms to individual function calls.
 
 ```python
 from opero import opero
@@ -27,7 +25,7 @@ def resilient_function(data, config=["primary", "backup"]):
 
 ### @opmap
 
-Extends `@opero` with parallel processing capabilities for handling multiple items.
+Extends `@opero` with parallel processing for handling multiple items.
 
 ```python
 from opero import opmap

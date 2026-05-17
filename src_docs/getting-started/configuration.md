@@ -1,6 +1,6 @@
 # Configuration Guide
 
-This guide covers all configuration options available in Opero's decorators.
+This guide documents all configuration options available in Opero's decorators.
 
 ## @opero Decorator Configuration
 
@@ -13,23 +13,23 @@ from opero import opero
 
 @opero(
     # Retry configuration
-    retries=3,                    # Number of retry attempts (default: 3)
-    backoff_factor=1.5,           # Exponential backoff multiplier (default: 1.5)
-    min_delay=0.1,                # Minimum retry delay in seconds (default: 0.1)
-    max_delay=30.0,               # Maximum retry delay in seconds (default: 30.0)
+    retries=3,                    # Number of retry attempts
+    backoff_factor=1.5,           # Exponential backoff multiplier
+    min_delay=0.1,                # Minimum retry delay in seconds
+    max_delay=30.0,               # Maximum retry delay in seconds
     retry_on=(Exception,),        # Exceptions that trigger retries
     
     # Fallback configuration
-    arg_fallback="config",        # Parameter name containing fallback values
+    arg_fallback="config",         # Parameter name containing fallback values
     
     # Caching configuration
-    cache=True,                   # Enable caching (default: False)
-    cache_ttl=3600,              # Cache TTL in seconds (default: None - no expiry)
-    cache_key=None,              # Custom cache key function
-    cache_namespace="opero",     # Cache namespace
+    cache=True,                   # Enable caching
+    cache_ttl=3600,               # Cache TTL in seconds (None = no expiry)
+    cache_key=None,               # Custom cache key function
+    cache_namespace="opero",      # Cache namespace
     
     # Rate limiting
-    rate_limit=10.0,             # Max calls per second (default: None - no limit)
+    rate_limit=10.0,              # Max calls per second (None = no limit)
 )
 def my_function(data, config=["primary", "backup"]):
     pass
@@ -45,7 +45,7 @@ Control retry behavior with fine-grained settings:
     backoff_factor=2.0,
     min_delay=0.5,
     max_delay=60.0,
-    retry_on=(ConnectionError, TimeoutError),  # Only retry network errors
+    retry_on=(ConnectionError, TimeoutError),
 )
 def fetch_data(url):
     # Retries with delays: 0.5s, 1s, 2s, 4s, 8s (capped at max_delay)
@@ -99,9 +99,9 @@ from opero import opmap
 @opmap(
     # Parallel processing settings
     mode="thread",               # Concurrency mode: "thread", "process", "async", "async_process"
-    workers=4,                   # Number of parallel workers (default: 4)
-    ordered=True,                # Preserve input order in results (default: True)
-    progress=True,               # Show progress bar if available (default: True)
+    workers=4,                  # Number of parallel workers
+    ordered=True,               # Preserve input order in results
+    progress=True,              # Show progress bar if available
     
     # All @opero parameters are also supported
     retries=3,
@@ -112,7 +112,7 @@ def process_item(item):
     pass
 ```
 
-### Concurrency Modes Explained
+### Concurrency Modes
 
 Choose the right mode for your workload:
 
@@ -247,7 +247,7 @@ logging.basicConfig(
     ]
 )
 
-# Now Opero will log detailed information about:
+# Opero logs information about:
 # - Retry attempts
 # - Cache hits/misses
 # - Rate limiting delays
@@ -288,7 +288,7 @@ Balance reliability with responsiveness:
     retries=3,
     min_delay=0.1,      # Quick first retry
     max_delay=10.0,     # Don't wait too long
-    backoff_factor=2.0,  # Reasonable progression
+    backoff_factor=2.0, # Reasonable progression
 )
 def time_sensitive_operation():
     pass
@@ -305,7 +305,6 @@ Only retry exceptions you expect to be transient:
         requests.Timeout,
         requests.HTTPError,
     ),
-    # Don't retry on ValueError, TypeError, etc.
 )
 def network_operation():
     pass

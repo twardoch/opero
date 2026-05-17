@@ -1,35 +1,33 @@
 # Quick Start
 
-This guide will help you get started with Opero in just a few minutes.
+Get started with Opero in minutes.
 
 ## Your First Resilient Function
 
-Let's start with a simple example that demonstrates Opero's core features:
+Here's a minimal example that shows Opero's core behavior:
 
 ```python
 from opero import opero
 
 @opero(
-    retries=3,          # Retry failed operations up to 3 times
-    backoff_factor=2.0, # Wait 2x longer between each retry
-    cache=True,         # Cache successful results
-    cache_ttl=300       # Cache for 5 minutes
+    retries=3,
+    backoff_factor=2.0,
+    cache=True,
+    cache_ttl=300
 )
 def fetch_user_data(user_id: int):
     """Fetch user data from an API (simulated)."""
     import random
     import time
     
-    # Simulate API call
     time.sleep(0.1)
     
-    # Simulate occasional failures
     if random.random() < 0.3:
         raise ConnectionError("API temporarily unavailable")
     
     return {"id": user_id, "name": f"User {user_id}"}
 
-# First call might retry on failure
+# First call may retry on failure
 user = fetch_user_data(123)
 print(f"Fetched: {user}")
 
@@ -40,14 +38,14 @@ print(f"From cache: {user_cached}")
 
 ## Handling Multiple Fallback Options
 
-When working with external services, you often need backup options:
+When one service fails, Opero can automatically try others:
 
 ```python
 from opero import opero, AllFailedError
 
 @opero(
     retries=2,
-    arg_fallback="api_endpoint",  # Parameter name with fallback values
+    arg_fallback="api_endpoint",
     cache=True
 )
 def fetch_weather(city: str, api_endpoint: list[str] = [
@@ -58,11 +56,9 @@ def fetch_weather(city: str, api_endpoint: list[str] = [
     """Fetch weather with automatic failover to backup APIs."""
     import requests
     
-    # Opero will try each endpoint in the list if failures occur
     current_endpoint = api_endpoint[0]
     print(f"Trying {current_endpoint}...")
     
-    # Simulate API call
     response = requests.get(f"{current_endpoint}/weather/{city}", timeout=5)
     response.raise_for_status()
     
@@ -77,18 +73,18 @@ except AllFailedError as e:
 
 ## Parallel Processing with @opmap
 
-Process multiple items concurrently with automatic resilience:
+Run multiple operations at once with built-in error handling:
 
 ```python
 from opero import opmap
 import time
 
 @opmap(
-    mode="thread",      # Use threads for I/O-bound tasks
-    workers=5,          # 5 concurrent workers
-    retries=2,          # Retry failed items
-    cache=True,         # Cache each item's result
-    ordered=True        # Maintain input order in results
+    mode="thread",
+    workers=5,
+    retries=2,
+    cache=True,
+    ordered=True
 )
 def download_image(url: str):
     """Download a single image."""
@@ -121,7 +117,7 @@ for result in results:
 
 ## Rate Limiting for API Protection
 
-Respect API rate limits automatically:
+Prevent overwhelming external services:
 
 ```python
 from opero import opero
@@ -129,7 +125,7 @@ import asyncio
 from datetime import datetime
 
 @opero(
-    rate_limit=2.0,     # Maximum 2 calls per second
+    rate_limit=2.0,
     retries=3,
     cache=True
 )
@@ -138,12 +134,10 @@ async def call_api(endpoint: str):
     timestamp = datetime.now().strftime("%H:%M:%S.%f")[:-3]
     print(f"[{timestamp}] Calling {endpoint}")
     
-    # Simulate API call
     await asyncio.sleep(0.1)
     return f"Response from {endpoint}"
 
 async def main():
-    # These calls will be automatically rate-limited
     endpoints = [f"/api/v1/resource/{i}" for i in range(6)]
     
     tasks = [call_api(endpoint) for endpoint in endpoints]
@@ -152,13 +146,12 @@ async def main():
     for result in results:
         print(result)
 
-# Run the async example
 asyncio.run(main())
 ```
 
 ## Combining Features
 
-Here's a real-world example combining multiple Opero features:
+A practical example using several Opero features together:
 
 ```python
 from opero import opmap
@@ -193,7 +186,7 @@ def scrape_product(product_id: int, headers: list[dict] = [
         "headers_used": current_headers["User-Agent"]
     }
 
-# Scrape multiple products in parallel with all protections
+# Scrape multiple products in parallel
 product_ids = list(range(1, 21))
 results = scrape_product(product_ids)
 
@@ -206,16 +199,17 @@ print(f"Failed: {len(failed)} products")
 
 ## Error Handling Best Practices
 
+Control exactly what gets retried and when:
+
 ```python
 from opero import opero, AllFailedError
 import logging
 
-# Configure logging to see Opero's internal operations
 logging.basicConfig(level=logging.INFO)
 
 @opero(
     retries=3,
-    retry_on=(ConnectionError, TimeoutError),  # Only retry specific errors
+    retry_on=(ConnectionError, TimeoutError),
     arg_fallback="timeout",
     cache=True
 )
@@ -247,12 +241,10 @@ except AllFailedError as e:
 
 ## Next Steps
 
-Now that you've seen Opero in action:
-
-1. **Explore the [Configuration Guide](configuration.md)** to learn about all available options
-2. **Read the [User Guide](../guide/basic-usage.md)** for in-depth examples
-3. **Check the [API Reference](../api/overview.md)** for complete documentation
-4. **See [Best Practices](../guide/best-practices.md)** for production usage
+- **[Configuration Guide](configuration.md)** - All decorator options
+- **[User Guide](../guide/basic-usage.md)** - Detailed examples
+- **[API Reference](../api/overview.md)** - Complete documentation
+- **[Best Practices](../guide/best-practices.md)** - Production tips
 
 ## Quick Reference
 

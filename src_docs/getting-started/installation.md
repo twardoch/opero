@@ -22,19 +22,19 @@ This installs the core package with all essential features:
 
 ## Optional Dependencies
 
-Opero has optional dependencies that enable additional features:
+Opero supports additional features through optional dependencies:
 
 ### Enhanced Multiprocessing
 
-For better serialization support (handles more Python object types):
+For better serialization support:
 
 ```bash
 pip install opero[pathos]
 ```
 
-This adds [pathos](https://github.com/uqfoundation/pathos) which provides:
-- Enhanced pickling capabilities via `dill`
-- Better support for lambda functions and closures
+Adds [pathos](https://github.com/uqfoundation/pathos) which provides:
+- Enhanced pickling via `dill`
+- Support for lambda functions and closures
 - Improved handling of complex objects in multiprocessing
 
 ### Asynchronous Multiprocessing
@@ -45,11 +45,11 @@ For running async functions in separate processes:
 pip install opero[aiomultiprocess]
 ```
 
-This enables the `async_process` mode in `@opmap` for CPU-intensive async operations.
+Enables the `async_process` mode in `@opmap` for CPU-intensive async operations.
 
 ### All Optional Dependencies
 
-To install all optional features:
+To install everything:
 
 ```bash
 pip install opero[all]
@@ -57,7 +57,7 @@ pip install opero[all]
 
 ## Development Installation
 
-For contributing to Opero or running from source:
+For contributing or running from source:
 
 ```bash
 # Clone the repository
@@ -67,14 +67,14 @@ cd opero
 # Install with development dependencies
 pip install -e ".[dev,test]"
 
-# Or using Hatch (recommended)
+# Or using Hatch (preferred)
 pip install hatch
 hatch shell
 ```
 
 ## Verify Installation
 
-After installation, verify Opero is working:
+Test that Opero works:
 
 ```python
 import opero
@@ -94,16 +94,16 @@ print(test_function())
 
 ### Core Dependencies
 
-These are always installed:
+Always installed:
 
-- **tenacity** (≥8.0.0): Retry logic foundation
-- **asynciolimiter** (≥1.0.0): Async-compatible rate limiting
-- **twat-cache** (≥2.3.0): Flexible caching backend
-- **twat-mp** (≥2.6.0): Multiprocessing abstraction
+- **tenacity** (≥8.0.0): Retry logic
+- **asynciolimiter** (≥1.0.0): Async rate limiting
+- **twat-cache** (≥2.3.0): Caching backend
+- **twat-mp** (≥2.6.0): Multiprocessing wrapper
 
 ### Optional Dependencies
 
-Installed based on your chosen extras:
+Installed with extras:
 
 - **pathos** (≥0.3.0): Enhanced multiprocessing
 - **aiomultiprocess** (≥0.9.0): Async multiprocessing
@@ -116,44 +116,42 @@ Opero is tested on:
 - Windows (10+)
 
 With Python versions:
-- Python 3.10
-- Python 3.11
-- Python 3.12
+- 3.10, 3.11, 3.12
 - PyPy 3.10
 
 ## Troubleshooting
 
 ### Import Errors
 
-If you encounter import errors after installation:
+If imports fail after installation:
 
 ```bash
-# Ensure pip is up to date
+# Update pip
 pip install --upgrade pip
 
-# Reinstall with verbose output
+# Force reinstall
 pip install --force-reinstall -v opero
 ```
 
 ### Permission Errors
 
-On Unix-like systems, you might need to use user installation:
+On Unix-like systems, try user installation:
 
 ```bash
 pip install --user opero
 ```
 
-Or use a virtual environment (recommended):
+Or use a virtual environment (better idea):
 
 ```bash
 python -m venv opero-env
-source opero-env/bin/activate  # On Windows: opero-env\Scripts\activate
+source opero-env/bin/activate  # Windows: opero-env\Scripts\activate
 pip install opero
 ```
 
 ### Cache Backend Issues
 
-If you encounter cache-related errors, ensure the `klepto` package is available:
+If caching breaks, install `klepto`:
 
 ```bash
 pip install klepto
@@ -161,6 +159,6 @@ pip install klepto
 
 ## Next Steps
 
-- Continue to [Quick Start](quickstart.md) to see Opero in action
-- Read the [Configuration Guide](configuration.md) for customization options
-- Explore the [User Guide](../guide/basic-usage.md) for detailed examples
+- [Quick Start](quickstart.md) – see Opero in action
+- [Configuration Guide](configuration.md) – customize behavior
+- [User Guide](../guide/basic-usage.md) – detailed examples

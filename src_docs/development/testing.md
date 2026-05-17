@@ -1,6 +1,6 @@
 # Testing Guide
 
-This guide covers testing practices, patterns, and tools used in Opero development.
+This guide documents testing practices, patterns, and tools used in Opero development.
 
 ## Test Organization
 
@@ -201,7 +201,7 @@ def flaky_function():
                 raise ConnectionError(f"Attempt {attempts} failed")
             return f"Success after {attempts} attempts"
         
-        return func
+        return func, failures
     
     return make_flaky
 ```
@@ -247,7 +247,6 @@ def test_cache_isolation():
         result = cached_func(5)
         assert result == 10
     finally:
-        # Clean up
         clear_cache(namespace="test_isolation")
 ```
 
@@ -282,7 +281,6 @@ class TestWithResources:
     def cleanup(self):
         """Ensure cleanup after each test."""
         yield
-        # Cleanup code here
         clear_cache()
         reset_rate_limiters()
 ```

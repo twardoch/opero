@@ -11,9 +11,9 @@
 
 ## What is Opero?
 
-Opero (Latin for "to work" or "to operate") is a Python library that makes your functions more robust and efficient through simple decorators. It provides automatic retries, fallbacks, rate limiting, caching, and parallel processing - all with minimal code changes.
+Opero (Latin for "to work" or "to operate") adds resilience and parallel processing to Python functions through simple decorators. It handles retries, fallbacks, rate limiting, caching, and concurrent execution with minimal code changes.
 
-## :material-flash: TLDR - Quick Start
+## Quick Start
 
 ```python
 from opero import opero, opmap
@@ -34,32 +34,32 @@ def process_item(item):
 results = process_item(list_of_1000_items)  # Processes all items in parallel
 ```
 
-## :material-book-open: Documentation Contents
+## Documentation Contents
 
-This documentation is organized into 9 comprehensive chapters to help you master Opero:
+This documentation is organized into 9 chapters to help you master Opero:
 
-### :material-rocket-launch: Getting Started
+### Getting Started
 Learn the basics and get up and running quickly.
 
 - **[Installation](getting-started/installation.md)** - Install Opero and its optional dependencies
 - **[Quick Start](getting-started/quickstart.md)** - Your first resilient function in 5 minutes
 - **[Configuration](getting-started/configuration.md)** - Essential configuration options
 
-### :material-book: User Guide
+### User Guide
 Master Opero's features and best practices.
 
 - **[Basic Usage](guide/basic-usage.md)** - Core concepts and simple examples
 - **[Advanced Features](guide/advanced-features.md)** - Fallbacks, custom caching, and complex scenarios
 - **[Best Practices](guide/best-practices.md)** - Patterns, performance tips, and common pitfalls
 
-### :material-api: API Reference
+### API Reference
 Complete technical reference.
 
 - **[Overview](api/overview.md)** - High-level API overview and design principles
 - **[Core Components](api/core.md)** - Detailed decorator and component documentation
 - **[Utilities](api/utils.md)** - Helper functions and advanced utilities
 
-## :material-heart: Key Features
+## Key Features
 
 <div class="grid cards" markdown>
 
@@ -83,7 +83,7 @@ Complete technical reference.
 
 </div>
 
-## :material-lightning-bolt: Why Choose Opero?
+## Why Choose Opero?
 
 ### Simple Yet Powerful
 Add enterprise-grade resilience with just a decorator:
@@ -128,27 +128,27 @@ def process_item(item):
 results = process_item(list_of_1000_items)
 ```
 
-## :material-compass: Navigation Guide
+## Navigation Guide
 
-### :material-account-school: New to Opero?
+### New to Opero?
 
 1. Start with **[Installation](getting-started/installation.md)** to get set up
 2. Follow the **[Quick Start](getting-started/quickstart.md)** guide for your first function
 3. Read **[Basic Usage](guide/basic-usage.md)** to understand core concepts
 
-### :material-account-wrench: Ready to Go Deeper?
+### Ready to Go Deeper?
 
 1. Explore **[Advanced Features](guide/advanced-features.md)** for complex scenarios
 2. Review **[Best Practices](guide/best-practices.md)** for production-ready code
 3. Reference the **[API Documentation](api/overview.md)** for complete details
 
-### :material-account-cog: Contributing or Troubleshooting?
+### Contributing or Troubleshooting?
 
 1. Check the **[API Reference](api/core.md)** for implementation details
 2. Browse **[Utilities](api/utils.md)** for helper functions
 3. See development guides in the **Development** section
 
-## :material-rocket: Quick Installation
+## Quick Installation
 
 ```bash
 # Basic installation
@@ -164,14 +164,14 @@ pip install opero[aiomultiprocess]
 pip install opero[all]
 ```
 
-## :material-github: Community & Support
+## Community & Support
 
 - **Issues**: [GitHub Issues](https://github.com/twardoch/opero/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/twardoch/opero/discussions)  
 - **Source Code**: [GitHub Repository](https://github.com/twardoch/opero)
 - **Package**: [PyPI](https://pypi.org/project/opero/)
 
-## :material-scale-balance: License
+## License
 
 Opero is licensed under the MIT License. See [LICENSE](https://github.com/twardoch/opero/blob/main/LICENSE) for details.
 

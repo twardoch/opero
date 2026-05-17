@@ -1,12 +1,12 @@
 # Advanced Features
 
-This guide covers advanced Opero features for complex use cases and production scenarios.
+This guide covers Opero's advanced capabilities for handling complex scenarios and production environments.
 
 ## Advanced Parallel Processing
 
 ### Dynamic Worker Allocation
 
-Adjust worker count based on system resources:
+Adjust the number of workers based on system resources:
 
 ```python
 import os
@@ -38,7 +38,7 @@ def parallel_io_task(item):
 
 ### Custom Task Distribution
 
-Implement custom logic for task distribution:
+Distribute tasks to balance workload across workers:
 
 ```python
 from typing import List, Any
@@ -97,7 +97,7 @@ async def cpu_intensive_async_task(data):
 
 ### Custom Cache Keys
 
-Implement sophisticated cache key generation:
+Generate sophisticated cache keys:
 
 ```python
 import hashlib
@@ -520,4 +520,4 @@ def monitored_function(data):
 
 - Review [Best Practices](best-practices.md) for production deployment
 - Explore the [API Reference](../api/overview.md) for complete details
-- Check [Development Guide](../development/contributing.md) to contribute
+- Check [Development Guide](../development/contributing

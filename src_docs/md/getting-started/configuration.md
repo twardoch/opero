@@ -1,19 +1,19 @@
 # Configuration
 
-Master Opero's configuration options to fine-tune resilience patterns for your specific needs.
+Opero's configuration options let you fine-tune resilience patterns for your specific needs.
 
-## Core Configuration Principles
+## Core Principles
 
-Opero follows these configuration principles:
+Opero follows these principles:
 
-- **Sensible defaults** - Works great out of the box
-- **Composable options** - Mix and match features as needed  
+- **Sensible defaults** - Works out of the box
+- **Composable options** - Mix features as needed  
 - **Environment-aware** - Adapt behavior based on context
-- **Type-safe** - Full type hints for better IDE support
+- **Type-safe** - Full type hints for IDE support
 
 ## Basic Configuration
 
-### Retry Configuration
+### Retry Settings
 
 Control how Opero retries failed operations:
 
@@ -43,7 +43,7 @@ delay = min(max_delay, min_delay * (backoff_factor ** attempt))
 # Attempt 5: 8.0s
 ```
 
-### Cache Configuration
+### Cache Settings
 
 Configure caching behavior:
 
@@ -59,13 +59,13 @@ def expensive_operation(item_id: str):
     pass
 ```
 
-**Available cache backends:**
+**Cache backends:**
 - `"memory"` - In-memory cache (default, fastest)
 - `"disk"` - Persistent disk cache  
 - `"redis"` - Redis backend (requires Redis server)
 - `"sqlite"` - SQLite-based cache
 
-### Rate Limiting Configuration  
+### Rate Limiting
 
 Control function call rates:
 
@@ -87,7 +87,7 @@ def api_call_2(): pass  # Shares the 5/sec limit with api_call_1
 
 ## Advanced Configuration
 
-### Fallback Configuration
+### Fallback Settings
 
 Configure parameter-based fallbacks:
 
@@ -112,7 +112,7 @@ endpoints = [
 result = multi_endpoint_call({"key": "value"}, endpoint=endpoints)
 ```
 
-### Parallel Processing Configuration
+### Parallel Processing
 
 Configure `@opmap` for optimal performance:
 
@@ -253,7 +253,7 @@ def api_function():
 
 ## Dynamic Configuration
 
-### Runtime Configuration Changes
+### Runtime Changes
 
 Update configuration based on runtime conditions:
 
@@ -323,7 +323,7 @@ low_priority_processor = create_prioritized_function("low")
 
 ## Performance Tuning
 
-### Memory-Optimized Configuration
+### Memory-Optimized Settings
 
 For memory-constrained environments:
 
@@ -345,7 +345,7 @@ def memory_efficient_batch(items):
     pass
 ```
 
-### High-Throughput Configuration
+### High-Throughput Settings
 
 For maximum performance:
 

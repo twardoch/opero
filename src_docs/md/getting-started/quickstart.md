@@ -1,10 +1,10 @@
 # Quick Start
 
-Get your first resilient function running in 5 minutes! This guide walks you through the essential Opero patterns you'll use every day.
+Get your first resilient function running in 5 minutes. This guide covers the essential Opero patterns you'll use every day.
 
 ## Your First Resilient Function
 
-Let's start with a simple function that might fail and make it bulletproof:
+Here's a simple function that might fail, made bulletproof:
 
 ```python
 import asyncio
@@ -36,13 +36,13 @@ async def main():
 asyncio.run(main())
 ```
 
-**What just happened?**
+**What this does:**
 
-- ✅ **Automatic retries** if the API call fails
-- ✅ **Exponential backoff** to avoid overwhelming the service  
-- ✅ **Caching** to avoid repeated API calls
-- ✅ **Rate limiting** to respect API limits
-- ✅ **Same interface** - no changes to how you call the function
+- Retries automatically if the API call fails
+- Uses exponential backoff to avoid overwhelming the service  
+- Caches results to prevent repeated API calls
+- Rate limits to respect API quotas
+- Keeps the same interface - no changes needed when calling the function
 
 ## Adding Smart Fallbacks
 
@@ -67,7 +67,7 @@ keys = ["primary_key", "backup_key", "emergency_key"]
 data = await fetch_data_with_fallback("item123", api_key=keys)
 ```
 
-**How it works:**
+**Fallback behavior:**
 1. First attempt uses `"primary_key"`
 2. If it fails, retry with `"backup_key"`  
 3. If that fails, try `"emergency_key"`
@@ -105,12 +105,12 @@ for result in results[:5]:  # Show first 5 results
 ```
 
 **Performance comparison:**
-- **Without Opero**: ~1000 seconds (sequential)
-- **With `@opmap`**: ~100 seconds (10x faster with 10 workers)
+- Sequential: ~1000 seconds
+- With `@opmap`: ~100 seconds (10x faster using 10 workers)
 
 ## Real-World Example: Web Scraping
 
-Here's a complete example that combines everything:
+A complete example combining everything:
 
 ```python
 import asyncio
@@ -223,8 +223,6 @@ except AllFailedError as e:
 
 ## Next Steps
 
-🎉 **You've mastered the basics!** 
-
 Now explore:
 
 1. **[Configuration](configuration.md)** - Fine-tune Opero's behavior
@@ -265,4 +263,4 @@ from opero import configure_logging
 from opero.exceptions import OperoError
 ```
 
-Ready to build resilient applications? Let's go! 🚀
+Ready to build resilient applications? Let's go.

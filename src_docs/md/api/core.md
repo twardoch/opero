@@ -1,10 +1,10 @@
 # Core Components
 
-Deep dive into Opero's core implementation, internal architecture, and advanced usage patterns.
+Deep dive into Opero's implementation, architecture, and usage patterns.
 
 ## Internal Architecture
 
-Opero's decorators work by composing multiple layers of functionality around your functions:
+Opero's decorators compose multiple layers of functionality around your functions:
 
 ```python
 # Conceptual view of how @opero works internally
@@ -26,11 +26,11 @@ def opero_decorator(**config):
     return decorator
 ```
 
-## Decorator Implementation Details
+## Decorator Implementation
 
 ### The `@opero` Decorator
 
-Located in `src/opero/decorators/opero.py`, the decorator orchestrates multiple resilience mechanisms:
+Located in `src/opero/decorators/opero.py`, this decorator orchestrates resilience mechanisms:
 
 ```python
 from opero.decorators.opero import opero
@@ -59,7 +59,7 @@ def opero(
     """
     Add resilience mechanisms to a function.
     
-    The decorator applies layers in this order:
+    Layers applied in this order:
     1. Cache check (if enabled)
     2. Rate limiting (if configured)  
     3. Retry logic (with fallbacks inside each retry)
@@ -170,11 +170,11 @@ def opmap(
     return decorator
 ```
 
-## Core Components Deep Dive
+## Core Components
 
-### Cache Implementation
+### Cache
 
-The caching system in `src/opero/core/cache.py` provides a flexible abstraction over multiple backends:
+The caching system in `src/opero/core/cache.py` abstracts multiple backends:
 
 ```python
 from opero.core.cache import CacheManager, get_cache_decorator
@@ -242,7 +242,6 @@ def get_cache_decorator(
         if key_func:
             return f"{namespace}:{key_func(*args, **kwargs)}"
         else:
-            # Default key generation
             import hashlib
             import json
             
@@ -286,9 +285,9 @@ def get_cache_decorator(
         return sync_cached_wrapper
 ```
 
-### Retry Implementation
+### Retry
 
-The retry system in `src/opero/core/retry.py` uses the `tenacity` library with custom configuration:
+The retry system in `src/opero/core/retry.py` uses `tenacity` with custom configuration:
 
 ```python
 from opero.core.retry import get_retry_decorator
@@ -311,7 +310,7 @@ def get_retry_decorator(
     
     # Configure tenacity retry strategy
     retry_strategy = Retrying(
-        stop=stop_after_attempt(retries + 1),  # +1 because initial attempt + retries
+        stop=stop_after_attempt(retries + 1),
         wait=wait_exponential(
             multiplier=min_delay,
             max=max_delay,
@@ -345,9 +344,9 @@ def get_retry_decorator(
     return retry_wrapper
 ```
 
-### Rate Limiting Implementation
+### Rate Limiting
 
-The rate limiting system in `src/opero/core/rate_limit.py` uses `asynciolimiter` for precise rate control:
+The rate limiting system in `src/opero/core/rate_limit.py` uses `asynciolimiter`:
 
 ```python
 from opero.core.rate_limit import RateLimitManager, get_rate_limit_decorator
@@ -388,7 +387,6 @@ class RateLimitManager:
         else:
             raise ValueError(f"Unknown rate limit scope: {scope_type}")
 
-# Global rate limit manager
 _rate_limit_manager = RateLimitManager()
 
 def get_rate_limit_decorator(
@@ -422,9 +420,9 @@ def get_rate_limit_decorator(
         return sync_rate_limited_wrapper
 ```
 
-### Fallback Implementation
+### Fallback
 
-The fallback system in `src/opero/core/fallback.py` manages parameter-based fallback strategies:
+The fallback system in `src/opero/core/fallback.py` manages parameter-based strategies:
 
 ```python
 from opero.core.fallback import get_fallback_decorator
@@ -488,11 +486,11 @@ def get_fallback_decorator(
     return fallback_wrapper
 ```
 
-## Parallel Processing Engine
+## Parallel Processing
 
 ### Pool Management
 
-The concurrency system in `src/opero/concurrency/pool.py` manages different types of worker pools:
+The concurrency system in `src/opero/concurrency/pool.py` manages worker pools:
 
 ```python
 from opero.concurrency.pool import PoolManager, get_pool_executor
@@ -573,7 +571,6 @@ class AsyncPool:
                 results.append(result)
             return results
 
-# Global pool manager
 _pool_manager = PoolManager()
 
 def get_pool_executor(mode: str, workers: int, timeout: Optional[float] = None):
@@ -581,9 +578,9 @@ def get_pool_executor(mode: str, workers: int, timeout: Optional[float] = None):
     return _pool_manager.get_or_create_pool(mode, workers, timeout)
 ```
 
-### Result Collection and Ordering
+### Result Collection
 
-The result collection system handles different execution modes and maintains ordering when requested:
+The result collection system handles different execution modes:
 
 ```python
 def collect_results(
@@ -668,7 +665,7 @@ class AllFailedError(OperoError):
         base_msg = super().__str__()
         error_summary = []
         
-        for i, error in enumerate(self.errors[:3], 1):  # Show first 3 errors
+        for i, error in enumerate(self.errors[:3], 1):
             error_summary.append(f"  {i}. {type(error).__name__}: {error}")
         
         if len(self.errors) > 3:
@@ -689,7 +686,7 @@ class RateLimitError(OperoError):
     pass
 ```
 
-### Error Context and Tracing
+### Error Context
 
 ```python
 from opero.utils.correlation import CorrelationContext
@@ -759,11 +756,10 @@ def memory_efficient(max_memory_mb: int = 1000):
         def wrapper(*args, **kwargs):
             if monitor.should_throttle():
                 import gc
-                gc.collect()  # Force garbage collection
+                gc.collect()
                 
                 if monitor.should_throttle():
-                    import time
-                    time.sleep(0.1)  # Brief pause to allow memory cleanup
+                    time.sleep(0.1)
             
             return func(*args, **kwargs)
         
@@ -834,26 +830,25 @@ class AdaptiveConfig:
         best_score = 0
         
         for config_key, perf in config_performance.items():
-            if perf["total"] < 5:  # Need minimum samples
+            if perf["total"] < 5:
                 continue
             
             success_rate = perf["successes"] / perf["total"]
             avg_duration = perf["avg_duration"] / perf["successes"] if perf["successes"] > 0 else float('inf')
             
-            # Score based on success rate and speed (lower duration is better)
+            # Score based on success rate and speed
             score = success_rate * 100 - avg_duration
             
             if score > best_score:
                 best_score = score
-                best_config = eval(config_key)  # Convert back to dict
+                best_config = eval(config_key)
         
         return dict(best_config) if best_config else current_config
 
-# Global adaptive config manager
 _adaptive_config = AdaptiveConfig()
 ```
 
-## Debugging and Introspection
+## Debugging Tools
 
 ### Function Introspection
 
@@ -871,7 +866,7 @@ def get_opero_info(func: Callable) -> dict:
         "layers": []
     }
     
-    # Check for Opero attributes (added by decorators)
+    # Check for Opero attributes
     if hasattr(func, '_opero_config'):
         info["is_opero_decorated"] = True
         info["configuration"] = func._opero_config
@@ -890,7 +885,7 @@ def get_opero_info(func: Callable) -> dict:
     return info
 
 def analyze_function(func: Callable) -> str:
-    """Generate human-readable analysis of function's Opero configuration."""
+    """Generate analysis of function's Opero configuration."""
     
     info = get_opero_info(func)
     
@@ -942,20 +937,20 @@ print(analyze_function(example_function))
 
 ## Next Steps
 
-You've now explored Opero's core implementation details. Continue with:
+Continue with:
 
 1. **[Utilities](utils.md)** - Helper functions and troubleshooting tools
 2. **[Best Practices](../guide/best-practices.md)** - Production patterns and optimization strategies
 
-## Core Architecture Summary
+## Architecture Summary
 
-Opero's power comes from its layered architecture:
+Opero's layered architecture:
 
 1. **Configuration Validation** - Ensures valid parameters
 2. **Decorator Composition** - Stacks resilience mechanisms
 3. **Execution Flow** - Cache → Rate Limit → Retry → Fallback → Function
-4. **Error Handling** - Comprehensive error tracking and context
+4. **Error Handling** - Comprehensive error tracking
 5. **Parallel Processing** - Efficient distribution across workers
 6. **Performance Optimization** - Adaptive configuration and memory management
 
-This modular design allows you to pick and choose exactly the resilience mechanisms you need while maintaining high performance and reliability.
+This modular design lets you choose exactly the resilience mechanisms you need while maintaining performance and reliability.

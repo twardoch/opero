@@ -6,7 +6,7 @@ This guide covers the fundamental patterns and use cases for Opero.
 
 ### The @opero Decorator
 
-The `@opero` decorator is the foundation of Opero. It wraps your functions with resilience mechanisms:
+The `@opero` decorator adds resilience to your functions:
 
 ```python
 from opero import opero
@@ -18,7 +18,7 @@ def simple_function():
 
 ### Resilience Layers
 
-Opero applies resilience mechanisms in a specific order:
+Opero applies resilience mechanisms in this order:
 
 1. **Cache Check** - Returns cached result if available
 2. **Rate Limiting** - Ensures rate limits are respected
@@ -31,7 +31,7 @@ Understanding this order helps you design effective resilient functions.
 
 ### Pattern 1: Unreliable Network Operations
 
-Handle network failures gracefully:
+Handle network failures:
 
 ```python
 import requests
@@ -81,7 +81,7 @@ def call_paid_api(query: str, api_key: list[str] = ["key1", "key2", "key3"]):
 
 ### Pattern 3: Caching Expensive Operations
 
-Reduce redundant computations:
+Avoid redundant computations:
 
 ```python
 import time
@@ -175,7 +175,7 @@ def get_user_list(department: str) -> List[User]:
 
 ### Generator Functions
 
-Opero supports generator functions:
+Opero supports generators:
 
 ```python
 @opero(
@@ -290,7 +290,7 @@ def monitored_function(x):
     logger.info(f"Processing: {x}")
     return x * 2
 
-# You'll see logs for:
+# Logs show:
 # - Cache hits/misses
 # - Retry attempts
 # - Rate limiting delays

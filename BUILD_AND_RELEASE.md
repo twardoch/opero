@@ -125,12 +125,12 @@ python scripts/release.py major
 ```
 
 The script will:
-1. ✅ Check that working directory is clean
-2. 🔨 Run build process (linting, tests, build)
-3. 📝 Update CHANGELOG.md
-4. 🏷️ Create git tag
-5. 🚀 Push to origin
-6. 🎉 Trigger GitHub Actions for PyPI release
+1. Check that working directory is clean
+2. Run build process (linting, tests, build)
+3. Update CHANGELOG.md
+4. Create git tag
+5. Push to origin
+6. Trigger GitHub Actions for PyPI release
 
 ### Manual Release
 
