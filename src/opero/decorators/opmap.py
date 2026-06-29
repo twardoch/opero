@@ -179,8 +179,27 @@ def opmap(
             **_kwargs_concurrency, # Pass concurrency-specific kwargs
         )
 
+        # Wrap resilient_func so per-item exceptions are returned as values
+        # rather than raised, preventing twat_mp from wrapping them in WorkerError.
+        _resilient_func = resilient_func
+
+        if asyncio.iscoroutinefunction(resilient_func):
+            @functools.wraps(resilient_func)
+            async def exception_capturing_func(*args: Any, **kw: Any) -> Any:
+                try:
+                    return await _resilient_func(*args, **kw)
+                except Exception as exc:
+                    return exc
+        else:
+            @functools.wraps(resilient_func)
+            def exception_capturing_func(*args: Any, **kw: Any) -> Any:  # type: ignore[misc]
+                try:
+                    return _resilient_func(*args, **kw)
+                except Exception as exc:
+                    return exc
+
         # Apply the parallel map decorator factory to our resilient single-item function
-        parallel_processing_func = parallel_map_decorator_factory(resilient_func)
+        parallel_processing_func = parallel_map_decorator_factory(exception_capturing_func)
 
         @functools.wraps(func) # Wraps the original user function for metadata
         def map_wrapper(items: Iterable[T], **call_time_kwargs: Any) -> list[R | Exception]:
@@ -188,8 +207,6 @@ def opmap(
             This is the function that users will call with an iterable of items.
             It uses the pre-configured parallel_processing_func.
             """
-            # Pass call-time kwargs to the parallel processing function,
-            # which in turn might pass them to pmap/amap/apmap if they support it.
             result = parallel_processing_func(items, **call_time_kwargs)
             return result  # type: ignore[return-value]
 

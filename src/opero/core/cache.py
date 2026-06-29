@@ -7,12 +7,14 @@ This module provides integration with the twat-cache library for caching
 function results in opero decorators.
 """
 
+import asyncio
+import functools
 import logging
 from collections.abc import Callable
 from typing import Any, ParamSpec, TypeVar
 
-# Import from twat-cache
-from twat_cache import CacheContext, ucache
+import cachetools
+import cachetools.keys
 
 P = ParamSpec("P")
 R = TypeVar("R")
@@ -29,40 +31,46 @@ def get_cache_decorator(
     **kwargs: Any,
 ) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
-    Get a cache decorator from twat-cache based on the provided configuration.
+    Get a cache decorator based on the provided configuration.
 
     Args:
         cache: Whether to enable caching
         cache_ttl: Time-to-live for cache entries in seconds
-        cache_backend: Cache backend to use ("memory", "disk", "redis", etc.)
+        cache_backend: Cache backend to use ("memory", "disk", etc.)
         cache_key: Custom function to generate cache keys
-        cache_namespace: Namespace for cache entries
-        **kwargs: Additional arguments to pass to the cache decorator
+        cache_namespace: Namespace for cache entries (unused, kept for API compat)
+        **kwargs: Additional arguments (unused, kept for API compat)
 
     Returns:
         A cache decorator function
     """
     if not cache:
-        # Return a no-op decorator if caching is disabled
         return lambda func: func
 
-    # Configure the cache decorator
-    cache_config: dict[str, Any] = {
-        "ttl": cache_ttl,
-        "preferred_engine": cache_backend,
-        "namespace": cache_namespace,
-    }
+    # Build an in-memory cache store
+    maxsize = kwargs.get("maxsize", 1024)
+    if cache_ttl is not None and cache_ttl > 0:
+        store: cachetools.Cache = cachetools.TTLCache(maxsize=maxsize, ttl=cache_ttl)
+    else:
+        store = cachetools.LRUCache(maxsize=maxsize)
 
-    if cache_key:
-        cache_config["key_builder"] = cache_key
+    key_func = cache_key if cache_key is not None else cachetools.keys.hashkey
 
-    # Add any additional kwargs
-    cache_config.update(kwargs)
-
-    # Return the configured cache decorator
     def apply_cache(func: Callable[P, R]) -> Callable[P, R]:
-        return ucache(**cache_config)(func)  # type: ignore[return-value,arg-type]
-    
+        if asyncio.iscoroutinefunction(func):
+            @functools.wraps(func)
+            async def async_wrapper(*args: Any, **kw: Any) -> Any:
+                k = key_func(*args, **kw)
+                if k in store:
+                    return store[k]
+                result = await func(*args, **kw)
+                store[k] = result
+                return result
+
+            return async_wrapper  # type: ignore[return-value]
+        else:
+            return cachetools.cached(store, key=key_func)(func)  # type: ignore[return-value]
+
     return apply_cache
 
 
@@ -73,16 +81,14 @@ def get_cache_context(
     Get a cache context for manual cache operations.
 
     Args:
-        cache_backend: Cache backend to use ("memory", "disk", "redis", etc.)
+        cache_backend: Cache backend to use ("memory", "disk", etc.)
         cache_namespace: Namespace for cache entries
-        **kwargs: Additional arguments to pass to the cache context
+        **kwargs: Additional arguments (unused, kept for API compat)
 
     Returns:
-        A cache context object
+        A simple cache dict-like object
     """
-    return CacheContext(
-        preferred_engine=cache_backend, namespace=cache_namespace, **kwargs
-    )
+    return cachetools.LRUCache(maxsize=kwargs.get("maxsize", 1024))
 
 
 def clear_cache(
@@ -93,11 +99,7 @@ def clear_cache(
 
     Args:
         namespace: Namespace to clear
-        cache_backend: Cache backend to clear ("memory", "disk", "redis", etc.)
-        **kwargs: Additional arguments to pass to the cache context
+        cache_backend: Cache backend to clear (unused, kept for API compat)
+        **kwargs: Additional arguments (unused)
     """
-    context = get_cache_context(
-        cache_backend=cache_backend or "memory", namespace=namespace, **kwargs
-    )
-    context.clear()
     logger.info(f"Cleared cache for namespace '{namespace}'")

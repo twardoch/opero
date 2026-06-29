@@ -25,13 +25,17 @@ from opero import opero, opmap, AllFailedError
 # Single-call resilience: cache results, retry up to 3 times,
 # fall back through a list of API keys on failure.
 @opero(cache=True, cache_ttl=3600, retries=3, arg_fallback="api_key", rate_limit=5.0)
-async def fetch(item_id: str, api_key: list[str] = ["key1", "key2", "key3"]):
-    return await call_api(item_id, api_key[0])
+async def fetch(item_id: str, api_key: str = None):
+    # api_key receives one value from the caller-supplied list on each attempt
+    return await call_api(item_id, api_key)
+
+# Pass the list explicitly; the decorator tries each key until one succeeds.
+result = await fetch("item-123", api_key=["key1", "key2", "key3"])
 
 # Batch resilience: same protections, applied in parallel across many items.
-@opmap(mode="thread", workers=8, retries=2, arg_fallback="config")
-def process(item: dict, config: list[str] = ["primary", "backup"]):
-    return transform(item, config[0])
+@opmap(mode="thread", workers=8, retries=2)
+def process(item: dict):
+    return transform(item)
 
 results = process(list_of_items)   # returns list; failed items are exceptions
 ```
@@ -44,7 +48,7 @@ Re-runs the function on failure using exponential backoff with jitter (via `tena
 
 ### Parameter fallbacks (`arg_fallback`)
 
-Names a parameter whose value is a list of alternatives. On each failure the next value from the list is tried. Useful for rotating API keys, backup endpoints, or config profiles. Raises `AllFailedError` when the list is exhausted.
+Names a parameter that receives one value at a time from a caller-supplied list. Pass the list explicitly at call time; on each failure the decorator retries with the next item. Useful for rotating API keys, backup endpoints, or config profiles. Raises `AllFailedError` when the list is exhausted.
 
 ### Caching (`cache`, `cache_ttl`, `cache_backend`, `cache_namespace`, `cache_key`)
 

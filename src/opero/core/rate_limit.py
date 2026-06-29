@@ -94,7 +94,7 @@ class RateLimiter:
         if self.rate_limit <= 0:
             return
 
-        await self.async_limiter.acquire()  # type: ignore[attr-defined]
+        await self.async_limiter.wait()  # type: ignore[attr-defined]
 
 
 def get_rate_limit_decorator(

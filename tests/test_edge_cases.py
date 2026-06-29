@@ -30,24 +30,22 @@ async def test_empty_fallback_list():
 @pytest.mark.asyncio
 async def test_single_item_fallback():
     """Test fallback with single item list."""
-    
-    @opero(arg_fallback="single_item", cache=False)
-    async def func_with_single_fallback(value: str, single_item: list = None):
-        if single_item is None:
-            single_item = ["only_option"]
-        
-        current = single_item[0]
+
+    @opero(arg_fallback="single_item", cache=False, min_delay=0, max_delay=0)
+    async def func_with_single_fallback(value: str, single_item: str = None):
+        # single_item is one key from the caller-provided list (or None)
+        current = single_item if single_item is not None else "only_option"
         if current == "only_option" and value == "fail":
             raise ValueError("Single option failed")
         return f"result_{current}_{value}"
-    
-    # Should succeed with normal value
+
+    # Should succeed with normal value (no fallback list needed)
     result = await func_with_single_fallback("success")
     assert result == "result_only_option_success"
-    
-    # Should fail when single option fails
+
+    # Should raise AllFailedError when the single option fails
     with pytest.raises(AllFailedError):
-        await func_with_single_fallback("fail")
+        await func_with_single_fallback("fail", single_item=["only_option"])
 
 
 @pytest.mark.asyncio
@@ -98,7 +96,7 @@ async def test_very_high_retry_count():
     """Test with very high retry count."""
     attempt_count = 0
     
-    @opero(retries=100, cache=False)
+    @opero(retries=100, cache=False, min_delay=0, max_delay=0)
     async def high_retry_func(value: str):
         nonlocal attempt_count
         attempt_count += 1
@@ -116,7 +114,7 @@ async def test_very_high_retry_count():
 async def test_nested_exceptions():
     """Test handling of nested exceptions."""
     
-    @opero(retries=2, cache=False)
+    @opero(retries=2, cache=False, min_delay=0, max_delay=0)
     async def nested_exception_func(value: str):
         try:
             raise ValueError("Inner exception")
@@ -166,18 +164,18 @@ async def test_opmap_with_none_values():
 async def test_opero_large_fallback_list():
     """Test with large fallback list."""
     
-    @opero(arg_fallback="large_list", cache=False)
-    async def func_with_large_fallback(value: str, large_list: list = None):
-        if large_list is None:
-            large_list = [f"option_{i}" for i in range(100)]
-        
-        current = large_list[0]
-        # Only the 50th option works
+    @opero(arg_fallback="large_list", cache=False, retries=1, min_delay=0, max_delay=0)
+    async def func_with_large_fallback(value: str, large_list: str = None):
+        # large_list is one option from the caller-provided list (or None)
+        current = large_list if large_list is not None else "option_0"
+        # Only option_49 works
         if current != "option_49":
             raise ValueError(f"Option {current} failed")
         return f"success_with_{current}"
-    
-    result = await func_with_large_fallback("test")
+
+    result = await func_with_large_fallback(
+        "test", large_list=[f"option_{i}" for i in range(100)]
+    )
     assert result == "success_with_option_49"
 
 
@@ -239,7 +237,7 @@ async def test_opmap_with_complex_data_types():
 async def test_opero_exception_preservation():
     """Test that original exception types are preserved."""
     
-    @opero(retries=1, cache=False)
+    @opero(retries=1, cache=False, min_delay=0, max_delay=0)
     async def func_with_specific_exception(value: str):
         if value == "custom":
             raise FileNotFoundError("Custom file not found")

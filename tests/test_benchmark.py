@@ -156,19 +156,16 @@ async def test_opero_retry_performance(benchmark):
 async def test_opero_fallback_performance(benchmark):
     """Benchmark fallback performance."""
     
-    @opero(arg_fallback="fallback_values", cache=False)
-    async def fallback_func(value: int, fallback_values: list = None):
-        if fallback_values is None:
-            fallback_values = ["fail", "succeed"]
-        
-        current = fallback_values[0]
-        if current == "fail":
+    @opero(arg_fallback="fallback_values", cache=False, min_delay=0, max_delay=0)
+    async def fallback_func(value: int, fallback_values: str = None):
+        # fallback_values is one item from the caller-provided list
+        if fallback_values is None or fallback_values == "fail":
             raise ValueError("Fallback test")
         return value * 2
-    
+
     async def benchmark_func():
-        return await fallback_func(42)
-    
+        return await fallback_func(42, fallback_values=["fail", "succeed"])
+
     result = await benchmark(benchmark_func)
     assert result == 84
 

@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Removed broken `twat_cache.ucache()` dependency (version `0.0.0` dev install always
+  selected `cachetools` backend whose engine class had unimplemented abstract methods).
+  Replaced with direct `cachetools.TTLCache` / `cachetools.LRUCache` in `cache.py`.
+- Fixed `asynciolimiter.Limiter` call: replaced nonexistent `.acquire()` with `.wait()`
+  in `src/opero/core/rate_limit.py`.
+- Removed unsupported `namespace` kwarg from `ucache()` call in `cache.py`.
+- Fixed `ImportError` for removed `apmap` in `twat_mp`: replaced with `amap` in
+  `src/opero/concurrency/pool.py`.
+- Added missing `FallbackError = AllFailedError` alias in `src/opero/core/fallback.py`.
+- Fixed `hatch test` environment: added `[tool.hatch.envs.hatch-test]` section with
+  required `pytest-asyncio`, `pytest-benchmark`, and `klepto` dependencies.
+- Fixed all tests to match async fallback design (explicit list passed as kwarg).
+- Fixed retry tests: added `min_delay=0, max_delay=0` to eliminate exponential backoff
+  hang in tests.
+- Fixed `opmap` error handling: wrap `resilient_func` per-item to return exceptions as
+  values rather than raising, preventing `twat_mp.WorkerError` from escaping.
+
 ### Added
 - Initial project structure and core functionality (from original base)
 - Comprehensive documentation structure using mkdocs with mkdocs-material theme:

@@ -13,7 +13,7 @@ from collections.abc import Callable, Iterable
 from typing import Any, TypeVar
 
 # Import from twat-mp
-from twat_mp import ThreadPool, amap, apmap, pmap  # type: ignore[import-untyped]
+from twat_mp import ThreadPool, amap, pmap  # type: ignore[import-untyped]
 
 T = TypeVar("T")  # Input type
 R = TypeVar("R")  # Return type
@@ -141,7 +141,7 @@ def get_parallel_executor(
             try:
                 loop = asyncio.get_running_loop()
                 return loop.run_until_complete(
-                    apmap(func)(
+                    amap(func)(
                         items,
                         workers=workers,
                         ordered=ordered,
@@ -152,7 +152,7 @@ def get_parallel_executor(
             except RuntimeError:
                 # No event loop running, create one
                 return asyncio.run(
-                    apmap(func)(
+                    amap(func)(
                         items,
                         workers=workers,
                         ordered=ordered,
@@ -317,7 +317,7 @@ def get_parallel_map_decorator(
             Returns:
                 The decorated function
             """
-            decorated = apmap(func)
+            decorated = amap(func)
 
             def wrapper(items: Iterable[T], **kw: Any) -> list[R]:
                 """

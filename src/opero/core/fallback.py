@@ -21,6 +21,9 @@ logger = logging.getLogger(__name__)
 # Import AllFailedError from the central exceptions module
 from opero.exceptions import AllFailedError
 
+# Backwards-compatible alias
+FallbackError = AllFailedError
+
 
 def get_fallback_decorator(
     arg_fallback: str | None = None,

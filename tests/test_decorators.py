@@ -55,15 +55,15 @@ async def test_opero_decorator_basic():
 async def test_opero_decorator_fallback():
     """Test that the opero decorator correctly uses fallback functions."""
 
-    @opero(cache=False, arg_fallback="fallback_values")
+    @opero(cache=False, arg_fallback="fallback_values", min_delay=0, max_delay=0)
     async def decorated_func(value, fallback_values=None):
-        if fallback_values is None:
-            fallback_values = ["fallback"]
-        if value != "fallback":
-            return await async_fail(value)
-        return await async_fallback(value)
+        # fallback_values is one item from the caller-provided list
+        if fallback_values is None or fallback_values == "fail":
+            raise ValueError(f"Failed with key: {fallback_values}")
+        return await async_fallback(fallback_values)
 
-    result = await decorated_func(1)
+    # Pass the fallback key list explicitly
+    result = await decorated_func(1, fallback_values=["fail", "fallback"])
     assert result == "Fallback: fallback"
 
 
