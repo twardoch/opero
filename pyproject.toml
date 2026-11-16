@@ -202,3 +202,6 @@ dev = [
 [tool.hatch.version]
 source = "vcs"
 path = "src/opero/__version__.py"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "src/opero/__version__.py"

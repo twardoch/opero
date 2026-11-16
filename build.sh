@@ -1,4 +1,19 @@
 #!/usr/bin/env bash
+# this_file: build.sh
+# Build only the adjacent documentation: ./build.sh --docs [renderer options]
+if [[ "${1:-}" == --docs ]]; then
+  shift
+  set -euo pipefail
+  cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
+  export PYTHONPATH="$PWD:$PWD/src:$PWD/../src:$PWD/..${PYTHONPATH:+:$PYTHONPATH}"
+  exec uvx --python 3.12 --from mkdocs==1.6.1 \
+    --with mkdocs-material \
+    --with 'mkdocstrings[python]' \
+    --with mkdocs-git-revision-date-localized-plugin \
+    --with pymdown-extensions \
+    mkdocs build --config-file mkdocs.yml "$@"
+fi
+
 # build.sh: Lint, test, and build opero
 # opero: Resilient, parallel task orchestration for Python
 
