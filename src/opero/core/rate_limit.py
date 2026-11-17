@@ -23,26 +23,26 @@ logger = logging.getLogger(__name__)
 
 class RateLimiter:
     """Rate limiter for controlling function call frequency.
-    
+
     This class provides both synchronous and asynchronous rate limiting
     capabilities. It ensures that operations don't exceed a specified
     rate limit (calls per second).
-    
+
     Attributes:
         rate_limit: Maximum number of operations per second.
         min_interval: Minimum time interval between operations.
         last_call_time: Timestamp of the last operation (for sync mode).
         async_limiter: Async rate limiter instance.
-    
+
     Example:
         # Create a rate limiter for 5 calls per second
         limiter = RateLimiter(5.0)
-        
+
         # Synchronous usage
         for i in range(10):
             limiter.wait()
             print(f"Operation {i}")
-            
+
         # Asynchronous usage
         async def rate_limited_operation():
             await limiter.wait_async()
@@ -63,10 +63,10 @@ class RateLimiter:
 
     def wait(self) -> None:
         """Wait synchronously until the rate limit allows another operation.
-        
+
         This method blocks the current thread if necessary to maintain
         the configured rate limit. It uses time.sleep() for delays.
-        
+
         Note:
             For async code, use wait_async() instead.
         """
@@ -84,10 +84,10 @@ class RateLimiter:
 
     async def wait_async(self) -> None:
         """Wait asynchronously until the rate limit allows another operation.
-        
+
         This method uses asyncio-compatible rate limiting, allowing other
         coroutines to run while waiting for the rate limit.
-        
+
         Note:
             For synchronous code, use wait() instead.
         """

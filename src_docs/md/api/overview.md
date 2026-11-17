@@ -120,8 +120,10 @@ Base exception for Opero errors.
 ```python
 from opero.exceptions import OperoError
 
+
 class OperoError(RuntimeError):
     """Base exception for Opero-related errors."""
+
     pass
 ```
 
@@ -132,9 +134,10 @@ Raised when all retry attempts and fallbacks are exhausted.
 ```python
 from opero.exceptions import AllFailedError
 
+
 class AllFailedError(OperoError):
     """Raised when all retry attempts and fallbacks fail."""
-    
+
     def __init__(self, message: str, errors: List[Exception]):
         super().__init__(message)
         self.errors = errors  # List of all failed attempts
@@ -145,9 +148,11 @@ class AllFailedError(OperoError):
 ```python
 from opero import opero, AllFailedError
 
+
 @opero(retries=3)
 def might_fail():
     raise ConnectionError("Connection failed")
+
 
 try:
     result = might_fail()
@@ -178,25 +183,27 @@ Supported through the `twat-cache` library:
 def memory_cached_function():
     pass
 
+
 # Disk cache with custom path
 @opero(
-    cache=True, 
+    cache=True,
     cache_backend="disk",
-    cache_backend_config={"cache_dir": "/tmp/opero_cache"}
+    cache_backend_config={"cache_dir": "/tmp/opero_cache"},
 )
 def disk_cached_function():
     pass
 
+
 # Redis cache
 @opero(
     cache=True,
-    cache_backend="redis", 
+    cache_backend="redis",
     cache_backend_config={
         "host": "localhost",
         "port": 6379,
         "db": 0,
-        "password": "optional_password"
-    }
+        "password": "optional_password",
+    },
 )
 def redis_cached_function():
     pass
@@ -212,11 +219,8 @@ def custom_cache_key(*args, **kwargs):
     # Only include specific arguments in cache key
     return f"my_func_{args[0]}_{kwargs.get('important_param', 'default')}"
 
-@opero(
-    cache=True,
-    cache_key=custom_cache_key,
-    cache_namespace="my_app"
-)
+
+@opero(cache=True, cache_key=custom_cache_key, cache_namespace="my_app")
 def function_with_custom_key(arg1, arg2, important_param=None, ignore_this=None):
     # ignore_this parameter won't affect caching
     return f"result for {arg1}, {important_param}"
@@ -306,37 +310,26 @@ async def async_cpu_task(item):
 Opero uses exponential backoff with jitter:
 
 ```python
-delay = min(max_delay, min_delay * (backoff_factor ** attempt_number))
+delay = min(max_delay, min_delay * (backoff_factor**attempt_number))
 ```
 
 ### Retry Configuration Examples
 
 ```python
 # Conservative retry strategy
-@opero(
-    retries=2,
-    backoff_factor=1.2,
-    min_delay=0.5,
-    max_delay=10.0
-)
+@opero(retries=2, backoff_factor=1.2, min_delay=0.5, max_delay=10.0)
 def conservative_function():
     pass
 
+
 # Aggressive retry strategy
-@opero(
-    retries=10,
-    backoff_factor=2.0,
-    min_delay=0.1,
-    max_delay=60.0
-)
+@opero(retries=10, backoff_factor=2.0, min_delay=0.1, max_delay=60.0)
 def aggressive_function():
     pass
 
+
 # Selective retry - only retry specific errors
-@opero(
-    retries=5,
-    retry_on=(ConnectionError, TimeoutError, requests.HTTPError)
-)
+@opero(retries=5, retry_on=(ConnectionError, TimeoutError, requests.HTTPError))
 def selective_retry_function():
     pass
 ```
@@ -361,18 +354,22 @@ Control how rate limits are applied:
 def function1():
     pass
 
-@opero(rate_limit=5.0, rate_limit_scope="per_function") 
+
+@opero(rate_limit=5.0, rate_limit_scope="per_function")
 def function2():
     pass  # Independent 5/sec limit
+
 
 # Global rate limiting - shared across functions
 @opero(rate_limit=10.0, rate_limit_scope="global")
 def function3():
     pass
 
+
 @opero(rate_limit=10.0, rate_limit_scope="global")
 def function4():
     pass  # Shares the 10/sec limit with function3
+
 
 # Per-argument rate limiting
 @opero(rate_limit=5.0, rate_limit_scope="per_args")
@@ -390,7 +387,7 @@ Automatically try alternative parameter values on failure:
 @opero(
     retries=2,
     arg_fallback="api_key",  # Parameter name to cycle through
-    fallback_delay=0.5       # Optional delay between fallback attempts
+    fallback_delay=0.5,  # Optional delay between fallback attempts
 )
 def api_call_with_fallback(data: dict, api_key: list[str]):
     # Opero automatically uses api_key[0], then api_key[1], etc.
@@ -400,10 +397,10 @@ def api_call_with_fallback(data: dict, api_key: list[str]):
     response.raise_for_status()
     return response.json()
 
+
 # Usage
 result = api_call_with_fallback(
-    {"key": "value"},
-    api_key=["primary_key", "backup_key", "emergency_key"]
+    {"key": "value"}, api_key=["primary_key", "backup_key", "emergency_key"]
 )
 ```
 
@@ -454,23 +451,27 @@ Opero includes comprehensive type hints:
 from typing import TypeVar, Awaitable, Union, List, Callable
 from opero import opero, opmap
 
-T = TypeVar('T')
-R = TypeVar('R')
+T = TypeVar("T")
+R = TypeVar("R")
+
 
 # Function type annotations
 @opero(retries=3)
 def typed_function(input_data: T) -> R:
     return process_data(input_data)
 
-# Async function type annotations  
+
+# Async function type annotations
 @opero(retries=3)
 async def async_typed_function(input_data: T) -> R:
     return await async_process_data(input_data)
+
 
 # Parallel processing type annotations
 @opmap(mode="thread", workers=10)
 def parallel_typed_function(item: T) -> R:
     return process_single_item(item)
+
 
 # Usage with type checking
 items: List[str] = ["item1", "item2", "item3"]
@@ -484,17 +485,21 @@ Opero validates configuration parameters:
 ```python
 # Invalid configuration examples that will raise errors:
 
+
 @opero(retries=-1)  # Error: retries must be non-negative
 def invalid_retries():
     pass
+
 
 @opero(rate_limit=0)  # Error: rate_limit must be positive
 def invalid_rate_limit():
     pass
 
+
 @opero(arg_fallback="nonexistent_param")  # Error: parameter not found
 def invalid_fallback(existing_param: str):
     pass
+
 
 @opmap(mode="invalid_mode")  # Error: unknown parallelization mode
 def invalid_mode():
@@ -535,19 +540,23 @@ from opero import opero
 
 app = FastAPI()
 
+
 @app.get("/users/{user_id}")
 @opero(retries=3, cache=True, cache_ttl=300)
 async def get_user(user_id: str):
     return await fetch_user_data(user_id)
 
+
 # Django integration
 from django.http import JsonResponse
 from opero import opero
 
+
 @opero(retries=3, cache=True)
 def django_view(request):
-    data = expensive_operation(request.GET.get('param'))
+    data = expensive_operation(request.GET.get("param"))
     return JsonResponse(data)
+
 
 # Flask integration
 from flask import Flask, jsonify
@@ -555,7 +564,8 @@ from opero import opero
 
 app = Flask(__name__)
 
-@app.route('/api/data')
+
+@app.route("/api/data")
 @opero(retries=3, cache=True)
 def flask_endpoint():
     return jsonify(fetch_data())
@@ -568,22 +578,23 @@ def flask_endpoint():
 from sqlalchemy.orm import Session
 from opero import opero
 
+
 @opero(
     retries=3,
     retry_on=(sqlalchemy.exc.DisconnectionError, sqlalchemy.exc.TimeoutError),
-    cache=False  # Don't cache database writes
+    cache=False,  # Don't cache database writes
 )
 def database_operation(session: Session, data: dict):
     return session.execute(query, data)
+
 
 # Redis integration
 import redis
 from opero import opero
 
+
 @opero(
-    retries=5,
-    retry_on=(redis.ConnectionError, redis.TimeoutError),
-    backoff_factor=2.0
+    retries=5, retry_on=(redis.ConnectionError, redis.TimeoutError), backoff_factor=2.0
 )
 def redis_operation(r: redis.Redis, key: str, value: str):
     return r.set(key, value)
@@ -617,17 +628,24 @@ from opero import configure_logging
 ```python
 # Basic resilience
 @opero(retries=3, cache=True)
-def basic_function(): pass
+def basic_function():
+    pass
+
 
 # API integration
 @opero(retries=3, rate_limit=10.0, arg_fallback="api_key")
-def api_function(data, api_key: list[str]): pass
+def api_function(data, api_key: list[str]):
+    pass
+
 
 # Batch processing
 @opmap(mode="thread", workers=10, retries=2)
-def batch_processor(item): pass
+def batch_processor(item):
+    pass
+
 
 # High-performance async
 @opmap(mode="async", workers=50, ordered=False)
-async def async_processor(item): pass
+async def async_processor(item):
+    pass
 ```

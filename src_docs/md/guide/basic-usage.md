@@ -52,6 +52,7 @@ import asyncio
 import aiohttp
 from opero import opero, AllFailedError
 
+
 @opero(
     retries=3,
     backoff_factor=1.5,
@@ -61,25 +62,26 @@ from opero import opero, AllFailedError
     cache_ttl=300,
     rate_limit=10.0,
     arg_fallback="api_key",
-    retry_on=(aiohttp.ClientError, asyncio.TimeoutError)
+    retry_on=(aiohttp.ClientError, asyncio.TimeoutError),
 )
 async def fetch_user_profile(user_id: str, api_key: list[str]):
     """Fetch user profile with comprehensive resilience."""
     current_key = api_key[0]  # Opero manages the fallback
-    
+
     headers = {"Authorization": f"Bearer {current_key}"}
     timeout = aiohttp.ClientTimeout(total=10)
-    
+
     async with aiohttp.ClientSession(timeout=timeout) as session:
         url = f"https://api.example.com/users/{user_id}"
         async with session.get(url, headers=headers) as response:
             response.raise_for_status()
             return await response.json()
 
+
 # Usage
 async def main():
     api_keys = ["primary_key", "backup_key", "emergency_key"]
-    
+
     try:
         profile = await fetch_user_profile("user123", api_key=api_keys)
         print(f"User profile: {profile}")
@@ -87,6 +89,7 @@ async def main():
         print(f"All attempts failed after {len(e.errors)} tries")
         for i, error in enumerate(e.errors, 1):
             print(f"  Attempt {i}: {error}")
+
 
 asyncio.run(main())
 ```
@@ -100,15 +103,17 @@ The `@opmap` decorator applies resilience to functions that process single items
 ```python
 # 1. Take a function that processes ONE item
 # 2. Make it resilient with @opmap
-# 3. Pass it MANY items 
+# 3. Pass it MANY items
 # 4. Get back results for ALL items
 
 from opero import opmap
+
 
 @opmap(mode="thread", workers=5)
 def process_single_item(item):
     # This function handles ONE item
     return expensive_operation(item)
+
 
 # But you call it with MANY items
 items = ["item1", "item2", "item3", ..., "item100"]
@@ -126,10 +131,12 @@ def io_bound_task(item):
     response = requests.get(f"https://api.com/{item}")
     return response.json()
 
+
 # CPU-bound tasks (calculations, data processing)
 @opmap(mode="process", workers=8)  # Usually number of CPU cores
 def cpu_bound_task(item):
     return complex_calculation(item)
+
 
 # Async I/O tasks (concurrent network operations)
 @opmap(mode="async", workers=100)
@@ -137,6 +144,7 @@ async def async_io_task(item):
     async with aiohttp.ClientSession() as session:
         async with session.get(f"https://api.com/{item}") as resp:
             return await resp.json()
+
 
 # Async tasks needing process isolation
 @opmap(mode="async_process", workers=4)
@@ -153,6 +161,7 @@ import aiohttp
 from opero import opmap, AllFailedError
 from typing import List, Dict, Any
 
+
 @opmap(
     mode="async",
     workers=25,
@@ -162,7 +171,7 @@ from typing import List, Dict, Any
     rate_limit=15.0,
     arg_fallback="user_agent",
     ordered=True,
-    progress=True
+    progress=True,
 )
 async def scrape_url(url: str, user_agent: List[str] = None) -> Dict[str, Any]:
     """Scrape a single URL with fallback user agents."""
@@ -170,70 +179,74 @@ async def scrape_url(url: str, user_agent: List[str] = None) -> Dict[str, Any]:
         user_agent = [
             "Mozilla/5.0 (compatible; OperoBot/1.0)",
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
         ]
-    
+
     headers = {
         "User-Agent": user_agent[0],
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
         "Accept-Language": "en-US,en;q=0.5",
         "Accept-Encoding": "gzip, deflate",
-        "Connection": "keep-alive"
+        "Connection": "keep-alive",
     }
-    
+
     timeout = aiohttp.ClientTimeout(total=30, connect=10)
-    
+
     async with aiohttp.ClientSession(timeout=timeout) as session:
         async with session.get(url, headers=headers) as response:
             # Trigger fallback for blocked requests
             if response.status in [403, 429]:
                 raise aiohttp.ClientError(f"Blocked with status {response.status}")
-            
+
             response.raise_for_status()
             content = await response.text()
-            
+
             return {
                 "url": url,
                 "status": response.status,
                 "title": extract_title(content),
                 "content_length": len(content),
                 "user_agent": user_agent[0],
-                "headers": dict(response.headers)
+                "headers": dict(response.headers),
             }
+
 
 def extract_title(html: str) -> str:
     """Extract title from HTML content."""
     import re
-    match = re.search(r'<title[^>]*>(.*?)</title>', html, re.IGNORECASE | re.DOTALL)
+
+    match = re.search(r"<title[^>]*>(.*?)</title>", html, re.IGNORECASE | re.DOTALL)
     return match.group(1).strip() if match else "No title"
+
 
 async def main():
     urls = [
         "https://httpbin.org/delay/1",
-        "https://httpbin.org/delay/2", 
+        "https://httpbin.org/delay/2",
         "https://httpbin.org/status/200",
         "https://httpbin.org/status/404",  # This will fail
         "https://httpbin.org/user-agent",
     ] * 10  # 50 URLs total
-    
+
     print(f"Scraping {len(urls)} URLs...")
     results = await scrape_url(urls)
-    
+
     # Analyze results
     successful = [r for r in results if not isinstance(r, Exception)]
     failed = [r for r in results if isinstance(r, Exception)]
-    
+
     print(f"\nSuccessfully scraped: {len(successful)} pages")
     print(f"Failed to scrape: {len(failed)} pages")
-    
+
     # Show some successful results
     for result in successful[:3]:
         print(f"  {result['title']} - {result['url']}")
-    
+
     # Show failures
     for error in failed[:3]:
         if isinstance(error, AllFailedError):
             print(f"  All attempts failed: {error}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -251,6 +264,7 @@ def expensive_calculation(n: int) -> int:
     # This expensive calculation only runs once per input
     time.sleep(1)  # Simulate expensive operation
     return sum(i**2 for i in range(n))
+
 
 # First call: slow (runs calculation)
 result1 = expensive_calculation(1000)  # Takes ~1 second
@@ -270,14 +284,12 @@ def cache_key_func(*args, **kwargs):
     # Only cache based on data, ignore timestamp
     return f"process_data_{kwargs['data']['id']}"
 
-@opero(
-    cache=True,
-    cache_key=cache_key_func,
-    cache_ttl=3600
-)
+
+@opero(cache=True, cache_key=cache_key_func, cache_ttl=3600)
 def process_data(data: dict, timestamp: float = None):
     # timestamp changes don't affect cache
     return expensive_operation(data)
+
 
 # These calls use the same cache entry
 result1 = process_data({"id": "123", "value": "test"}, timestamp=1000)
@@ -291,19 +303,24 @@ Choose the right cache backend:
 ```python
 # Memory cache (default, fastest)
 @opero(cache=True, cache_backend="memory")
-def memory_cached(): pass
+def memory_cached():
+    pass
+
 
 # Disk cache (persistent across runs)
 @opero(cache=True, cache_backend="disk", cache_ttl=86400)
-def disk_cached(): pass
+def disk_cached():
+    pass
+
 
 # Redis cache (shared across instances)
 @opero(
-    cache=True, 
+    cache=True,
     cache_backend="redis",
-    cache_backend_config={"host": "localhost", "port": 6379, "db": 0}
+    cache_backend_config={"host": "localhost", "port": 6379, "db": 0},
 )
-def redis_cached(): pass
+def redis_cached():
+    pass
 ```
 
 ## Error Handling Patterns
@@ -313,6 +330,7 @@ def redis_cached(): pass
 ```python
 from opero import opero, AllFailedError
 
+
 @opero(retries=3, arg_fallback="endpoint")
 def api_call(data: dict, endpoint: list[str]):
     current_endpoint = endpoint[0]
@@ -320,18 +338,19 @@ def api_call(data: dict, endpoint: list[str]):
     response.raise_for_status()
     return response.json()
 
+
 try:
     result = api_call(
-        {"key": "value"}, 
-        endpoint=["https://api1.com", "https://api2.com", "https://api3.com"]
+        {"key": "value"},
+        endpoint=["https://api1.com", "https://api2.com", "https://api3.com"],
     )
 except AllFailedError as e:
     print(f"All {len(e.errors)} attempts failed:")
-    
+
     # e.errors contains all the failed attempts
     for i, error in enumerate(e.errors, 1):
         print(f"  Attempt {i}: {type(error).__name__}: {error}")
-    
+
     # Get the last error for more details
     last_error = e.errors[-1]
     print(f"Last error was: {last_error}")
@@ -345,6 +364,7 @@ Only retry specific errors:
 import requests
 from requests.exceptions import ConnectionError, Timeout, HTTPError
 
+
 @opero(
     retries=3,
     retry_on=(ConnectionError, Timeout),  # Only retry these
@@ -352,15 +372,16 @@ from requests.exceptions import ConnectionError, Timeout, HTTPError
 )
 def selective_retry(url: str):
     response = requests.get(url, timeout=10)
-    
+
     if response.status_code >= 500:
         # Server errors trigger retry
         raise ConnectionError(f"Server error: {response.status_code}")
     elif response.status_code == 404:
         # Client errors don't trigger retry
         raise HTTPError(f"Not found: {url}")
-    
+
     return response.json()
+
 
 try:
     result = selective_retry("https://api.example.com/data")
@@ -382,6 +403,7 @@ def fetch_user_preferences(user_id: str) -> dict:
     response.raise_for_status()
     return response.json()
 
+
 def get_user_preferences(user_id: str) -> dict:
     """Get user preferences with graceful fallback."""
     try:
@@ -389,11 +411,8 @@ def get_user_preferences(user_id: str) -> dict:
     except AllFailedError:
         # Fall back to default preferences
         print(f"Using default preferences for user {user_id}")
-        return {
-            "theme": "light",
-            "language": "en",
-            "notifications": True
-        }
+        return {"theme": "light", "language": "en", "notifications": True}
+
 
 # Usage always succeeds
 preferences = get_user_preferences("user123")
@@ -410,6 +429,7 @@ Respect API rate limits:
 def api_call(endpoint: str):
     return requests.get(f"https://api.com/{endpoint}").json()
 
+
 # These calls will be automatically spaced out
 results = []
 for i in range(50):
@@ -424,10 +444,14 @@ Multiple functions sharing the same rate limit:
 ```python
 # Both functions share the same 5/sec rate limit
 @opero(rate_limit=5.0, rate_limit_scope="api_group")
-def get_data(item_id: str): pass
+def get_data(item_id: str):
+    pass
 
-@opero(rate_limit=5.0, rate_limit_scope="api_group")  
-def post_data(item_data: dict): pass
+
+@opero(rate_limit=5.0, rate_limit_scope="api_group")
+def post_data(item_data: dict):
+    pass
+
 
 # Combined calls respect the shared limit
 get_data("123")  # Uses 1/5 of rate limit
@@ -442,12 +466,14 @@ Adjust rate limits based on conditions:
 def get_rate_limit():
     """Adjust rate limit based on time of day."""
     import time
+
     hour = time.gmtime().tm_hour
-    
+
     if 9 <= hour <= 17:  # Business hours
         return 20.0  # Higher rate limit
     else:
-        return 5.0   # Lower rate limit
+        return 5.0  # Lower rate limit
+
 
 @opero(rate_limit=get_rate_limit())
 def time_aware_api():
@@ -467,9 +493,11 @@ from opero import configure_logging
 # Configure Opero logging
 logger = configure_logging(level=logging.INFO)
 
+
 @opero(retries=3, cache=True, rate_limit=5.0)
 def monitored_function(x):
     return x * 2
+
 
 # Logs will show:
 # - Cache hits/misses
@@ -487,6 +515,7 @@ Add custom metrics:
 import time
 from functools import wraps
 
+
 def add_timing_metrics(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -500,7 +529,9 @@ def add_timing_metrics(func):
             duration = time.time() - start_time
             print(f"{func.__name__} failed after {duration:.2f}s: {e}")
             raise
+
     return wrapper
+
 
 @add_timing_metrics
 @opero(retries=3, cache=True)
@@ -521,18 +552,18 @@ def timed_function(x):
 
 ```python
 # Good: Centralized configuration
-API_CONFIG = {
-    "retries": 3,
-    "cache": True,
-    "cache_ttl": 300,
-    "rate_limit": 10.0
-}
+API_CONFIG = {"retries": 3, "cache": True, "cache_ttl": 300, "rate_limit": 10.0}
+
 
 @opero(**API_CONFIG)
-def api_function_1(): pass
+def api_function_1():
+    pass
 
-@opero(**API_CONFIG)  
-def api_function_2(): pass
+
+@opero(**API_CONFIG)
+def api_function_2():
+    pass
+
 
 # Good: Specific configurations for different use cases
 BATCH_CONFIG = {"mode": "thread", "workers": 10, "retries": 2}
@@ -572,17 +603,24 @@ Now that you understand basic usage:
 ```python
 # Basic resilience
 @opero(retries=3, cache=True)
-def basic_function(): pass
+def basic_function():
+    pass
 
-# API integration  
+
+# API integration
 @opero(retries=3, rate_limit=10.0, arg_fallback="api_key")
-def api_function(data, api_key: list[str]): pass
+def api_function(data, api_key: list[str]):
+    pass
+
 
 # Batch processing
 @opmap(mode="thread", workers=10, retries=2)
-def batch_processor(item): pass
+def batch_processor(item):
+    pass
+
 
 # High-performance async
 @opmap(mode="async", workers=50, ordered=False)
-async def async_processor(item): pass
+async def async_processor(item):
+    pass
 ```

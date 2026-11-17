@@ -125,7 +125,8 @@ def opmap(
         @opmap(mode="process", workers=4, retries=2)
         def process_image(image_path: str):
             return compute_intensive_operation(image_path)
-        
+
+
         results = process_image(image_paths)
         ```
     """
@@ -169,11 +170,11 @@ def get_retry_decorator(
     min_delay: float = 0.1,
     max_delay: float = 30.0,
     retry_on: tuple[type[Exception], ...] = (Exception,),
-    **kwargs: Any
+    **kwargs: Any,
 ) -> Callable:
     """
     Create a retry decorator using tenacity.
-    
+
     Args:
         retries: Maximum retry attempts.
         backoff_factor: Exponential backoff multiplier.
@@ -181,7 +182,7 @@ def get_retry_decorator(
         max_delay: Maximum delay between retries.
         retry_on: Exception types to retry.
         **kwargs: Additional tenacity options.
-    
+
     Returns:
         Retry decorator.
     """
@@ -190,17 +191,14 @@ def get_retry_decorator(
 ### get_rate_limit_decorator
 
 ```python
-def get_rate_limit_decorator(
-    rate_limit: float,
-    **kwargs: Any
-) -> Callable:
+def get_rate_limit_decorator(rate_limit: float, **kwargs: Any) -> Callable:
     """
     Create a rate limiting decorator.
-    
+
     Args:
         rate_limit: Maximum calls per second.
         **kwargs: Additional options.
-    
+
     Returns:
         Rate limiting decorator.
     """
@@ -209,20 +207,17 @@ def get_rate_limit_decorator(
 ### get_fallback_decorator
 
 ```python
-def get_fallback_decorator(
-    arg_fallback: str,
-    **kwargs: Any
-) -> Callable:
+def get_fallback_decorator(arg_fallback: str, **kwargs: Any) -> Callable:
     """
     Create a parameter fallback decorator.
-    
+
     Args:
         arg_fallback: Parameter name containing fallback values.
         **kwargs: Additional options.
-    
+
     Returns:
         Fallback decorator.
-    
+
     Raises:
         ValueError: If arg_fallback parameter not found or not a sequence.
     """
@@ -324,6 +319,7 @@ CacheBackend = Literal["memory", "disk", "redis"]
 @dataclass
 class CacheConfig:
     """Configuration for caching behavior."""
+
     enabled: bool = False
     ttl: int | None = None
     backend: str = "memory"
@@ -338,6 +334,7 @@ class CacheConfig:
 @dataclass
 class RetryConfig:
     """Configuration for retry behavior."""
+
     attempts: int = 3
     backoff_factor: float = 1.5
     min_delay: float = 0.1
@@ -351,6 +348,7 @@ class RetryConfig:
 @dataclass
 class RateLimitConfig:
     """Configuration for rate limiting."""
+
     rate: float | None = None
     burst: int = 1
 ```
@@ -362,21 +360,21 @@ class RateLimitConfig:
 ```python
 from opero import opero, AllFailedError
 
+
 @opero(
     retries=3,
     backoff_factor=2.0,
     cache=True,
     cache_ttl=600,
     rate_limit=5.0,
-    arg_fallback="api_key"
+    arg_fallback="api_key",
 )
 def resilient_api_call(
-    endpoint: str,
-    api_key: list[str] = ["primary_key", "backup_key"]
+    endpoint: str, api_key: list[str] = ["primary_key", "backup_key"]
 ):
     """
     Make API call with full resilience stack.
-    
+
     - Checks cache first
     - Respects rate limit
     - Retries with exponential backoff
@@ -393,6 +391,7 @@ def resilient_api_call(
 ```python
 from opero import opmap
 
+
 @opmap(
     mode="thread",
     workers=10,
@@ -400,13 +399,14 @@ from opero import opmap
     cache=True,
     cache_ttl=3600,
     rate_limit=2.0,
-    ordered=True
+    ordered=True,
 )
 def scrape_product(product_id: int) -> dict:
     """Scrape product with rate limiting and caching."""
     url = f"https://api.example.com/products/{product_id}"
     response = requests.get(url)
     return response.json()
+
 
 # Scrape 100 products in parallel with all protections
 product_ids = range(1, 101)

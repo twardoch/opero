@@ -82,7 +82,7 @@ logger = configure_logging(
 async def call_external_api(
     endpoint: str,
     data: dict[str, Any],
-    api_key: list[str] = ["primary_key", "backup_key"],
+    api_key: list[str] | None = None,
 ) -> APIResponse:
     """
     Call an external API with full resilience mechanisms.
@@ -104,6 +104,8 @@ async def call_external_api(
     Raises:
         FallbackError: If all API keys fail
     """
+    if api_key is None:
+        api_key = ["primary_key", "backup_key"]
     current_key = api_key[0]
     logger.info(f"Calling API endpoint {endpoint} with key {current_key}")
 
@@ -182,7 +184,7 @@ def process_batch_item(item: dict[str, Any]) -> ProcessingResult:
 async def query_database(
     query: str,
     params: dict[str, Any],
-    db_host: list[str] = ["primary.db", "replica.db"],
+    db_host: list[str] | None = None,
 ) -> list[dict[str, Any]]:
     """
     Execute a database query with fallback to replica.
@@ -203,6 +205,8 @@ async def query_database(
     Raises:
         FallbackError: If all database hosts fail
     """
+    if db_host is None:
+        db_host = ["primary.db", "replica.db"]
     current_host = db_host[0]
     logger.info(f"Executing query on {current_host}")
 

@@ -34,7 +34,7 @@ def opmap(
     cache_ttl: int | None = None,
     cache_backend: str = "memory",
     cache_key: Callable[..., str] | None = None,
-    cache_namespace: str = "opero_opmap_item", # Default namespace for item processing
+    cache_namespace: str = "opero_opmap_item",  # Default namespace for item processing
     # Retry options (applied to the single-item processing function)
     retries: int = 3,
     backoff_factor: float = 1.5,
@@ -121,12 +121,31 @@ def opmap(
         # Let's stick to current @opero order for consistency first.
         # Cache -> Rate Limit -> Retry -> Fallback (for the item processing)
 
-        _kwargs_cache = {k.replace('cache_', ''): v for k,v in kwargs.items() if k.startswith('cache_')}
-        _kwargs_retry = {k.replace('retry_', ''): v for k,v in kwargs.items() if k.startswith('retry_')}
-        _kwargs_fallback = {k.replace('fallback_', ''): v for k,v in kwargs.items() if k.startswith('fallback_')}
-        _kwargs_rate_limit = {k.replace('rate_limit_', ''): v for k,v in kwargs.items() if k.startswith('rate_limit_')}
-        _kwargs_concurrency = {k.replace('concurrency_', ''): v for k,v in kwargs.items() if k.startswith('concurrency_')}
-
+        _kwargs_cache = {
+            k.replace("cache_", ""): v
+            for k, v in kwargs.items()
+            if k.startswith("cache_")
+        }
+        _kwargs_retry = {
+            k.replace("retry_", ""): v
+            for k, v in kwargs.items()
+            if k.startswith("retry_")
+        }
+        _kwargs_fallback = {
+            k.replace("fallback_", ""): v
+            for k, v in kwargs.items()
+            if k.startswith("fallback_")
+        }
+        _kwargs_rate_limit = {
+            k.replace("rate_limit_", ""): v
+            for k, v in kwargs.items()
+            if k.startswith("rate_limit_")
+        }
+        _kwargs_concurrency = {
+            k.replace("concurrency_", ""): v
+            for k, v in kwargs.items()
+            if k.startswith("concurrency_")
+        }
 
         # Apply Caching
         cache_decorator = get_cache_decorator(
@@ -135,14 +154,13 @@ def opmap(
             cache_backend=cache_backend,
             cache_key=cache_key,
             cache_namespace=cache_namespace,
-            **_kwargs_cache, # Pass only cache-related specific kwargs if any, or all kwargs
+            **_kwargs_cache,  # Pass only cache-related specific kwargs if any, or all kwargs
         )
         resilient_func = cache_decorator(resilient_func)
 
         # Apply Rate Limiting
         rate_limit_decorator = get_rate_limit_decorator(
-            rate_limit=rate_limit,
-            **_kwargs_rate_limit
+            rate_limit=rate_limit, **_kwargs_rate_limit
         )
         resilient_func = rate_limit_decorator(resilient_func)
 
@@ -159,8 +177,7 @@ def opmap(
 
         # Apply Parameter-based Fallbacks
         fallback_decorator = get_fallback_decorator(
-            arg_fallback=arg_fallback,
-            **_kwargs_fallback
+            arg_fallback=arg_fallback, **_kwargs_fallback
         )
         resilient_func = fallback_decorator(resilient_func)  # type: ignore[assignment]
 
@@ -176,7 +193,7 @@ def opmap(
             workers=workers,
             ordered=ordered,
             progress=progress,
-            **_kwargs_concurrency, # Pass concurrency-specific kwargs
+            **_kwargs_concurrency,  # Pass concurrency-specific kwargs
         )
 
         # Wrap resilient_func so per-item exceptions are returned as values
@@ -184,6 +201,7 @@ def opmap(
         _resilient_func = resilient_func
 
         if asyncio.iscoroutinefunction(resilient_func):
+
             @functools.wraps(resilient_func)
             async def exception_capturing_func(*args: Any, **kw: Any) -> Any:
                 try:
@@ -191,6 +209,7 @@ def opmap(
                 except Exception as exc:
                     return exc
         else:
+
             @functools.wraps(resilient_func)
             def exception_capturing_func(*args: Any, **kw: Any) -> Any:  # type: ignore[misc]
                 try:
@@ -199,10 +218,14 @@ def opmap(
                     return exc
 
         # Apply the parallel map decorator factory to our resilient single-item function
-        parallel_processing_func = parallel_map_decorator_factory(exception_capturing_func)
+        parallel_processing_func = parallel_map_decorator_factory(
+            exception_capturing_func
+        )
 
-        @functools.wraps(func) # Wraps the original user function for metadata
-        def map_wrapper(items: Iterable[T], **call_time_kwargs: Any) -> list[R | Exception]:
+        @functools.wraps(func)  # Wraps the original user function for metadata
+        def map_wrapper(
+            items: Iterable[T], **call_time_kwargs: Any
+        ) -> list[R | Exception]:
             """
             This is the function that users will call with an iterable of items.
             It uses the pre-configured parallel_processing_func.

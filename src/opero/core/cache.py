@@ -58,6 +58,7 @@ def get_cache_decorator(
 
     def apply_cache(func: Callable[P, R]) -> Callable[P, R]:
         if asyncio.iscoroutinefunction(func):
+
             @functools.wraps(func)
             async def async_wrapper(*args: Any, **kw: Any) -> Any:
                 k = key_func(*args, **kw)

@@ -42,12 +42,9 @@ Opero (Latin for "to work" or "to operate") is a Python library that adds resili
 ```python
 from opero import opero
 
+
 @opero(
-    retries=3,
-    backoff_factor=1.5,
-    cache=True,
-    rate_limit=10.0,
-    arg_fallback="api_key"
+    retries=3, backoff_factor=1.5, cache=True, rate_limit=10.0, arg_fallback="api_key"
 )
 async def fetch_data(item_id: str, api_key: list[str] = ["key1", "key2"]):
     # Your function implementation
@@ -86,6 +83,7 @@ def process_data(item):
     response = api.call(item)  # Might fail!
     return response.data
 
+
 # After: Resilient code
 @opero(retries=3, cache=True)
 def process_data(item):
@@ -107,14 +105,11 @@ Process large datasets efficiently:
 ```python
 from opero import opmap
 
-@opmap(
-    mode="thread",
-    workers=10,
-    retries=2,
-    cache=True
-)
+
+@opmap(mode="thread", workers=10, retries=2, cache=True)
 def process_item(item):
     return expensive_operation(item)
+
 
 # Process all items in parallel with automatic resilience
 results = process_item(list_of_1000_items)

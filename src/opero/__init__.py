@@ -30,7 +30,7 @@ Quick Example:
     @opmap(mode="thread", workers=10, retries=2)
     def process_item(item):
         return expensive_operation(item)
-    
+
     # Process many items in parallel
     results = process_item(list_of_items)
 """
@@ -38,7 +38,7 @@ Quick Example:
 from opero.__version__ import __version__
 from opero.concurrency import get_parallel_executor, get_parallel_map_decorator
 from opero.core import (
-    RateLimiter, # FallbackError removed from core exports
+    RateLimiter,  # FallbackError removed from core exports
     clear_cache,
     get_cache_context,
     get_cache_decorator,
@@ -47,6 +47,7 @@ from opero.core import (
     get_retry_decorator,
 )
 from opero.decorators import opero, opmap
+
 # Import AllFailedError from exceptions
 from opero.exceptions import OperoError, AllFailedError
 from opero.utils import (
@@ -59,8 +60,8 @@ from opero.utils import (
 )
 
 __all__ = [
+    "AllFailedError",  # Added AllFailedError
     "OperoError",
-    "AllFailedError", # Added AllFailedError
     "RateLimiter",
     # Version
     "__version__",

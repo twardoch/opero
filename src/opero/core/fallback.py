@@ -115,7 +115,9 @@ def get_fallback_decorator(
                         f"Fallback argument '{arg_fallback}' in {func.__name__} is not a list or tuple. Fallback disabled."
                     )
                     # Restore if popped, then call original function once
-                    if original_fallback_values_list is not None: # only restore if it was popped
+                    if (
+                        original_fallback_values_list is not None
+                    ):  # only restore if it was popped
                         kwargs[arg_fallback] = original_fallback_values_list
                     result = await func(*args, **kwargs)
                     return result  # type: ignore[no-any-return]
@@ -125,7 +127,9 @@ def get_fallback_decorator(
                         f"Fallback argument '{arg_fallback}' in {func.__name__} is empty. Fallback disabled."
                     )
                     # Call original function once (arg_fallback might be an empty list passed intentionally)
-                    kwargs[arg_fallback] = original_fallback_values_list # ensure it's passed as empty list
+                    kwargs[arg_fallback] = (
+                        original_fallback_values_list  # ensure it's passed as empty list
+                    )
                     result = await func(*args, **kwargs)
                     return result  # type: ignore[no-any-return]
 
@@ -136,7 +140,9 @@ def get_fallback_decorator(
                         # Create a mutable copy of kwargs for this attempt
                         current_kwargs = kwargs.copy()
                         current_kwargs[arg_fallback] = fallback_value_attempt
-                        logger.debug(f"Attempting call for {func.__name__} with {arg_fallback}={fallback_value_attempt}")
+                        logger.debug(
+                            f"Attempting call for {func.__name__} with {arg_fallback}={fallback_value_attempt}"
+                        )
                         result = await func(*args, **current_kwargs)
                         return result  # type: ignore[no-any-return]
                     except Exception as e:
@@ -182,7 +188,7 @@ def get_fallback_decorator(
                     for fallback_value in fallback_values:
                         try:
                             # Replace the first argument with the fallback value
-                            new_args = (fallback_value,) + args[1:]
+                            new_args = (fallback_value, *args[1:])
                             return func(*new_args, **kwargs)
                         except Exception as e:
                             errors.append(e)

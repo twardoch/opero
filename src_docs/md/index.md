@@ -18,17 +18,20 @@ Opero (Latin for "to work" or "to operate") adds resilience and parallel process
 ```python
 from opero import opero, opmap
 
+
 # Make any function resilient with @opero
 @opero(retries=3, cache=True, rate_limit=10.0)
 async def fetch_data(item_id: str):
     # Your code here - now with automatic retries, caching, and rate limiting
     return await api_call(item_id)
 
+
 # Process thousands of items in parallel with @opmap
 @opmap(mode="thread", workers=10, retries=2)
 def process_item(item):
     # Process one item - opmap handles the parallelization
     return expensive_operation(item)
+
 
 # Use it
 results = process_item(list_of_1000_items)  # Processes all items in parallel
@@ -94,6 +97,7 @@ def process_data(item):
     response = api.call(item)  # Might fail!
     return response.data
 
+
 # After: Resilient code
 @opero(retries=3, cache=True)
 def process_data(item):
@@ -115,14 +119,16 @@ Process thousands of items efficiently:
 ```python
 from opero import opmap
 
+
 @opmap(
-    mode="thread",      # Use threads for I/O-bound tasks
-    workers=10,         # 10 parallel workers
-    retries=2,          # Retry failed items
-    cache=True          # Cache results
+    mode="thread",  # Use threads for I/O-bound tasks
+    workers=10,  # 10 parallel workers
+    retries=2,  # Retry failed items
+    cache=True,  # Cache results
 )
 def process_item(item):
     return expensive_operation(item)
+
 
 # Process all items in parallel with automatic resilience
 results = process_item(list_of_1000_items)

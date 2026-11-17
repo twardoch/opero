@@ -36,10 +36,11 @@ setup_structured_logging()
 # Get structured logger
 logger = structlog.get_logger("my_app")
 
+
 @opero(retries=3, cache=True)
 def monitored_function(user_id: str):
     logger.info("Processing user", user_id=user_id)
-    
+
     try:
         result = expensive_operation(user_id)
         logger.info("Operation successful", user_id=user_id, result_size=len(result))
@@ -47,6 +48,7 @@ def monitored_function(user_id: str):
     except Exception as e:
         logger.error("Operation failed", user_id=user_id, error=str(e))
         raise
+
 
 # JSON output:
 # {"event": "Processing user", "user_id": "123", "timestamp": "2024-01-15T10:30:00Z"}
@@ -61,18 +63,20 @@ Create custom log formats:
 from opero.utils.logging import OperoFormatter
 import logging
 
+
 class CustomOperoFormatter(OperoFormatter):
     """Custom formatter for Opero logs."""
-    
+
     def format(self, record):
         # Add custom fields
-        if hasattr(record, 'opero_function'):
+        if hasattr(record, "opero_function"):
             record.msg = f"[{record.opero_function}] {record.msg}"
-        
-        if hasattr(record, 'opero_attempt'):
+
+        if hasattr(record, "opero_attempt"):
             record.msg = f"(attempt {record.opero_attempt}) {record.msg}"
-        
+
         return super().format(record)
+
 
 # Apply custom formatter
 handler = logging.StreamHandler()
@@ -92,11 +96,13 @@ Analyze Opero-decorated functions:
 ```python
 from opero.utils.debug import analyze_function, get_execution_trace
 
+
 @opero(retries=3, cache=True, rate_limit=10.0, arg_fallback="api_key")
 def example_function(data: dict, api_key: list[str]):
     """Example function with Opero features."""
     current_key = api_key[0]
     return make_api_call(data, current_key)
+
 
 # Analyze configuration
 analysis = analyze_function(example_function)
@@ -120,12 +126,14 @@ Trace function execution:
 ```python
 from opero.utils.debug import trace_execution
 
+
 @trace_execution
 @opero(retries=3, cache=True)
 def traced_function(x: int):
     if x < 0:
         raise ValueError("Negative values not allowed")
-    return x ** 2
+    return x**2
+
 
 # Execute with tracing
 result = traced_function(5)
@@ -143,7 +151,7 @@ result = traced_function(5)
 result2 = traced_function(5)
 
 # Trace output:
-# [TRACE] traced_function: Starting execution  
+# [TRACE] traced_function: Starting execution
 # [TRACE] traced_function: Cache hit for key 'opero:traced_function:a1b2c3d4'
 # [TRACE] traced_function: Returning cached result
 ```
@@ -155,12 +163,14 @@ Profile Opero function performance:
 ```python
 from opero.utils.debug import profile_function, PerformanceProfiler
 
+
 # Quick profiling
 @profile_function
 @opero(retries=3, cache=True)
 def profiled_function(n: int):
     time.sleep(0.1)  # Simulate work
     return sum(range(n))
+
 
 # Execute multiple times
 for i in range(10):
@@ -187,11 +197,13 @@ Monitor memory usage during parallel processing:
 ```python
 from opero.utils.debug import MemoryTracker
 
+
 @opmap(mode="process", workers=4)
 def memory_intensive_task(item):
     # Simulate memory-intensive work
     data = [0] * (item * 1000)
     return sum(data)
+
 
 # Track memory usage
 with MemoryTracker() as tracker:
@@ -227,7 +239,7 @@ config = {
     "cache": True,
     "cache_ttl": 3600,
     "rate_limit": 10.0,
-    "arg_fallback": "api_key"
+    "arg_fallback": "api_key",
 }
 
 validator = ConfigValidator()
@@ -255,14 +267,16 @@ Load configuration from environment variables:
 from opero.utils.config import load_config_from_env
 
 # Set environment variables
-os.environ.update({
-    "OPERO_RETRIES": "5",
-    "OPERO_CACHE": "true", 
-    "OPERO_CACHE_TTL": "3600",
-    "OPERO_RATE_LIMIT": "20.0",
-    "OPERO_BATCH_WORKERS": "8",
-    "OPERO_BATCH_MODE": "thread"
-})
+os.environ.update(
+    {
+        "OPERO_RETRIES": "5",
+        "OPERO_CACHE": "true",
+        "OPERO_CACHE_TTL": "3600",
+        "OPERO_RATE_LIMIT": "20.0",
+        "OPERO_BATCH_WORKERS": "8",
+        "OPERO_BATCH_MODE": "thread",
+    }
+)
 
 # Load configuration
 api_config = load_config_from_env(prefix="OPERO", config_type="api")
@@ -275,10 +289,12 @@ print(f"Batch config: {batch_config}")
 # API config: {'retries': 5, 'cache': True, 'cache_ttl': 3600, 'rate_limit': 20.0}
 # Batch config: {'workers': 8, 'mode': 'thread'}
 
+
 # Use configurations
 @opero(**api_config)
 def api_function():
     pass
+
 
 @opmap(**batch_config, **api_config)
 def batch_function(item):
@@ -297,37 +313,28 @@ templates = ConfigTemplates()
 
 # API client
 api_config = templates.api_client(
-    retries=5,
-    cache_duration_minutes=30,
-    rate_limit_per_second=15.0
+    retries=5, cache_duration_minutes=30, rate_limit_per_second=15.0
 )
 
 # Batch processing
-batch_config = templates.batch_processing(
-    workers=8,
-    mode="thread",
-    timeout_minutes=5
-)
+batch_config = templates.batch_processing(workers=8, mode="thread", timeout_minutes=5)
 
 # Web scraping
 scraping_config = templates.web_scraping(
-    max_retries=3,
-    rate_limit=2.0,
-    cache_hours=1,
-    user_agent_fallbacks=True
+    max_retries=3, rate_limit=2.0, cache_hours=1, user_agent_fallbacks=True
 )
 
 # Database operations
 db_config = templates.database_operations(
-    connection_retries=3,
-    no_cache=True,
-    timeout_seconds=30
+    connection_retries=3, no_cache=True, timeout_seconds=30
 )
+
 
 # Apply templates
 @opero(**api_config)
 def api_call():
     pass
+
 
 @opmap(**batch_config)
 def process_batch(item):
@@ -343,69 +350,69 @@ Test Opero-decorated functions:
 ```python
 from opero.utils.testing import OperoTestCase, mock_external_service
 
+
 class TestMyAPI(OperoTestCase):
     """Test case with Opero utilities."""
-    
+
     def setUp(self):
         super().setUp()
         self.reset_opero_state()
-    
+
     def test_retry_behavior(self):
         """Test retry mechanism."""
-        
+
         with mock_external_service(
-            fail_attempts=[1, 2],
-            success_response={"data": "success"}
+            fail_attempts=[1, 2], success_response={"data": "success"}
         ) as mock_service:
-            
+
             @opero(retries=3)
             def api_call():
                 return mock_service.call()
-            
+
             result = api_call()
-            
+
             self.assertEqual(result, {"data": "success"})
             self.assertEqual(mock_service.call_count, 3)
-    
+
     def test_cache_behavior(self):
         """Test caching."""
         call_count = 0
-        
+
         @opero(cache=True, cache_ttl=1)
         def cached_function(x):
             nonlocal call_count
             call_count += 1
             return f"result_{x}"
-        
+
         # First call
         result1 = cached_function("test")
         self.assertEqual(call_count, 1)
-        
+
         # Second call - cache hit
         result2 = cached_function("test")
         self.assertEqual(call_count, 1)
         self.assertEqual(result1, result2)
-        
+
         # Wait for cache expiry
         self.advance_time(1.1)
-        
+
         # Third call - cache miss
         result3 = cached_function("test")
         self.assertEqual(call_count, 2)
-    
+
     def test_parallel_processing(self):
         """Test parallel processing."""
-        
+
         @opmap(mode="thread", workers=3)
         def parallel_task(item):
             time.sleep(0.1)
             return item * 2
-        
+
         items = list(range(10))
-        
+
         with self.measure_time() as timer:
             results = parallel_task(items)
-        
+
         # Should complete faster than sequential
         self.assertLess(timer.elapsed, 0.5)
         self.assertEqual(results, [i * 2 for i in items])
@@ -418,53 +425,56 @@ Performance testing and benchmarking:
 ```python
 from opero.utils.testing import BenchmarkSuite, performance_test
 
+
 class OperoBenchmarks(BenchmarkSuite):
     """Benchmark suite for Opero."""
-    
+
     def setup(self):
         """Set up test data."""
         self.test_items = list(range(1000))
         self.api_endpoints = [f"endpoint_{i}" for i in range(100)]
-    
+
     @performance_test(iterations=10, warmup=2)
     def benchmark_sequential_processing(self):
         """Benchmark sequential processing."""
+
         def process_item(item):
             time.sleep(0.001)
-            return item ** 2
-        
+            return item**2
+
         results = [process_item(item) for item in self.test_items[:100]]
         return len(results)
-    
-    @performance_test(iterations=10, warmup=2)  
+
+    @performance_test(iterations=10, warmup=2)
     def benchmark_parallel_processing(self):
         """Benchmark parallel processing."""
-        
+
         @opmap(mode="thread", workers=10)
         def process_item(item):
             time.sleep(0.001)
-            return item ** 2
-        
+            return item**2
+
         results = process_item(self.test_items[:100])
         return len(results)
-    
+
     @performance_test(iterations=20, warmup=5)
     def benchmark_caching_performance(self):
         """Benchmark caching performance."""
-        
+
         @opero(cache=True)
         def expensive_operation(x):
             time.sleep(0.01)
-            return x ** 2
-        
+            return x**2
+
         # Mix of cached and uncached calls
         results = []
         for i in range(50):
             value = i % 10
             result = expensive_operation(value)
             results.append(result)
-        
+
         return len(results)
+
 
 # Run benchmarks
 benchmarks = OperoBenchmarks()
@@ -473,18 +483,18 @@ print(report)
 
 # Output:
 # Benchmark Report:
-# 
+#
 # benchmark_sequential_processing:
 #   Mean: 105.2ms ± 2.1ms
 #   Min: 102.1ms, Max: 108.7ms
-#   
-# benchmark_parallel_processing:  
+#
+# benchmark_parallel_processing:
 #   Mean: 23.4ms ± 1.8ms
 #   Min: 21.2ms, Max: 26.1ms
 #   Speedup: 4.5x over sequential
-#   
+#
 # benchmark_caching_performance:
-#   Mean: 12.3ms ± 0.8ms  
+#   Mean: 12.3ms ± 0.8ms
 #   Min: 11.1ms, Max: 13.9ms
 #   Cache hit rate: 80% (40/50 calls)
 ```
@@ -498,20 +508,25 @@ Work with both sync and async functions:
 ```python
 from opero.utils.async_utils import ensure_async, run_sync, bridge_sync_async
 
+
 # Convert sync to async
 def sync_function(x):
     time.sleep(0.1)
     return x * 2
 
+
 async_version = ensure_async(sync_function)
 result = await async_version(5)
+
 
 # Run async in sync context
 async def async_function(x):
     await asyncio.sleep(0.1)
     return x * 2
 
+
 sync_result = run_sync(async_function(5))
+
 
 # Bridge sync/async execution
 @bridge_sync_async
@@ -521,6 +536,7 @@ def flexible_function(x):
         return expensive_operation(x)
     else:
         return expensive_operation(x)
+
 
 # Works in both contexts:
 sync_result = flexible_function(5)
@@ -534,15 +550,17 @@ Manage async resources:
 ```python
 from opero.utils.async_utils import AsyncResourceManager
 
+
 class DatabaseConnectionPool(AsyncResourceManager):
     """Async context manager for database connections."""
-    
+
     async def __aenter__(self):
         self.pool = await create_connection_pool()
         return self.pool
-    
+
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.pool.close()
+
 
 # Use with Opero
 @opero(retries=3)
@@ -561,10 +579,12 @@ Diagnostic tools for common issues:
 ```python
 from opero.utils.troubleshooting import diagnose_issues, OperoDoctor
 
+
 # Diagnose issues
 @opero(retries=3, cache=True, rate_limit=10.0)
 def problematic_function():
     pass
+
 
 doctor = OperoDoctor()
 diagnosis = doctor.diagnose(problematic_function)
@@ -573,12 +593,12 @@ print(diagnosis.report)
 
 # Example output:
 # Opero Health Check for 'problematic_function':
-# 
+#
 # ✓ Configuration: Valid
 # ✓ Dependencies: All packages installed
 # ✓ Cache Backend: Memory cache accessible
 # ✓ Rate Limiter: Configured correctly
-# 
+#
 # Recommendations:
 # - Use disk cache for persistence
 # - Rate limit could be increased
@@ -592,10 +612,12 @@ Identify performance bottlenecks:
 ```python
 from opero.utils.troubleshooting import PerformanceDiagnostic
 
+
 @opmap(mode="thread", workers=20)
 def slow_function(item):
     time.sleep(1)
     return item
+
 
 # Diagnose performance
 diagnostic = PerformanceDiagnostic()
@@ -612,10 +634,10 @@ for issue in issues:
 # Example output:
 # Issue: High worker contention
 # Suggestion: Reduce workers from 20 to 8
-# 
+#
 # Issue: Tasks completing slowly
 # Suggestion: Use process mode for CPU-bound tasks
-# 
+#
 # Issue: Memory usage growing
 # Suggestion: Use smaller batch sizes
 ```
@@ -627,12 +649,15 @@ Analyze error patterns:
 ```python
 from opero.utils.troubleshooting import ErrorAnalyzer
 
+
 @opero(retries=3, arg_fallback="api_key")
 def flaky_api_call(data, api_key: list[str]):
     import random
+
     if random.random() < 0.7:
         raise ConnectionError("Service unavailable")
     return {"status": "success", "data": data}
+
 
 # Collect error data
 analyzer = ErrorAnalyzer()
@@ -649,18 +674,18 @@ print(analysis.summary)
 
 # Example output:
 # Error Analysis for 'flaky_api_call':
-# 
+#
 # Total errors: 72 out of 100 calls (72% error rate)
-# 
+#
 # Error breakdown:
 # - ConnectionError: 65 occurrences (90.3%)
 # - TimeoutError: 7 occurrences (9.7%)
-# 
+#
 # Patterns:
 # - High error rate suggests service instability
 # - Errors cluster in time periods
 # - Fallback activated in 23% of failed calls
-# 
+#
 # Recommendations:
 # - Increase retry count to 5
 # - Add exponential backoff with jitter
@@ -677,34 +702,39 @@ Integrate Opero with popular frameworks:
 ```python
 from opero.utils.integration import FastAPIIntegration, DjangoIntegration
 
+
 # FastAPI integration
 class FastAPIOpero(FastAPIIntegration):
     """FastAPI Opero integration."""
-    
+
     def resilient_endpoint(self, **opero_config):
         """Decorator for resilient endpoints."""
+
         def decorator(func):
             opero_func = opero(**opero_config)(func)
-            
+
             @wraps(opero_func)
             async def wrapper(*args, **kwargs):
                 try:
                     return await opero_func(*args, **kwargs)
                 except AllFailedError as e:
                     from fastapi import HTTPException
+
                     raise HTTPException(
-                        status_code=503,
-                        detail=f"Service unavailable: {e}"
+                        status_code=503, detail=f"Service unavailable: {e}"
                     )
-            
+
             return wrapper
+
         return decorator
+
 
 # Usage
 from fastapi import FastAPI
 
 app = FastAPI()
 fastapi_opero = FastAPIOpero()
+
 
 @app.get("/users/{user_id}")
 @fastapi_opero.resilient_endpoint(retries=3, cache=True, cache_ttl=300)
@@ -719,34 +749,38 @@ Database-specific helpers:
 ```python
 from opero.utils.integration import DatabaseIntegration
 
+
 class SQLAlchemyIntegration(DatabaseIntegration):
     """SQLAlchemy Opero integration."""
-    
+
     def resilient_query(self, **opero_config):
         """Decorator for resilient queries."""
-        
+
         database_errors = (
             sqlalchemy.exc.DisconnectionError,
             sqlalchemy.exc.TimeoutError,
-            sqlalchemy.exc.OperationalError
+            sqlalchemy.exc.OperationalError,
         )
-        
+
         default_config = {
             "retries": 3,
             "backoff_factor": 2.0,
             "retry_on": database_errors,
-            "cache": False
+            "cache": False,
         }
-        
+
         config = {**default_config, **opero_config}
         return opero(**config)
+
 
 # Usage
 db_integration = SQLAlchemyIntegration()
 
+
 @db_integration.resilient_query(retries=5)
 def get_user_from_db(session, user_id):
     return session.query(User).filter(User.id == user_id).first()
+
 
 @db_integration.resilient_query(cache=False, retries=2)
 def update_user_in_db(session, user_id, data):
@@ -769,11 +803,13 @@ from opero.utils.metrics import MetricsCollector, get_metrics
 # Global metrics collector
 metrics = MetricsCollector()
 
+
 @metrics.instrument
 @opero(retries=3, cache=True, rate_limit=10.0)
 def instrumented_function(x):
     time.sleep(0.1)
     return x * 2
+
 
 # Execute function
 for i in range(100):
@@ -788,26 +824,26 @@ print(report)
 
 # Example output:
 # Metrics Report for 'instrumented_function':
-# 
+#
 # Call Statistics:
 # - Total calls: 100
 # - Successful calls: 100 (100.0%)
 # - Failed calls: 0 (0.0%)
-# 
+#
 # Performance:
 # - Average response time: 0.012s
 # - 95th percentile: 0.098s
 # - 99th percentile: 0.102s
-# 
+#
 # Cache Statistics:
 # - Cache hit rate: 90.0% (90/100)
 # - Cache miss rate: 10.0% (10/100)
 # - Average cache response time: 0.001s
-# 
+#
 # Retry Statistics:
 # - Functions requiring retries: 0
 # - Average retries per failed call: 0
-# 
+#
 # Rate Limiting:
 # - Rate limit violations: 0
 # - Average wait time: 0.005s
@@ -822,13 +858,16 @@ from opero.utils.monitoring import HealthMonitor
 
 health_monitor = HealthMonitor()
 
+
 @health_monitor.monitor
 @opero(retries=3, cache=True)
 def monitored_service():
     import random
+
     if random.random() < 0.1:
         raise ConnectionError("Service temporarily unavailable")
     return {"status": "healthy"}
+
 
 # Get health status
 health_status = health_monitor.get_health("monitored_service")
@@ -840,7 +879,7 @@ print(f"Average response time: {health_status.avg_response_time:.3f}s")
 health_monitor.configure_alerts(
     success_rate_threshold=0.95,
     response_time_threshold=1.0,
-    alert_callback=lambda service, issue: print(f"ALERT: {service} - {issue}")
+    alert_callback=lambda service, issue: print(f"ALERT: {service} - {issue}"),
 )
 ```
 
@@ -873,7 +912,7 @@ You've now mastered Opero's complete API and utilities. Consider:
 # Logging
 from opero.utils.logging import configure_logging
 
-# Debugging  
+# Debugging
 from opero.utils.debug import analyze_function, trace_execution
 
 # Configuration
@@ -905,12 +944,16 @@ analysis = analyze_function(my_function)
 validator = ConfigValidator()
 result = validator.validate(config)
 
+
 # Performance testing
 @performance_test(iterations=10)
-def benchmark_function(): pass
+def benchmark_function():
+    pass
+
 
 # Health monitoring
 @health_monitor.monitor
 @opero(retries=3)
-def monitored_function(): pass
+def monitored_function():
+    pass
 ```

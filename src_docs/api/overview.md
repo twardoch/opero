@@ -11,12 +11,8 @@ Adds resilience mechanisms to individual function calls.
 ```python
 from opero import opero
 
-@opero(
-    retries=3,
-    cache=True,
-    rate_limit=10.0,
-    arg_fallback="config"
-)
+
+@opero(retries=3, cache=True, rate_limit=10.0, arg_fallback="config")
 def resilient_function(data, config=["primary", "backup"]):
     pass
 ```
@@ -30,14 +26,11 @@ Extends `@opero` with parallel processing for handling multiple items.
 ```python
 from opero import opmap
 
-@opmap(
-    mode="thread",
-    workers=10,
-    retries=2,
-    cache=True
-)
+
+@opmap(mode="thread", workers=10, retries=2, cache=True)
 def process_item(item):
     pass
+
 
 # Process many items in parallel
 results = process_item(items_list)
@@ -82,8 +75,7 @@ OperoError
 from opero.utils import configure_logging
 
 logger = configure_logging(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 ```
 
@@ -107,7 +99,8 @@ Opero is fully type-annotated for better IDE support and type checking:
 from typing import TypeVar, Callable, Any
 from opero import opero
 
-T = TypeVar('T')
+T = TypeVar("T")
+
 
 def opero(
     retries: int = 3,
@@ -116,9 +109,8 @@ def opero(
     cache_ttl: int | None = None,
     rate_limit: float | None = None,
     arg_fallback: str | None = None,
-    **kwargs: Any
-) -> Callable[[Callable[..., T]], Callable[..., T]]:
-    ...
+    **kwargs: Any,
+) -> Callable[[Callable[..., T]], Callable[..., T]]: ...
 ```
 
 ## Configuration Reference
@@ -155,6 +147,7 @@ def opero(
 def custom_key(func, *args, **kwargs):
     return f"{func.__name__}:{args[0]}"
 
+
 @opero(cache=True, cache_key=custom_key)
 def cached_function(id: str):
     pass
@@ -168,7 +161,7 @@ def cached_function(id: str):
     on_retry=lambda e, attempt: print(f"Retry {attempt}: {e}"),
     on_success=lambda result: print(f"Success: {result}"),
     on_failure=lambda e: print(f"Failed: {e}"),
-    on_cache_hit=lambda: print("Cache hit!")
+    on_cache_hit=lambda: print("Cache hit!"),
 )
 def monitored_function():
     pass
@@ -183,6 +176,7 @@ from fastapi import FastAPI, HTTPException
 from opero import opero
 
 app = FastAPI()
+
 
 @app.get("/users/{user_id}")
 @opero(retries=3, cache=True, cache_ttl=300)
@@ -199,7 +193,8 @@ async def get_user(user_id: int):
 from celery import Celery
 from opero import opero
 
-app = Celery('tasks')
+app = Celery("tasks")
+
 
 @app.task
 @opero(retries=5, backoff_factor=2.0)

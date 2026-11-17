@@ -31,10 +31,10 @@ def is_async_function(func: Callable[..., Any]) -> bool:
     Example:
         async def async_func():
             await asyncio.sleep(1)
-            
+
         def sync_func():
             time.sleep(1)
-            
+
         print(is_async_function(async_func))  # True
         print(is_async_function(sync_func))   # False
     """
@@ -57,15 +57,15 @@ def ensure_async(func: Callable[..., R]) -> Callable[..., Coroutine[Any, Any, R]
     Example:
         def sync_add(x, y):
             return x + y
-            
+
         async def async_add(x, y):
             await asyncio.sleep(0.1)
             return x + y
-            
+
         # Both can now be used in async context
         async_sync_add = ensure_async(sync_add)
         async_async_add = ensure_async(async_add)
-        
+
         async def main():
             result1 = await async_sync_add(1, 2)  # Works
             result2 = await async_async_add(3, 4)  # Also works
@@ -112,11 +112,11 @@ def run_async(
             async with aiohttp.ClientSession() as session:
                 async with session.get(url) as response:
                     return await response.text()
-        
+
         # Run from sync code
         data = run_async(fetch_data, "https://api.example.com/data")
         print(data)
-        
+
     Note:
         This function will use an existing event loop if one is running,
         otherwise it creates a new one. This makes it safe to use in

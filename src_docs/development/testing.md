@@ -48,18 +48,16 @@ Test component interactions:
 @pytest.mark.integration
 def test_opero_with_redis_cache(redis_server):
     """Test @opero with Redis cache backend."""
+
     @opero(
-        cache=True,
-        cache_backend="redis",
-        cache_redis_url=redis_server.url,
-        retries=2
+        cache=True, cache_backend="redis", cache_redis_url=redis_server.url, retries=2
     )
     def cached_operation(x):
         return expensive_computation(x)
-    
+
     # First call
     result1 = cached_operation(42)
-    
+
     # Should hit cache
     result2 = cached_operation(42)
     assert result1 == result2
@@ -72,10 +70,11 @@ Measure performance characteristics:
 @pytest.mark.benchmark
 def test_parallel_processing_performance(benchmark):
     """Benchmark parallel processing overhead."""
+
     @opmap(mode="thread", workers=4)
     def process_item(x):
         return x * 2
-    
+
     data = list(range(1000))
     result = benchmark(process_item, data)
     assert len(result) == 1000
@@ -88,15 +87,16 @@ def test_parallel_processing_performance(benchmark):
 ```python
 from unittest.mock import Mock, patch
 
+
 def test_api_fallback():
     """Test fallback to backup API endpoints."""
     primary_api = Mock(side_effect=ConnectionError("Primary down"))
     backup_api = Mock(return_value={"status": "ok"})
-    
+
     @opero(arg_fallback="api_client", retries=1)
     def call_api(data, api_client=[primary_api, backup_api]):
         return api_client[0](data)
-    
+
     result = call_api({"test": "data"})
     assert result == {"status": "ok"}
     assert primary_api.call_count == 1
@@ -131,16 +131,14 @@ async def test_async_rate_limiting():
 ```python
 def test_all_fallbacks_exhausted():
     """Test behavior when all fallback options fail."""
-    @opero(
-        arg_fallback="endpoint",
-        retries=1
-    )
+
+    @opero(arg_fallback="endpoint", retries=1)
     def failing_operation(endpoint=["bad1", "bad2", "bad3"]):
         raise ValueError(f"Failed with {endpoint[0]}")
-    
+
     with pytest.raises(AllFailedError) as exc_info:
         failing_operation()
-    
+
     error = exc_info.value
     assert len(error.errors) == 3
     assert all("Failed with" in str(e) for e in error.errors)
@@ -149,17 +147,21 @@ def test_all_fallbacks_exhausted():
 ### Parametrized Tests
 
 ```python
-@pytest.mark.parametrize("mode,workers,expected_type", [
-    ("thread", 4, ThreadPoolExecutor),
-    ("process", 2, ProcessPoolExecutor),
-    ("async", 8, AsyncExecutor),
-])
+@pytest.mark.parametrize(
+    "mode,workers,expected_type",
+    [
+        ("thread", 4, ThreadPoolExecutor),
+        ("process", 2, ProcessPoolExecutor),
+        ("async", 8, AsyncExecutor),
+    ],
+)
 def test_parallel_modes(mode, workers, expected_type):
     """Test different parallel processing modes."""
+
     @opmap(mode=mode, workers=workers)
     def process(x):
         return x * 2
-    
+
     result = process([1, 2, 3])
     assert result == [2, 4, 6]
 ```
@@ -173,36 +175,39 @@ def test_parallel_modes(mode, workers, expected_type):
 import pytest
 from unittest.mock import Mock
 
+
 @pytest.fixture
 def mock_time(monkeypatch):
     """Mock time for deterministic tests."""
     current_time = 0
-    
+
     def mock_time():
         return current_time
-    
+
     def advance(seconds):
         nonlocal current_time
         current_time += seconds
-    
+
     monkeypatch.setattr(time, "time", mock_time)
     return advance
+
 
 @pytest.fixture
 def flaky_function():
     """Function that fails N times before succeeding."""
+
     def make_flaky(failures=2):
         attempts = 0
-        
+
         def func():
             nonlocal attempts
             attempts += 1
             if attempts <= failures:
                 raise ConnectionError(f"Attempt {attempts} failed")
             return f"Success after {attempts} attempts"
-        
+
         return func, failures
-    
+
     return make_flaky
 ```
 
@@ -217,16 +222,17 @@ def temp_cache_dir(tmp_path):
     yield str(cache_dir)
     # Cleanup happens automatically
 
+
 @pytest.fixture
 def redis_mock():
     """Mock Redis client for testing."""
     client = Mock()
     storage = {}
-    
+
     client.get.side_effect = lambda k: storage.get(k)
     client.set.side_effect = lambda k, v, **kw: storage.update({k: v})
     client.delete.side_effect = lambda k: storage.pop(k, None)
-    
+
     return client
 ```
 
@@ -239,10 +245,11 @@ Ensure tests don't affect each other:
 ```python
 def test_cache_isolation():
     """Ensure cache doesn't leak between tests."""
+
     @opero(cache=True, cache_namespace="test_isolation")
     def cached_func(x):
         return x * 2
-    
+
     try:
         result = cached_func(5)
         assert result == 10
@@ -314,24 +321,23 @@ def test_thread_safety():
 ```python
 import pytest
 
+
 @pytest.mark.benchmark(group="decorators")
 def test_opero_overhead(benchmark):
     """Measure @opero decorator overhead."""
+
     def simple_function(x):
         return x * 2
-    
+
     @opero()  # Minimal configuration
     def decorated_function(x):
         return x * 2
-    
+
     # Benchmark the overhead
     result = benchmark.pedantic(
-        decorated_function,
-        args=(42,),
-        iterations=1000,
-        rounds=100
+        decorated_function, args=(42,), iterations=1000, rounds=100
     )
-    
+
     assert result == 84
 ```
 
@@ -340,22 +346,23 @@ def test_opero_overhead(benchmark):
 ```python
 import tracemalloc
 
+
 def test_memory_usage():
     """Test memory usage doesn't grow unbounded."""
     tracemalloc.start()
-    
+
     @opmap(mode="thread", workers=4)
     def process(x):
         return [0] * 1000  # Allocate some memory
-    
+
     # Process many items
     for _ in range(10):
         results = process(range(100))
         del results  # Explicit cleanup
-    
+
     current, peak = tracemalloc.get_traced_memory()
     tracemalloc.stop()
-    
+
     # Memory should be reasonable
     assert peak < 100 * 1024 * 1024  # Less than 100MB
 ```
@@ -396,8 +403,10 @@ hatch run pytest -vvs
 ```python
 def test_complex_scenario():
     """Debug a complex test."""
-    import pdb; pdb.set_trace()  # Breakpoint
-    
+    import pdb
+
+    pdb.set_trace()  # Breakpoint
+
     @opero(retries=2, cache=True)
     def complex_function(x):
         # Test logic here
@@ -410,16 +419,17 @@ def test_complex_scenario():
 def test_with_logging(caplog):
     """Test with detailed logging."""
     import logging
+
     caplog.set_level(logging.DEBUG)
-    
+
     @opero(retries=2)
     def logged_function():
         logger.info("Function called")
         raise ValueError("Test error")
-    
+
     with pytest.raises(AllFailedError):
         logged_function()
-    
+
     # Verify logs
     assert "Retry attempt 1" in caplog.text
     assert "Retry attempt 2" in caplog.text

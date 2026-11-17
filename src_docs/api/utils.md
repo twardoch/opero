@@ -257,7 +257,7 @@ Used internally by Opero to handle both function types uniformly.
 ### F
 
 ```python
-F = TypeVar('F', bound=Callable[..., Any])
+F = TypeVar("F", bound=Callable[..., Any])
 """
 Type variable for generic callable types.
 
@@ -411,28 +411,33 @@ module_logger.info("Module initialized")
 ```python
 from opero.utils import ensure_async, is_async_function, run_async
 
+
 # Make any function awaitable
 def sync_operation(x):
     return x * 2
+
 
 async def async_operation(x):
     await asyncio.sleep(0.1)
     return x * 3
 
+
 # Convert sync to async
 async_sync_op = ensure_async(sync_operation)
+
 
 # Use in async context
 async def process():
     # Both can be awaited now
     result1 = await async_sync_op(5)  # 10
     result2 = await async_operation(5)  # 15
-    
+
     # Check function types
-    print(is_async_function(sync_operation))   # False
+    print(is_async_function(sync_operation))  # False
     print(is_async_function(async_operation))  # True
-    
+
     return result1 + result2
+
 
 # Run async from sync code
 total = run_async(process())  # 25
@@ -445,9 +450,7 @@ from opero.utils import get_cache_context, clear_cache
 
 # Get cache context for direct operations
 cache = get_cache_context(
-    backend="redis",
-    namespace="user_data",
-    redis_url="redis://localhost:6379"
+    backend="redis", namespace="user_data", redis_url="redis://localhost:6379"
 )
 
 # Set with TTL

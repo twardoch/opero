@@ -11,25 +11,23 @@ The `@opero` decorator adds resilience mechanisms to individual function calls.
 ```python
 from opero import opero
 
+
 @opero(
     # Retry configuration
-    retries=3,                    # Number of retry attempts
-    backoff_factor=1.5,           # Exponential backoff multiplier
-    min_delay=0.1,                # Minimum retry delay in seconds
-    max_delay=30.0,               # Maximum retry delay in seconds
-    retry_on=(Exception,),        # Exceptions that trigger retries
-    
+    retries=3,  # Number of retry attempts
+    backoff_factor=1.5,  # Exponential backoff multiplier
+    min_delay=0.1,  # Minimum retry delay in seconds
+    max_delay=30.0,  # Maximum retry delay in seconds
+    retry_on=(Exception,),  # Exceptions that trigger retries
     # Fallback configuration
-    arg_fallback="config",         # Parameter name containing fallback values
-    
+    arg_fallback="config",  # Parameter name containing fallback values
     # Caching configuration
-    cache=True,                   # Enable caching
-    cache_ttl=3600,               # Cache TTL in seconds (None = no expiry)
-    cache_key=None,               # Custom cache key function
-    cache_namespace="opero",      # Cache namespace
-    
+    cache=True,  # Enable caching
+    cache_ttl=3600,  # Cache TTL in seconds (None = no expiry)
+    cache_key=None,  # Custom cache key function
+    cache_namespace="opero",  # Cache namespace
     # Rate limiting
-    rate_limit=10.0,              # Max calls per second (None = no limit)
+    rate_limit=10.0,  # Max calls per second (None = no limit)
 )
 def my_function(data, config=["primary", "backup"]):
     pass
@@ -61,12 +59,13 @@ def custom_cache_key(func, *args, **kwargs):
     # Create custom cache key based on function arguments
     return f"{func.__name__}:{args[0].id}"
 
+
 @opero(
     cache=True,
-    cache_ttl=1800,              # 30 minutes
+    cache_ttl=1800,  # 30 minutes
     cache_key=custom_cache_key,
     cache_namespace="api_cache",
-    cache_backend="memory",      # Options: "memory", "disk", "redis"
+    cache_backend="memory",  # Options: "memory", "disk", "redis"
 )
 def get_user_profile(user):
     pass
@@ -96,13 +95,13 @@ The `@opmap` decorator adds parallel processing on top of all `@opero` features.
 ```python
 from opero import opmap
 
+
 @opmap(
     # Parallel processing settings
-    mode="thread",               # Concurrency mode: "thread", "process", "async", "async_process"
-    workers=4,                  # Number of parallel workers
-    ordered=True,               # Preserve input order in results
-    progress=True,              # Show progress bar if available
-    
+    mode="thread",  # Concurrency mode: "thread", "process", "async", "async_process"
+    workers=4,  # Number of parallel workers
+    ordered=True,  # Preserve input order in results
+    progress=True,  # Show progress bar if available
     # All @opero parameters are also supported
     retries=3,
     cache=True,
@@ -122,15 +121,18 @@ Choose the right mode for your workload:
 def download_file(url):
     pass
 
+
 # CPU-bound tasks (computation, data processing)
 @opmap(mode="process", workers=4)
 def compute_hash(data):
     pass
 
+
 # Async I/O operations
 @opmap(mode="async", workers=20)
 async def fetch_async(url):
     pass
+
 
 # CPU-intensive async operations
 @opmap(mode="async_process", workers=4)
@@ -144,9 +146,8 @@ async def process_async(data):
 @opmap(
     mode="process",
     workers=8,
-    ordered=False,              # Don't preserve order (faster)
+    ordered=False,  # Don't preserve order (faster)
     progress=True,
-    
     # Resilience for each item
     retries=3,
     arg_fallback="server",
@@ -154,12 +155,10 @@ async def process_async(data):
     cache_ttl=600,
     rate_limit=10.0,
 )
-def distributed_task(
-    task_id: int,
-    server: list[str] = ["server1.com", "server2.com"]
-):
+def distributed_task(task_id: int, server: list[str] = ["server1.com", "server2.com"]):
     # Each task gets resilience features
     pass
+
 
 # Process many items with automatic load balancing
 task_ids = range(1000)
@@ -240,11 +239,8 @@ logger = configure_logging(level=logging.INFO)
 # Custom configuration
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('opero.log'),
-        logging.StreamHandler()
-    ]
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler("opero.log"), logging.StreamHandler()],
 )
 
 # Opero logs information about:
@@ -267,14 +263,9 @@ Begin with basic configuration and add features as needed:
 def my_function():
     pass
 
+
 # Add more as requirements grow
-@opero(
-    retries=3,
-    cache=True,
-    cache_ttl=300,
-    rate_limit=10.0,
-    arg_fallback="endpoint"
-)
+@opero(retries=3, cache=True, cache_ttl=300, rate_limit=10.0, arg_fallback="endpoint")
 def my_enhanced_function(endpoint=["primary", "backup"]):
     pass
 ```
@@ -286,9 +277,9 @@ Balance reliability with responsiveness:
 ```python
 @opero(
     retries=3,
-    min_delay=0.1,      # Quick first retry
-    max_delay=10.0,     # Don't wait too long
-    backoff_factor=2.0, # Reasonable progression
+    min_delay=0.1,  # Quick first retry
+    max_delay=10.0,  # Don't wait too long
+    backoff_factor=2.0,  # Reasonable progression
 )
 def time_sensitive_operation():
     pass
@@ -320,10 +311,12 @@ Match cache TTL to your data freshness requirements:
 def get_stock_price(symbol):
     pass
 
+
 # Stable data
 @opero(cache=True, cache_ttl=86400)  # 24 hours
 def get_company_info(company_id):
     pass
+
 
 # Immutable data
 @opero(cache=True)  # No TTL
@@ -336,6 +329,7 @@ def calculate_hash(data):
 ```python
 import os
 
+
 # Scale based on workload type
 @opmap(
     mode="thread",
@@ -343,6 +337,7 @@ import os
 )
 def io_task(item):
     pass
+
 
 @opmap(
     mode="process",
@@ -373,7 +368,7 @@ def scrape_page(
     user_agent: list[str] = [
         "Mozilla/5.0 (Bot 1.0)",
         "Mozilla/5.0 (Bot 2.0)",
-    ]
+    ],
 ):
     pass
 ```
@@ -392,8 +387,7 @@ def scrape_page(
     arg_fallback="api_key",
 )
 def call_external_api(
-    endpoint: str,
-    api_key: list[str] = ["primary_key", "secondary_key"]
+    endpoint: str, api_key: list[str] = ["primary_key", "secondary_key"]
 ):
     pass
 ```

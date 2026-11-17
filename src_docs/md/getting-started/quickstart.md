@@ -10,28 +10,32 @@ Here's a simple function that might fail, made bulletproof:
 import asyncio
 from opero import opero
 
+
 # Before: A fragile function
 async def fetch_user_data(user_id: str):
     # This might fail due to network issues, rate limits, etc.
     response = await some_api_call(user_id)
     return response.json()
 
+
 # After: A resilient function
 @opero(
-    retries=3,              # Try up to 3 times
-    backoff_factor=1.5,     # Wait longer between retries
-    cache=True,             # Cache successful results
-    cache_ttl=300,          # Cache for 5 minutes
-    rate_limit=10.0         # Max 10 calls per second
+    retries=3,  # Try up to 3 times
+    backoff_factor=1.5,  # Wait longer between retries
+    cache=True,  # Cache successful results
+    cache_ttl=300,  # Cache for 5 minutes
+    rate_limit=10.0,  # Max 10 calls per second
 )
 async def fetch_user_data(user_id: str):
     response = await some_api_call(user_id)
     return response.json()
 
+
 # Usage - same as before, but now resilient!
 async def main():
     user_data = await fetch_user_data("user123")
     print(user_data)
+
 
 asyncio.run(main())
 ```
@@ -52,15 +56,16 @@ Need backup API keys or alternative endpoints? Opero handles fallbacks automatic
 @opero(
     retries=2,
     arg_fallback="api_key",  # Try different API keys on failure
-    cache=True
+    cache=True,
 )
 async def fetch_data_with_fallback(item_id: str, api_key: list[str]):
     # Opero will try each API key until one works
     current_key = api_key[0]  # Always use the first available key
-    
+
     headers = {"Authorization": f"Bearer {current_key}"}
     response = await http_client.get(f"/api/data/{item_id}", headers=headers)
     return response.json()
+
 
 # Usage with fallback keys
 keys = ["primary_key", "backup_key", "emergency_key"]
@@ -81,19 +86,21 @@ Process thousands of items with a single decorator change:
 from opero import opmap
 import time
 
+
 # Single item processor
 @opmap(
-    mode="thread",          # Use threads (good for I/O)
-    workers=10,             # 10 parallel workers
-    retries=2,              # Retry failed items
-    cache=True,             # Cache results per item
-    rate_limit=50.0         # 50 requests per second total
+    mode="thread",  # Use threads (good for I/O)
+    workers=10,  # 10 parallel workers
+    retries=2,  # Retry failed items
+    cache=True,  # Cache results per item
+    rate_limit=50.0,  # 50 requests per second total
 )
 def process_item(item_id: str):
     # This function processes ONE item
     # opmap handles the parallelization
     result = expensive_api_call(item_id)
     return {"id": item_id, "result": result}
+
 
 # Process many items in parallel
 items = [f"item_{i}" for i in range(1000)]
@@ -117,24 +124,25 @@ import asyncio
 import aiohttp
 from opero import opmap, AllFailedError
 
+
 @opmap(
-    mode="async",              # Use asyncio for I/O-bound tasks
-    workers=20,                # 20 concurrent requests
-    retries=3,                 # Retry failed pages
-    cache=True,                # Cache scraped content
-    cache_ttl=3600,            # Cache for 1 hour
-    rate_limit=10.0,           # Respect rate limits
-    arg_fallback="user_agent"  # Try different user agents
+    mode="async",  # Use asyncio for I/O-bound tasks
+    workers=20,  # 20 concurrent requests
+    retries=3,  # Retry failed pages
+    cache=True,  # Cache scraped content
+    cache_ttl=3600,  # Cache for 1 hour
+    rate_limit=10.0,  # Respect rate limits
+    arg_fallback="user_agent",  # Try different user agents
 )
 async def scrape_page(url: str, user_agent: list[str] = None):
     if user_agent is None:
         user_agent = [
             "Mozilla/5.0 (compatible; OperoBot/1.0)",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
         ]
-    
+
     headers = {"User-Agent": user_agent[0]}
-    
+
     async with aiohttp.ClientSession() as session:
         async with session.get(url, headers=headers) as response:
             if response.status == 403:
@@ -144,31 +152,33 @@ async def scrape_page(url: str, user_agent: list[str] = None):
                 "url": url,
                 "status": response.status,
                 "content": await response.text(),
-                "user_agent": user_agent[0]
+                "user_agent": user_agent[0],
             }
+
 
 async def main():
     urls = [
         "https://example.com/page1",
-        "https://example.com/page2", 
+        "https://example.com/page2",
         "https://example.com/page3",
         # ... 100 more URLs
     ]
-    
+
     print(f"Scraping {len(urls)} URLs...")
     results = await scrape_page(urls)
-    
+
     # Check results
     successful = [r for r in results if not isinstance(r, Exception)]
     failed = [r for r in results if isinstance(r, Exception)]
-    
+
     print(f"✅ Successfully scraped: {len(successful)} pages")
     print(f"❌ Failed to scrape: {len(failed)} pages")
-    
+
     # Show failed URLs for debugging
     for error in failed[:5]:  # Show first 5 errors
         if isinstance(error, AllFailedError):
             print(f"All attempts failed: {error}")
+
 
 if __name__ == "__main__":
     asyncio.run(main())
@@ -208,17 +218,19 @@ if __name__ == "__main__":
 ```python
 from opero import opero, AllFailedError
 
+
 @opero(retries=3)
 async def might_fail():
     # Your code here
     pass
+
 
 try:
     result = await might_fail()
 except AllFailedError as e:
     print(f"All {len(e.errors)} attempts failed:")
     for i, error in enumerate(e.errors):
-        print(f"  Attempt {i+1}: {error}")
+        print(f"  Attempt {i + 1}: {error}")
 ```
 
 ## Next Steps
@@ -237,19 +249,26 @@ Now explore:
 ```python
 # Simple retry + cache
 @opero(retries=3, cache=True)
-def api_call(): pass
+def api_call():
+    pass
+
 
 # With fallbacks
-@opero(retries=2, arg_fallback="endpoint") 
-def multi_endpoint(data, endpoint: list[str]): pass
+@opero(retries=2, arg_fallback="endpoint")
+def multi_endpoint(data, endpoint: list[str]):
+    pass
+
 
 # Parallel processing
 @opmap(mode="thread", workers=10)
-def process_item(item): pass
+def process_item(item):
+    pass
+
 
 # High-performance async
 @opmap(mode="async", workers=50, rate_limit=100.0)
-async def async_task(item): pass
+async def async_task(item):
+    pass
 ```
 
 ### Import Quick Reference
@@ -258,7 +277,7 @@ async def async_task(item): pass
 # Essential imports
 from opero import opero, opmap, AllFailedError
 
-# Advanced imports  
+# Advanced imports
 from opero import configure_logging
 from opero.exceptions import OperoError
 ```

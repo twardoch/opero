@@ -8,6 +8,6 @@ including the @opero and @opmap decorators.
 """
 
 from .opero import opero
-from .opmap import opmap # Added . for relative import
+from .opmap import opmap  # Added . for relative import
 
 __all__ = ["opero", "opmap"]

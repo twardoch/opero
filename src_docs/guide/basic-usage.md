@@ -11,6 +11,7 @@ The `@opero` decorator adds resilience to your functions:
 ```python
 from opero import opero
 
+
 @opero()  # Even with no parameters, adds basic error handling
 def simple_function():
     return "Hello, Opero!"
@@ -37,15 +38,13 @@ Handle network failures:
 import requests
 from opero import opero
 
-@opero(
-    retries=3,
-    backoff_factor=2.0,
-    retry_on=(requests.RequestException,)
-)
+
+@opero(retries=3, backoff_factor=2.0, retry_on=(requests.RequestException,))
 def fetch_api_data(endpoint: str):
     response = requests.get(f"https://api.example.com/{endpoint}")
     response.raise_for_status()
     return response.json()
+
 
 # Usage
 try:
@@ -61,21 +60,19 @@ Rotate through API keys automatically:
 ```python
 @opero(
     arg_fallback="api_key",
-    retries=2  # Try each key up to 2 times
+    retries=2,  # Try each key up to 2 times
 )
 def call_paid_api(query: str, api_key: list[str] = ["key1", "key2", "key3"]):
     headers = {"Authorization": f"Bearer {api_key[0]}"}
     response = requests.post(
-        "https://api.service.com/query",
-        json={"query": query},
-        headers=headers
+        "https://api.service.com/query", json={"query": query}, headers=headers
     )
-    
+
     if response.status_code == 429:  # Rate limited
         raise Exception("Rate limited")
     elif response.status_code == 401:  # Invalid key
         raise Exception("Invalid API key")
-    
+
     return response.json()
 ```
 
@@ -87,19 +84,21 @@ Avoid redundant computations:
 import time
 import hashlib
 
+
 @opero(
     cache=True,
-    cache_ttl=3600  # Cache for 1 hour
+    cache_ttl=3600,  # Cache for 1 hour
 )
 def expensive_calculation(data: str):
     print(f"Computing hash for: {data}")
     time.sleep(2)  # Simulate expensive operation
-    
+
     return {
         "input": data,
         "hash": hashlib.sha256(data.encode()).hexdigest(),
-        "timestamp": time.time()
+        "timestamp": time.time(),
     }
+
 
 # First call takes 2 seconds
 result1 = expensive_calculation("hello")
@@ -117,16 +116,18 @@ Respect external service limits:
 import asyncio
 from datetime import datetime
 
+
 @opero(
     rate_limit=1.0  # 1 call per second
 )
 async def rate_limited_api_call(item_id: int):
     timestamp = datetime.now().isoformat()
     print(f"[{timestamp}] Processing item {item_id}")
-    
+
     # Simulate API call
     await asyncio.sleep(0.1)
     return f"Result for item {item_id}"
+
 
 async def process_many_items():
     # These will be automatically spaced out
@@ -145,29 +146,21 @@ Opero works with any Python object:
 from dataclasses import dataclass
 from typing import List
 
+
 @dataclass
 class User:
     id: int
     name: str
     email: str
 
-@opero(
-    retries=3,
-    cache=True,
-    cache_ttl=300
-)
+
+@opero(retries=3, cache=True, cache_ttl=300)
 def get_user_details(user_id: int) -> User:
     # Simulate database query
-    return User(
-        id=user_id,
-        name=f"User {user_id}",
-        email=f"user{user_id}@example.com"
-    )
+    return User(id=user_id, name=f"User {user_id}", email=f"user{user_id}@example.com")
 
-@opero(
-    retries=2,
-    cache=True
-)
+
+@opero(retries=2, cache=True)
 def get_user_list(department: str) -> List[User]:
     # Return list of users
     return [get_user_details(i) for i in range(1, 6)]
@@ -180,13 +173,14 @@ Opero supports generators:
 ```python
 @opero(
     retries=2,
-    cache=False  # Generators shouldn't be cached
+    cache=False,  # Generators shouldn't be cached
 )
 def read_large_file(filename: str):
     """Read file line by line with retry capability."""
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         for line in f:
             yield line.strip()
+
 
 # Usage
 for line in read_large_file("data.txt"):
@@ -200,21 +194,19 @@ for line in read_large_file("data.txt"):
 ```python
 from opero import opero, AllFailedError
 
-@opero(
-    retries=3,
-    retry_on=(ConnectionError, TimeoutError),
-    arg_fallback="timeout"
-)
+
+@opero(retries=3, retry_on=(ConnectionError, TimeoutError), arg_fallback="timeout")
 def unstable_connection(url: str, timeout: list[float] = [1.0, 3.0, 10.0]):
     response = requests.get(url, timeout=timeout[0])
     return response.text
+
 
 try:
     content = unstable_connection("https://slow-server.com")
 except AllFailedError as e:
     print("Failed with all timeouts:")
     for i, error in enumerate(e.errors):
-        print(f"  Timeout {i+1}: {error}")
+        print(f"  Timeout {i + 1}: {error}")
     # Implement fallback logic
     content = get_cached_content()
 ```
@@ -222,14 +214,11 @@ except AllFailedError as e:
 ### Graceful Degradation
 
 ```python
-@opero(
-    retries=2,
-    cache=True,
-    cache_ttl=3600
-)
+@opero(retries=2, cache=True, cache_ttl=3600)
 def get_weather_data(city: str):
     # Primary data source
     return fetch_from_weather_api(city)
+
 
 def get_weather_with_fallback(city: str):
     try:
@@ -251,21 +240,18 @@ Opero fully supports async/await:
 ```python
 import aiohttp
 
-@opero(
-    retries=3,
-    backoff_factor=1.5,
-    cache=True,
-    rate_limit=10.0
-)
+
+@opero(retries=3, backoff_factor=1.5, cache=True, rate_limit=10.0)
 async def fetch_async(session: aiohttp.ClientSession, url: str):
     async with session.get(url) as response:
         return await response.json()
+
 
 async def fetch_multiple_urls(urls: list[str]):
     async with aiohttp.ClientSession() as session:
         tasks = [fetch_async(session, url) for url in urls]
         results = await asyncio.gather(*tasks, return_exceptions=True)
-        
+
         # Handle results
         for url, result in zip(urls, results):
             if isinstance(result, Exception):
@@ -285,10 +271,12 @@ from opero.utils import configure_logging
 # Enable INFO level logging
 logger = configure_logging(level=logging.INFO)
 
+
 @opero(retries=3, cache=True)
 def monitored_function(x):
     logger.info(f"Processing: {x}")
     return x * 2
+
 
 # Logs show:
 # - Cache hits/misses
@@ -303,13 +291,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-@opero(
-    retries=3,
-    cache=True
-)
+
+@opero(retries=3, cache=True)
 def function_with_custom_logging(data):
     logger.info(f"Starting processing for: {data}")
-    
+
     try:
         result = process_data(data)
         logger.info(f"Successfully processed: {data}")

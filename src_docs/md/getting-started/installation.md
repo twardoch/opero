@@ -109,14 +109,17 @@ Verify your installation:
 
 ```python
 import opero
+
 print(f"Opero version: {opero.__version__}")
 
 # Test basic functionality
 from opero import opero
 
+
 @opero(retries=1)
 def test_function():
     return "Opero is working!"
+
 
 result = test_function()
 print(result)  # Should print: Opero is working!

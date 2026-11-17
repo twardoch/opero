@@ -78,14 +78,17 @@ Test that Opero works:
 
 ```python
 import opero
+
 print(opero.__version__)
 
 # Test basic functionality
 from opero import opero as opero_decorator
 
+
 @opero_decorator(retries=2)
 def test_function():
     return "Opero is working!"
+
 
 print(test_function())
 ```

@@ -22,6 +22,7 @@ pip install opero[all]           # everything
 ```python
 from opero import opero, opmap, AllFailedError
 
+
 # Single-call resilience: cache results, retry up to 3 times,
 # fall back through a list of API keys on failure.
 @opero(cache=True, cache_ttl=3600, retries=3, arg_fallback="api_key", rate_limit=5.0)
@@ -29,15 +30,18 @@ async def fetch(item_id: str, api_key: str = None):
     # api_key receives one value from the caller-supplied list on each attempt
     return await call_api(item_id, api_key)
 
+
 # Pass the list explicitly; the decorator tries each key until one succeeds.
 result = await fetch("item-123", api_key=["key1", "key2", "key3"])
+
 
 # Batch resilience: same protections, applied in parallel across many items.
 @opmap(mode="thread", workers=8, retries=2)
 def process(item: dict):
     return transform(item)
 
-results = process(list_of_items)   # returns list; failed items are exceptions
+
+results = process(list_of_items)  # returns list; failed items are exceptions
 ```
 
 ## What each mechanism does
@@ -84,7 +88,7 @@ try:
     result = await fetch("item-42")
 except AllFailedError as e:
     for i, err in enumerate(e.errors):
-        print(f"attempt {i+1}: {err}")
+        print(f"attempt {i + 1}: {err}")
 ```
 
 ## Async support
@@ -96,7 +100,8 @@ Both sync and async functions work. Opero detects async functions automatically 
 ```python
 from opero import configure_logging
 import logging
-configure_logging(level=logging.DEBUG)   # see retries, cache hits, fallbacks
+
+configure_logging(level=logging.DEBUG)  # see retries, cache hits, fallbacks
 ```
 
 ## Package structure

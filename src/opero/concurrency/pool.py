@@ -189,13 +189,15 @@ def get_parallel_map_decorator(
         A parallel map decorator function
     """
     if mode == "process":
-        return lambda func: lambda items, **kw: list(
-            pmap(func)(
-                items,
-                workers=workers,
-                ordered=ordered,
-                progress=progress,
-                **{**kwargs, **kw},
+        return lambda func: (
+            lambda items, **kw: list(
+                pmap(func)(
+                    items,
+                    workers=workers,
+                    ordered=ordered,
+                    progress=progress,
+                    **{**kwargs, **kw},
+                )
             )
         )
 
@@ -212,7 +214,7 @@ def get_parallel_map_decorator(
                 The decorated function
             """
 
-            def wrapper(items: Iterable[T]) -> list[R]: # Removed **kw as it's not used
+            def wrapper(items: Iterable[T]) -> list[R]:  # Removed **kw as it's not used
                 """
                 Wrapper function.
 
@@ -252,60 +254,7 @@ def get_parallel_map_decorator(
 
         return decorator
 
-    elif mode == "async":
-
-        def decorator(func: Callable[[T], R]) -> Callable[[Iterable[T]], list[R]]:
-            """
-            Decorator function.
-
-            Args:
-                func: The function to decorate
-
-            Returns:
-                The decorated function
-            """
-            decorated = amap(func)
-
-            def wrapper(items: Iterable[T], **kw: Any) -> list[R]:
-                """
-                Wrapper function.
-
-                Args:
-                    items: Items to process
-                    **kw: Additional keyword arguments
-
-                Returns:
-                    List of results
-                """
-                # If we're already in an event loop, use it
-                try:
-                    loop = asyncio.get_running_loop()
-                    return loop.run_until_complete(
-                        decorated(
-                            items,
-                            workers=workers,
-                            ordered=ordered,
-                            progress=progress,
-                            **{**kwargs, **kw},
-                        )
-                    )
-                except RuntimeError:
-                    # No event loop running, create one
-                    return asyncio.run(
-                        decorated(
-                            items,
-                            workers=workers,
-                            ordered=ordered,
-                            progress=progress,
-                            **{**kwargs, **kw},
-                        )
-                    )
-
-            return wrapper
-
-        return decorator
-
-    elif mode == "async_process":
+    elif mode == "async" or mode == "async_process":
 
         def decorator(func: Callable[[T], R]) -> Callable[[Iterable[T]], list[R]]:
             """

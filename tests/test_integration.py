@@ -5,7 +5,6 @@ Integration tests for the opero package.
 
 import asyncio
 import time
-from unittest.mock import AsyncMock, Mock
 
 import pytest
 
@@ -25,7 +24,7 @@ async def test_opero_integration_all_features():
         min_delay=0,
         max_delay=0,
     )
-    async def api_call(endpoint: str, api_key: str = None):
+    async def api_call(endpoint: str, api_key: str | None = None):
         nonlocal call_count
         call_count += 1
 
@@ -86,7 +85,7 @@ async def test_opero_error_handling():
         min_delay=0,
         max_delay=0,
     )
-    async def failing_function(value: str, fallback_values: str = None):
+    async def failing_function(value: str, fallback_values: str | None = None):
         # Always fails regardless of fallback_values
         raise RuntimeError(f"Always fails for {value}")
 
