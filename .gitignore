@@ -386,3 +386,5 @@ dmypy.json
 
 # macOS
 .DS_Store
+
+dist/
